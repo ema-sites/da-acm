@@ -2,6 +2,12 @@
 
 This project boilerplate is for Edge Delivery Services projects that integrate with Adobe Commerce.
 
+## Content:
+
+- DA: https://da.live/#/ema-sites/da-acm
+- Preview: https://main--da-acm--ema-sites.aem.page/
+- Live: https://main--da-acm--ema-sites.aem.live/
+
 ## Documentation
 
 Before using the boilerplate, we recommend you to go through the documentation on <https://experienceleague.adobe.com/developer/commerce/storefront/> and more specifically:
