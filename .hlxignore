@@ -16,3 +16,4 @@ plugins/experimentation/documentation/images/*
 sync-block-collection.sh
 catalog/
 config.json
+tools/importer/
