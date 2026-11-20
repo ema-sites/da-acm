@@ -1,0 +1,22 @@
+{
+  "variantName": "active-filters",
+  "baseBlock": "custom",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "minimal",
+    "hasGrid": false,
+    "imagePattern": "noimg",
+    "structure": "heading + link",
+    "purpose": "results heading bar with a heading on the left and links (Back to top, filter chips) on the right, underlined"
+  },
+  "contentPattern": {
+    "structure": "one row; cells: heading (e.g. All Products), links (e.g. Back to top with href #top)"
+  },
+  "options": [],
+  "memberVariantIds": [
+    "v_149789cd297e"
+  ],
+  "usage": "Partner profile pages, above the partner's product list.",
+  "reuseGuidance": "Use for a heading + right-aligned link bar above a listing. A link to # or #top scrolls smoothly to the top."
+}

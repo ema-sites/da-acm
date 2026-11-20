@@ -17,3 +17,8 @@ scripts/__dropins__/**/*.map
 !AGENTS.md
 
 .scout/
+migration-work/navigation-validation/
+
+# local preview only: demo commerce config (the real one comes from the site configuration)
+/config.json
+migration-work/footer-validation/

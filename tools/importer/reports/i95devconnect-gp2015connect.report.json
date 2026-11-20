@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "url": "https://commercemarketplace.adobe.com/i95devconnect-gp2015connect.html",
+  "path": "i95devconnect-gp2015connect",
+  "timestamp": "2026-11-20T01:33:28.952Z",
+  "title": "i95Dev",
+  "template": "partner-profile",
+  "blocks": [
+    "notice",
+    "notice",
+    "notice",
+    "partner-profile",
+    "cards-product"
+  ],
+  "importScript": "8aa0f1414c82"
+}

@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://commercemarketplace.adobe.com/privacy-policy-cookie-restriction-mode",
+  "path": "privacy-policy-cookie-restriction-mode",
+  "timestamp": "2026-11-20T01:55:08.935Z",
+  "title": "Privacy and Cookie Policy",
+  "template": "legal-page",
+  "blocks": [
+    "table-data"
+  ],
+  "importScript": "d4f468bc0510"
+}

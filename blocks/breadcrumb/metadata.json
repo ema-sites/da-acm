@@ -1,0 +1,22 @@
+{
+  "variantName": "breadcrumb",
+  "baseBlock": "custom",
+  "canonicalModel": "auto-blocked",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "moderate",
+    "hasGrid": true,
+    "imagePattern": "noimg",
+    "structure": "list + link",
+    "purpose": "breadcrumb trail (Home > ancestors > current page) generated from the URL path"
+  },
+  "contentPattern": {
+    "structure": "not authored; scripts/scripts.js inserts it at the top of main on every page except the homepage. Ancestor path segments are title-cased and linked; the current page shows its h1 or title. Opt out with page metadata breadcrumb: off. Optional authored form: one row with links, used as the trail"
+  },
+  "options": [],
+  "memberVariantIds": [
+    "v_fc5ff5ebd80d"
+  ],
+  "usage": "Every page except the homepage (auto-blocked).",
+  "reuseGuidance": "Do not author. Set metadata \"breadcrumb-home\" to change the Home label."
+}

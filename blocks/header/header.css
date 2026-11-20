@@ -466,6 +466,7 @@ header nav .nav-sections .authCombineNavElement button:focus-visible {
 }
 
 /* If viewport height is below max, set max height to 90% of viewport */
+/* breakpoint-exception: Adobe Commerce boilerplate header rule (mini-cart, search and auth panels), kept as shipped */
 @media (max-height: 819px) {
   .cart-mini-cart:not(:has(.cart-empty-cart)) {
     max-height: calc(100vh - var(--nav-height));
@@ -484,6 +485,7 @@ header .nav-search-input .search_autocomplete .popover-container {
   width: 100%;
 }
 
+/* breakpoint-exception: Adobe Commerce boilerplate header rule (mini-cart, search and auth panels), kept as shipped */
 @media (min-width: 1024px) {
   header nav .nav-tools-wrapper {
     position: relative;
@@ -563,6 +565,7 @@ header .nav-search-input .search_autocomplete .popover-container {
   }
 }
 
+/* breakpoint-exception: Adobe Commerce boilerplate header rule (mini-cart, search and auth panels), kept as shipped */
 @media (min-width: 1024px) {
   .dropdown-wrapper.nav-tools-wrapper .nav-auth-menu-panel {
     width: 398px;
@@ -634,6 +637,7 @@ header .nav-search-input .search_autocomplete .popover-container {
   display: block;
 }
 
+/* breakpoint-exception: Adobe Commerce boilerplate header rule (mini-cart, search and auth panels), kept as shipped */
 @media (max-width: 899px) {
   header {
     position: relative;
@@ -877,6 +881,7 @@ body:has(.seller-assisted-buying-banner) {
   cursor: not-allowed;
 }
 
+/* breakpoint-exception: Adobe Commerce boilerplate header rule (mini-cart, search and auth panels), kept as shipped */
 @media (max-width: 900px) {
   .seller-assisted-buying-banner {
     gap: var(--spacing-xsmall);
@@ -884,6 +889,7 @@ body:has(.seller-assisted-buying-banner) {
   }
 }
 
+/* breakpoint-exception: Adobe Commerce boilerplate header rule (mini-cart, search and auth panels), kept as shipped */
 @media (max-width: 768px) {
   body:has(.seller-assisted-buying-banner) {
     padding-top: var(--spacing-large);
@@ -901,5 +907,333 @@ body:has(.seller-assisted-buying-banner) {
   .seller-assisted-buying-banner__close-button span {
     line-height: 1.1;
     display: inline-block;
+  }
+}
+
+/* ---------------------------------------------------------------
+ * Commerce Marketplace header look (migrated from the source site)
+ * Mobile-first: base rules are mobile, min-width queries enhance.
+ * ------------------------------------------------------------- */
+header .header.block {
+  --marketplace-header-height: var(--nav-height);
+  --marketplace-bar-bg: #2b2b2c;
+  --marketplace-nav-link: #515050;
+  --marketplace-nav-link-hover: #000;
+  --marketplace-nav-hover-bg: #f2f3f3;
+}
+
+header {
+  height: calc(var(--nav-height) + 80px);
+}
+
+header .nav-wrapper {
+  border-bottom: 0;
+}
+
+header nav .nav-brand img {
+  width: 90px;
+  height: auto;
+  display: block;
+}
+
+/* The source shows only cart and Sign In on the right */
+header nav .nav-tools .wishlist-wrapper {
+  display: none;
+}
+
+/* sub-header bar: search + version text */
+header .nav-bar-wrapper {
+  position: relative;
+  z-index: 2;
+  margin-top: var(--nav-height);
+  background-color: var(--marketplace-bar-bg);
+  color: #fff;
+}
+
+header .nav-bar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 20px;
+}
+
+header .nav-bar-search {
+  position: relative;
+  width: 100%;
+}
+
+header .nav-bar-search-stub input,
+header .nav-bar-search .nav-search-panel input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px;
+  padding: 0 48px 0 16px;
+  border: 0;
+  border-radius: 0;
+  background: #fff url('../../icons/search.svg') no-repeat right 14px center / 18px;
+  color: #2c2c2c;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: normal;
+  appearance: none;
+}
+
+header .nav-bar-search-stub input::placeholder,
+header .nav-bar-search .nav-search-panel input::placeholder {
+  color: #8e8e8e;
+}
+
+header .nav-bar-search .search-wrapper,
+header .nav-bar-search .nav-search-button {
+  display: none;
+}
+
+header .nav-bar-search.is-live .nav-bar-search-stub {
+  display: none;
+}
+
+header .nav-bar-search.is-live .search-wrapper {
+  display: block;
+}
+
+header .nav-bar-search .nav-search-panel {
+  position: static;
+  display: block;
+  width: 100%;
+  max-height: none;
+  padding: 0;
+  overflow: visible;
+  box-shadow: none;
+  background: none;
+}
+
+header .nav-bar-search .nav-search-panel .search-bar-result {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  width: 100%;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: var(--spacing-small);
+  box-sizing: border-box;
+  background: var(--background-color);
+  box-shadow: var(--shape-shadow-2);
+  color: var(--color-neutral-800);
+}
+
+header .nav-bar-text p {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: right;
+}
+
+@media (min-width: 900px) {
+  header {
+    height: calc(90px + 55px);
+  }
+
+  header .header.block {
+    --nav-height: 90px;
+  }
+
+  header nav {
+    max-width: 1200px;
+    padding: 0 30px;
+  }
+
+  header nav .nav-sections {
+    flex: 1 1 auto;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li {
+    margin: 0;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li > a {
+    display: block;
+    padding: 0 15px;
+    color: var(--marketplace-nav-link);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 90px;
+    text-decoration: none;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:hover {
+    background-color: transparent;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li > a:hover {
+    color: var(--marketplace-nav-link-hover);
+    background-color: var(--marketplace-nav-hover-bg);
+  }
+
+  header .nav-bar-wrapper {
+    margin-top: 0;
+  }
+
+  header .nav-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 55px;
+    padding: 0 30px;
+  }
+
+  header .nav-bar-search {
+    width: 450px;
+  }
+
+  header .nav-bar-text p {
+    margin-right: 20px;
+  }
+}
+
+header .nav-bar-search-stub {
+  display: block;
+  margin: 0;
+}
+
+/* Source header typography (the site body type is lighter and letter-spaced) */
+header .header.block {
+  color: #505050;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+}
+
+header .header.block nav .nav-sections .default-content-wrapper > ul > li > a,
+header .header.block .nav-bar-text p,
+header .header.block .nav-bar-search-stub input {
+  font-weight: 400;
+  letter-spacing: normal;
+}
+
+header .header.block .nav-bar-wrapper {
+  position: sticky;
+  color: #505050;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+header .header.block .nav-bar-search-stub input,
+header .header.block .nav-bar-search .nav-search-panel input {
+  padding: 12px 48px 12px 16px;
+  color: #8e8e8e;
+  font-family: roboto, 'Helvetica Neue', helvetica, arial, sans-serif;
+}
+
+header .header.block .nav-bar-text p {
+  color: #fff;
+  line-height: 55px;
+}
+
+header .header.block nav .nav-brand {
+  color: #0469e3;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+}
+
+@media (min-width: 900px) {
+  header .header.block nav {
+    position: relative;
+    gap: 0;
+  }
+
+  header .header.block nav .nav-sections {
+    margin-left: 50px;
+  }
+
+  header .header.block nav .nav-sections .default-content-wrapper > ul > li > a {
+    display: inline-block;
+    padding: 15px;
+    font-weight: 500;
+    line-height: 60px;
+  }
+
+  header .header.block .nav-bar {
+    padding: 0 0 0 20px;
+  }
+}
+
+header .header.block nav .nav-brand,
+header .header.block nav .nav-brand p,
+header .header.block nav .nav-brand a {
+  width: auto;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+  color: #0469e3;
+}
+
+header .header.block nav .nav-brand a {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  header .header.block nav .nav-sections .default-content-wrapper > ul {
+    padding: 0;
+  }
+
+  header .header.block nav .nav-sections .default-content-wrapper > ul > li > a {
+    position: relative;
+  }
+}
+
+@media (min-width: 900px) {
+  header .header.block nav .nav-brand {
+    flex: 0 0 auto;
+    width: 90px;
+    min-width: 0;
+  }
+
+  header .header.block nav .nav-sections .default-content-wrapper > ul > li {
+    padding: 0;
+  }
+}
+
+header .header.block nav .nav-tools-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+header .header.block nav .nav-tools .nav-dropdown-button {
+  color: #000;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: normal;
+  white-space: nowrap;
+}
+
+/* keep the bar's top margin inside the header (no margin collapse onto the fixed nav) */
+header .header.block {
+  display: flow-root;
+}
+
+header .header.block .nav-bar-text p {
+  line-height: 20px;
+}
+
+@media (min-width: 900px) {
+  header .header.block .nav-bar-text p {
+    line-height: 55px;
   }
 }

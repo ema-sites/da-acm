@@ -1,0 +1,24 @@
+{
+  "variantName": "product-list-page",
+  "baseBlock": "custom",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "minimal",
+    "hasGrid": true,
+    "imagePattern": "noimg",
+    "structure": "field + button",
+    "purpose": "commerce product listing page rendered by the product discovery drop-in (facets, toolbar, results)"
+  },
+  "contentPattern": {
+    "structure": "commerce drop-in block; results, facets, sorting and pagination come from catalog search at runtime"
+  },
+  "options": [],
+  "memberVariantIds": [
+    "v_1008024cdac4",
+    "v_2cb18af51a50",
+    "v_c84305fab857"
+  ],
+  "usage": "Product listing pages (migrated with the commerce workflow). Also renders the listing toolbar (listing-toolbar) and filter facets.",
+  "reuseGuidance": "Do not author content into it; configured by the commerce workflow."
+}

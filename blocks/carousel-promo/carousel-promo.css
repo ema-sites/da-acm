@@ -1,0 +1,151 @@
+/* Full-width promo slider: the block spans the viewport, the slides are 1160px wide. */
+main > .section > .carousel-promo-wrapper {
+  max-width: none;
+  padding: 0;
+}
+
+.carousel-promo {
+  display: flow-root;
+  position: relative;
+  margin: 0 0 40px;
+  color: var(--brand-text-color);
+}
+
+.carousel-promo .carousel-promo-slides-container {
+  position: relative;
+  width: min(1160px, calc(100% - 40px));
+  margin: 30px auto 18px;
+}
+
+.carousel-promo .carousel-promo-slides {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.carousel-promo .carousel-promo-slides::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-promo .carousel-promo-slide {
+  position: relative;
+  flex: 0 0 100%;
+  min-height: 348px;
+  scroll-snap-align: start;
+}
+
+/* the banner image carries the headline and copy */
+.carousel-promo .carousel-promo-slide-image {
+  line-height: 0;
+}
+
+.carousel-promo .carousel-promo-slide-image picture {
+  display: block;
+}
+
+.carousel-promo .carousel-promo-slide-image img {
+  display: block;
+  width: 100%;
+  height: 348px;
+  object-fit: cover;
+  object-position: left top;
+}
+
+/* CTA placed over the banner */
+.carousel-promo .carousel-promo-slide-content {
+  position: absolute;
+  top: 280px;
+  left: 50px;
+}
+
+.carousel-promo .carousel-promo-slide-content > * {
+  margin: 0;
+}
+
+main .carousel-promo .carousel-promo-slide-content a:any-link {
+  display: inline-block;
+  padding: 12px 25px;
+  border: 1px solid rgb(235 82 2);
+  border-radius: 0;
+  background-color: rgb(235 82 2);
+  color: rgb(255 255 255);
+  font-family: RobotoRegular, roboto, 'Helvetica Neue', helvetica, arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: normal;
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+main .carousel-promo .carousel-promo-slide-content a:any-link:hover {
+  color: rgb(255 255 255);
+  text-decoration: none;
+}
+
+/* per-banner CTA offsets, matching where each source banner leaves room for the button */
+.carousel-promo .carousel-promo-slide:nth-child(3) .carousel-promo-slide-content {
+  left: 35px;
+}
+
+/* the source slider has no arrows, only dots */
+.carousel-promo .carousel-promo-navigation {
+  display: none;
+}
+
+.carousel-promo > nav {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 0;
+  right: 0;
+}
+
+.carousel-promo .carousel-promo-indicators {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.carousel-promo .carousel-promo-indicator {
+  line-height: 0;
+}
+
+.carousel-promo .carousel-promo-indicator button {
+  display: block;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgb(204 204 204);
+  border-radius: 10px;
+  background-color: rgb(255 255 255);
+  color: rgb(255 255 255);
+  font-family: RobotoRegular, roboto, 'Helvetica Neue', helvetica, arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: center;
+  text-indent: -9999px;
+  cursor: pointer;
+}
+
+.carousel-promo .carousel-promo-indicator button[aria-current='true'] {
+  background-color: rgb(28 25 24);
+}
+
+@media (width >= 900px) {
+  .carousel-promo .carousel-promo-slide:nth-child(2) .carousel-promo-slide-content {
+    left: min(750px, calc(100% - 194px));
+  }
+}

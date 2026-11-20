@@ -1,0 +1,34 @@
+{
+  "variantName": "cards-product",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "moderate",
+    "hasGrid": true,
+    "imagePattern": "noimg",
+    "structure": "link + heading + image",
+    "purpose": "product / extension tiles in a 4-column grid: logo, name, vendor, star rating, partner badge, price"
+  },
+  "contentPattern": {
+    "structure": "one row per product; cells (any may be omitted, recognised by content): logo image, product name (heading or link to the product), vendor, rating (number 0-5, e.g. 4.5), partner badge (text containing \"Partner\", e.g. Gold Technology Partner), price (e.g. $99.00 or $75.00 / year)"
+  },
+  "options": [],
+  "memberVariantIds": [
+    "v_43c0d5fe9f1c",
+    "v_714128e81961",
+    "v_43c0d5fe9f1c-1",
+    "v_714128e81961-1",
+    "v_43c0d5fe9f1c-2",
+    "v_43c0d5fe9f1c-3",
+    "v_43c0d5fe9f1c-4",
+    "v_43c0d5fe9f1c-10",
+    "v_43c0d5fe9f1c-5",
+    "v_43c0d5fe9f1c-6",
+    "v_43c0d5fe9f1c-7",
+    "v_43c0d5fe9f1c-8",
+    "v_43c0d5fe9f1c-9"
+  ],
+  "usage": "Partner profile pages: the partner's extensions list.",
+  "reuseGuidance": "Use for any product grid authored as content. Product data from the commerce catalog belongs in product-list-page instead."
+}

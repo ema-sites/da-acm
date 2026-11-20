@@ -7,7 +7,6 @@ import {
 
 // Block-level
 import createModal from '../modal/modal.js';
-import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
 
 /**
@@ -24,14 +23,84 @@ function toggleStoreDropdown(sections, expanded = false) {
 }
 
 /**
+ * Groups each heading with the list that follows it into a column.
+ * @param {Element} wrapper The section's default-content wrapper
+ */
+function buildLinkColumns(wrapper) {
+  const columns = document.createElement('div');
+  columns.className = 'footer-columns';
+  let column;
+  [...wrapper.children].forEach((child) => {
+    if (/^H[1-6]$/.test(child.tagName) || !column) {
+      column = document.createElement('div');
+      column.className = 'footer-column';
+      columns.append(column);
+    }
+    column.append(child);
+  });
+  wrapper.append(columns);
+}
+
+/**
+ * Splits the bottom section into a brand row (logo, text, social list) and a legal row
+ * (copyright and legal links), reading the authored order from the fragment.
+ * @param {Element} wrapper The section's default-content wrapper
+ */
+function buildBottomRows(wrapper) {
+  const brandRow = document.createElement('div');
+  brandRow.className = 'footer-brand-row';
+  const legalRow = document.createElement('div');
+  legalRow.className = 'footer-legal-row';
+  let row = brandRow;
+  [...wrapper.children].forEach((child) => {
+    const isLogo = child.tagName === 'P' && child.querySelector('img') && !child.textContent.trim();
+    const isSocial = child.tagName === 'UL' && child.querySelector('a img');
+    if (isLogo) child.classList.add('footer-logo');
+    if (isSocial) {
+      child.classList.add('footer-social');
+      child.querySelectorAll('li').forEach((li) => {
+        if (!li.querySelector('a')) li.classList.add('footer-social-label');
+      });
+    }
+    row.append(child);
+    // everything after the social list belongs to the legal row
+    if (isSocial) row = legalRow;
+  });
+  legalRow.querySelectorAll(':scope > ul').forEach((ul) => ul.classList.add('footer-legal-links'));
+  wrapper.append(brandRow, legalRow);
+}
+
+/**
+ * Adds layout classes to the fragment's sections: link columns first, bottom bar second.
+ * @param {Element} footer The footer content element
+ */
+function decorateFooterSections(footer) {
+  const sections = [...footer.querySelectorAll(':scope > .section')];
+  const [links, bottom] = sections;
+  if (links) {
+    links.classList.add('footer-links');
+    const wrapper = links.querySelector('.default-content-wrapper');
+    if (wrapper) buildLinkColumns(wrapper);
+  }
+  if (bottom) {
+    bottom.classList.add('footer-bottom');
+    const wrapper = bottom.querySelector('.default-content-wrapper');
+    if (wrapper) buildBottomRows(wrapper);
+  }
+}
+
+/**
  * loads and decorates the footer
  * @param {Element} block The footer block element
  */
 export default async function decorate(block) {
   const root = getRootPath();
-  // Load Footer as Fragment
-  const footerMeta = getMetadata('footer');
-  const footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/footer';
+  // Load Footer as Fragment — metadata-independent: /content first (localhost), then root (DA/EDS prod)
+  let footerResp = await fetch('/content/footer.plain.html');
+  if (!footerResp.ok) footerResp = await fetch('/footer.plain.html');
+  const footerPath = footerResp.ok
+    ? new URL(footerResp.url).pathname.replace(/\.plain\.html$/, '')
+    : '/footer';
   const fragment = await loadFragment(footerPath);
 
   // decorate footer DOM
@@ -168,5 +237,6 @@ export default async function decorate(block) {
   }
   while (fragment.firstElementChild) footer.append(fragment.firstElementChild);
 
+  decorateFooterSections(footer);
   block.append(footer);
 }

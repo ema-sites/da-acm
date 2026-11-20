@@ -1,0 +1,14 @@
+{
+  "status": "success",
+  "url": "https://commercemarketplace.adobe.com/",
+  "path": "index",
+  "timestamp": "2026-11-20T01:42:40.608Z",
+  "title": "Adobe Commerce Extensions & Themes for Your Online Store | Marketplace",
+  "template": "homepage",
+  "blocks": [
+    "carousel-promo",
+    "cards-category",
+    "cards-program"
+  ],
+  "importScript": "bd2c8d8cfd5a"
+}

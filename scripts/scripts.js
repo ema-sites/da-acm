@@ -9,6 +9,7 @@ import {
   loadSections,
   loadCSS,
   buildBlock,
+  getMetadata,
 } from './aem.js';
 import {
   buildPDPBlock,
@@ -114,6 +115,27 @@ function buildWidgetAutoBlocks(main) {
 }
 
 /**
+ * Inserts an auto-blocked breadcrumb at the top of main, in its own section,
+ * on every page except the homepage. The trail is generated from the URL path
+ * by blocks/breadcrumb. Opt out per page with metadata `breadcrumb: off`.
+ * @param {Element} main The container element
+ */
+function buildBreadcrumbBlock(main) {
+  // Only the page's own <main>: fragments (nav, footer, …) are decorated too and must not get one.
+  if (main !== document.querySelector('main')) return;
+  // Local preview serves pages under /content; that folder is not part of the site path.
+  const path = window.location.pathname
+    .replace(window.location.hostname === 'localhost' ? /^\/content(?=\/)/ : /^$/, '')
+    .replace(/\/index(\.html)?$/, '/');
+  if (path === '/' || path === '') return;
+  if (['off', 'false', 'no'].includes(getMetadata('breadcrumb').toLowerCase())) return;
+  if (main.querySelector('.breadcrumb')) return;
+  const section = document.createElement('div');
+  section.append(buildBlock('breadcrumb', ''));
+  main.prepend(section);
+}
+
+/**
  * Builds all synthetic blocks in a container element.
  * @param {Element} main The container element
  */
@@ -137,6 +159,7 @@ function buildAutoBlocks(main) {
       });
     }
     buildWidgetAutoBlocks(main);
+    buildBreadcrumbBlock(main);
     // auto-block PDP
     const metaSku = getProductSku();
     const pdpBlock = document.querySelector('.product-details');

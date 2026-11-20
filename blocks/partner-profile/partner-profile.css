@@ -1,0 +1,117 @@
+/* Seller header: bordered logo, seller name, website link, social icons.
+ * Values from the source capture (commercemarketplace.adobe.com .product.media). */
+
+.partner-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  color: var(--brand-text-color);
+  font-family: var(--brand-body-font-family);
+  font-size: var(--brand-body-font-size);
+  line-height: var(--brand-body-line-height);
+}
+
+.partner-profile .partner-profile-logo {
+  flex: 0 0 auto;
+  margin: 0 0 14px;
+  border: 1px solid #afafaf;
+  line-height: 0;
+}
+
+.partner-profile .partner-profile-logo picture {
+  display: block;
+}
+
+.partner-profile .partner-profile-logo img {
+  display: block;
+  width: 84px;
+  height: 84px;
+  object-fit: fill;
+}
+
+.partner-profile .partner-profile-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.partner-profile .partner-profile-details > * {
+  margin: 0;
+}
+
+main .partner-profile .partner-profile-name {
+  margin: 0 0 5px;
+  font-family: var(--brand-heading-font-family);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 30.8px;
+  letter-spacing: normal;
+  color: var(--brand-heading-color);
+}
+
+.partner-profile .partner-profile-website {
+  max-width: 100%;
+}
+
+main .partner-profile .partner-profile-website a:any-link {
+  font-family: var(--brand-body-font-family);
+  font-size: var(--brand-body-font-size);
+  font-weight: 400;
+  line-height: var(--brand-body-line-height);
+  letter-spacing: normal;
+  color: var(--brand-link-color);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+main .partner-profile .partner-profile-website a:hover {
+  text-decoration: underline;
+}
+
+.partner-profile .partner-profile-social {
+  display: flex;
+  gap: 3px;
+  margin: 9px 0 39px;
+  padding: 0;
+  list-style: none;
+}
+
+.partner-profile .partner-profile-social li {
+  margin: 0;
+  padding: 0;
+}
+
+main .partner-profile .partner-profile-social a:any-link {
+  display: block;
+  line-height: 0;
+}
+
+.partner-profile .partner-profile-social .icon,
+.partner-profile .partner-profile-social img {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+@media (width >= 900px) {
+  .partner-profile {
+    flex-direction: row;
+    gap: 20px;
+    margin: 0 0 5px;
+  }
+
+  .partner-profile .partner-profile-logo {
+    margin: 0;
+  }
+
+  .partner-profile .partner-profile-social {
+    gap: 0;
+    margin-bottom: 29px;
+  }
+
+  .partner-profile .partner-profile-social li {
+    padding: 0 8px;
+  }
+}

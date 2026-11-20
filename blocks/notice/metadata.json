@@ -1,0 +1,28 @@
+{
+  "variantName": "notice",
+  "baseBlock": "custom",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "minimal",
+    "hasGrid": false,
+    "imagePattern": "noimg",
+    "structure": "link",
+    "purpose": "bordered notice box with text and links; the warning option is a yellow box with a warning icon"
+  },
+  "contentPattern": {
+    "structure": "one row, one cell of text paragraphs with inline links"
+  },
+  "options": [
+    {
+      "class": "warning",
+      "label": "Warning"
+    }
+  ],
+  "memberVariantIds": [
+    "v_6e97f91526ff-3",
+    "v_99e588dac7f3"
+  ],
+  "usage": "Partner profile pages (policy notice); warning option for redirect / unavailable messages.",
+  "reuseGuidance": "Use for short inline notices. Add (warning) for alert-style messages."
+}

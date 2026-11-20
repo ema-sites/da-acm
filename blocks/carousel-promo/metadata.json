@@ -1,0 +1,22 @@
+{
+  "variantName": "carousel-promo",
+  "baseBlock": "carousel",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "moderate",
+    "hasGrid": false,
+    "imagePattern": "noimg",
+    "structure": "list + link + button",
+    "purpose": "promotional banner slider; each slide has a logo, heading, text and CTA button beside a large image"
+  },
+  "contentPattern": {
+    "structure": "one row per slide; cells: content (logo image, heading, text, CTA link) and image, in either order"
+  },
+  "options": [],
+  "memberVariantIds": [
+    "v_9bf6cacc665a"
+  ],
+  "usage": "Homepage promotional banner (e.g. Payment Services).",
+  "reuseGuidance": "Use for full-width promo banners. A single row renders a static banner without controls."
+}

@@ -1,18 +1,194 @@
+/* Commerce Marketplace footer (migrated). Mobile-first; min-width queries enhance. */
 footer {
-    background-color: var(--color-neutral-100);
-    font: var(--type-body-2-default-font);
-    letter-spacing: var(--type-body-2-default-letter-spacing);
+  background-color: #31302b;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
 }
 
 footer .footer > div {
-    margin: auto;
-    max-width: 1200px;
-    padding: 40px 24px 24px;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 25px;
 }
 
 footer .footer p {
-    margin: 0;
+  margin: 0;
 }
+
+footer .footer a:any-link {
+  color: #fff;
+  text-decoration: none;
+}
+
+footer .footer a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+footer .footer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* link columns */
+footer .footer-links {
+  padding-top: 40px;
+}
+
+footer .footer-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+}
+
+footer .footer-column h3 {
+  margin: 0;
+  padding: 0 10px 0 0;
+  min-height: 58px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 19.8px;
+  letter-spacing: normal;
+}
+
+footer .footer-column li a {
+  display: block;
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* bottom bar */
+footer .footer-bottom {
+  margin-top: 40px;
+  border-top: 1px solid #979797;
+  padding-top: 40px;
+}
+
+footer .footer-brand-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+footer .footer-logo img {
+  display: block;
+  width: 90px;
+  height: auto;
+}
+
+footer .footer-brand-row > p:not(.footer-logo) {
+  padding-top: 7px;
+  font-size: 14px;
+}
+
+footer .footer-social {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+footer .footer-social .footer-social-label {
+  padding-top: 7px;
+  font-size: 16px;
+  line-height: 22.86px;
+}
+
+footer .footer-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #fff;
+  border-radius: 100%;
+}
+
+footer .footer-social a img {
+  width: 15px;
+  height: 15px;
+  filter: brightness(0) invert(1);
+}
+
+footer .footer-legal-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 40px;
+  font-size: 12px;
+  line-height: 17.14px;
+}
+
+footer .footer-legal-links {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+footer .footer-legal-links a {
+  display: block;
+  padding: 0 15px 0 0;
+  font-size: 12px;
+  line-height: 17.14px;
+}
+
+@media (min-width: 900px) {
+  footer .footer > div {
+    padding: 0 30px;
+  }
+
+  footer .footer-links {
+    padding-top: 60px;
+  }
+
+  footer .footer-columns {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  footer .footer-bottom {
+    margin-top: 40px;
+    padding-top: 50px;
+    padding-bottom: 25px;
+  }
+
+  footer .footer-brand-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  footer .footer-brand-row > * {
+    flex: 1 1 0;
+  }
+
+  footer .footer-brand-row > p:not(.footer-logo) {
+    text-align: center;
+  }
+
+  footer .footer-social {
+    justify-content: flex-end;
+  }
+
+  footer .footer-legal-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  footer .footer-legal-links a {
+    padding: 0 0 0 30px;
+  }
+}
+
 
 .storeview-switcher-button {
     background: transparent;
@@ -66,8 +242,15 @@ footer .footer p {
     margin-bottom: var(--spacing-small);
 }
 
-@media (min-width: 900px) {
-    footer .footer > div {
-        padding: 40px 32px 24px;
-    }
+
+footer .footer a:any-link,
+footer .footer li,
+footer .footer p {
+  font-family: var(--brand-body-font-family, adobe-clean, sans-serif);
+  font-weight: 400;
+  letter-spacing: normal;
+}
+
+footer .footer .footer-column h3 {
+  font-weight: 700;
 }

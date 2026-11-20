@@ -1,0 +1,22 @@
+{
+  "variantName": "partner-profile",
+  "baseBlock": "custom",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "moderate",
+    "hasGrid": true,
+    "imagePattern": "noimg",
+    "structure": "image + heading + link + list",
+    "purpose": "seller header: logo, seller name, website link and social links"
+  },
+  "contentPattern": {
+    "structure": "one row; cells: logo image, details (seller name heading, website link, social links to facebook/twitter/x/linkedin/youtube/instagram, shown as icons)"
+  },
+  "options": [],
+  "memberVariantIds": [
+    "v_40ac25a0e5e5"
+  ],
+  "usage": "Top of each partner profile page.",
+  "reuseGuidance": "One per partner page. Social links are recognised by their host name."
+}

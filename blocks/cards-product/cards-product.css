@@ -1,0 +1,161 @@
+/* Product tiles: values from the source's computed styles (#instant-search-results-container). */
+.cards-product {
+  --cards-product-border-color: rgb(224 224 224);
+  --cards-product-star-empty: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 24'%3E%3Cpath fill='%23d8d8d8' d='M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z'/%3E%3C/svg%3E");
+  --cards-product-star-full: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 24'%3E%3Cpath fill='%23464646' d='M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z'/%3E%3C/svg%3E");
+
+  /* the source list box runs 20px past the tiles on the right */
+  display: flow-root;
+  margin-right: -20px;
+  padding: 20px 20px 0 0;
+  color: rgb(32 32 33);
+  font-family: var(--brand-body-font-family);
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.cards-product > ul {
+  list-style: none;
+  margin: 15px 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cards-product .cards-product-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cards-product .cards-product-link,
+.cards-product a.cards-product-link:any-link {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  color: rgb(32 32 33);
+  font: 400 16px/28px var(--brand-body-font-family);
+  letter-spacing: normal;
+  text-decoration: none;
+}
+
+.cards-product a.cards-product-link:hover {
+  color: rgb(32 32 33);
+  text-decoration: none;
+}
+
+.cards-product .cards-product-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 240px;
+  padding: 10px 10px 2px;
+  border: 1px solid var(--cards-product-border-color);
+  border-radius: 4px;
+  background-color: var(--brand-background-color);
+}
+
+.cards-product .cards-product-body p {
+  margin: 0;
+}
+
+.cards-product .cards-product-image {
+  margin-bottom: 15px;
+  line-height: 0;
+}
+
+.cards-product .cards-product-image img {
+  display: block;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.cards-product .cards-product-name {
+  padding-bottom: 3px; /* with the title's 15px bottom margin, the source's 18px gap above the rule */
+  border-bottom: 1px solid var(--cards-product-border-color);
+}
+
+.cards-product .cards-product-name :is(h1, h2, h3, h4, h5, h6) {
+  height: 42px; /* two lines, as on the source */
+  margin: 0 0 15px;
+  overflow: hidden;
+  color: rgb(51 51 51);
+  font: 700 15px/21px var(--brand-heading-font-family);
+  letter-spacing: 0.04em;
+}
+
+.cards-product .cards-product-extra {
+  margin-top: 8px;
+  color: rgb(102 102 102);
+}
+
+.cards-product .cards-product-rating {
+  position: relative;
+  flex: none;
+  width: 100px;
+  height: 16px;
+  margin-top: 11px;
+  background: var(--cards-product-star-empty) repeat-x 0 0 / 20px 16px;
+}
+
+.cards-product .cards-product-rating::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--rating, 0) / 5 * 100%);
+  background: var(--cards-product-star-full) repeat-x 0 0 / 20px 16px;
+}
+
+.cards-product .cards-product-rating-percent {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.cards-product .cards-product-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.cards-product .cards-product-badge {
+  flex: none;
+  line-height: 0;
+}
+
+.cards-product .cards-product-badge img {
+  display: block;
+  width: 90px;
+  height: 28px;
+}
+
+/* like the source, the price is right-aligned and shows its first line only */
+.cards-product .cards-product-price {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 20px;
+  overflow: hidden;
+  color: rgb(70 86 102);
+  font-size: 16px;
+  line-height: 20px;
+  text-align: right;
+}
+
+.cards-product .cards-product-vendor {
+  display: none;
+}
+
+@media (width >= 900px) {
+  .cards-product > ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

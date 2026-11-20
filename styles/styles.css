@@ -1,3 +1,5 @@
+@import url('brand.css');
+
 /*
  * Copyright 2020 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -646,4 +648,319 @@ body.columns main > .section:empty {
 */
 main[hidden] {
   display: none !important;
+}
+
+/* ---------------------------------------------------------------
+ * Commerce Marketplace global design (migrated from the source)
+ * ------------------------------------------------------------- */
+body {
+  font-family: var(--brand-body-font-family);
+  font-size: var(--brand-body-font-size);
+  font-weight: 400;
+  line-height: var(--brand-body-line-height);
+  letter-spacing: normal;
+  color: var(--brand-text-color);
+  background-color: var(--brand-background-color);
+}
+
+main h1,
+main h2,
+main h3,
+main h4,
+main h5,
+main h6 {
+  font-family: var(--brand-heading-font-family);
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--brand-heading-color);
+}
+
+main h1 {
+  margin: 0 0 15px;
+  font-size: var(--brand-heading-xxl-mobile);
+  line-height: 1.1;
+}
+
+main h2 {
+  font-size: var(--brand-heading-xl-mobile);
+  line-height: 1.1;
+}
+
+main h3 {
+  margin: 0 0 10px;
+  font-size: var(--brand-heading-l-mobile);
+  line-height: 1.1;
+}
+
+main h4 {
+  font-size: var(--brand-heading-m-mobile);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+main h5 {
+  font-size: var(--brand-heading-s);
+  font-weight: 700;
+}
+
+main h6 {
+  font-size: var(--brand-heading-xs);
+  font-weight: 700;
+}
+
+main p,
+main li {
+  font-size: var(--brand-body-font-size);
+  line-height: var(--brand-body-line-height);
+  letter-spacing: normal;
+}
+
+main p {
+  margin: 0 0 10px;
+}
+
+main a:any-link {
+  color: var(--brand-link-color);
+  text-decoration: none;
+}
+
+main a:hover {
+  color: var(--brand-link-hover-color);
+  text-decoration: underline;
+}
+
+main a:focus-visible {
+  outline: 2px solid var(--brand-link-color);
+  outline-offset: 2px;
+}
+
+/* EDS button reset: authored links stay links unless a block styles them */
+main .button-container {
+  display: inline;
+}
+
+main a.button:any-link {
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: var(--brand-link-color);
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  white-space: normal;
+}
+
+main > .section > div {
+  max-width: var(--brand-content-max-width);
+  padding-left: var(--brand-section-padding);
+  padding-right: var(--brand-section-padding);
+}
+
+@media (min-width: 900px) {
+  main h1 {
+    font-size: var(--brand-heading-xxl);
+  }
+
+  main h2 {
+    font-size: var(--brand-heading-xl);
+  }
+
+  main h3 {
+    font-size: var(--brand-heading-l);
+  }
+
+  main h4 {
+    font-size: var(--brand-heading-m);
+  }
+
+  main > .section > div {
+    padding-left: var(--brand-content-padding);
+    padding-right: var(--brand-content-padding);
+  }
+}
+
+/* source content box: 1200px including the 30px side padding (1140px of content) */
+main > .section > div {
+  box-sizing: border-box;
+}
+
+/* Seller pages: the partner profile and its sidebar notices sit side by side, as on the source */
+@media (min-width: 900px) {
+  main > .section:has(> .partner-profile-wrapper ~ .notice-wrapper) > .partner-profile-wrapper {
+    float: left;
+    width: 752px;
+    max-width: calc(100% - 388px);
+    margin-left: max(var(--brand-content-padding), (100% - var(--brand-content-max-width)) / 2 + var(--brand-content-padding));
+    padding: 0;
+  }
+
+  main > .section:has(> .partner-profile-wrapper ~ .notice-wrapper) > div:not(.partner-profile-wrapper, .notice-wrapper) {
+    clear: left;
+  }
+
+  main > .section:has(> .partner-profile-wrapper ~ .notice-wrapper)::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+/* Section styles (set with section metadata) */
+main > .section.light-grey {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: var(--brand-light-color);
+}
+
+/* Homepage section headings are large and centred on the source */
+main .cards-category-container > .default-content-wrapper h2,
+main .cards-program-container > .default-content-wrapper h2 {
+  margin: 20px 0 30px;
+  font-size: 28px;
+  line-height: 1.1;
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  main .cards-category-container > .default-content-wrapper h2,
+  main .cards-program-container > .default-content-wrapper h2 {
+    font-size: 36px;
+  }
+}
+
+/* Link hover (source: blue, underlined) */
+main a:any-link:hover {
+  color: var(--brand-link-hover-color);
+  text-decoration: underline;
+}
+
+/* Source button looks: **link** = orange filled, _link_ = outlined pill */
+main p.button-wrapper {
+  margin: 0 0 10px;
+}
+
+main a.button.primary:any-link {
+  display: inline-block;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 0;
+  background-color: #eb5202;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: normal;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background-color 0.13s ease;
+}
+
+main a.button.primary:any-link:hover,
+main a.button.primary:any-link:focus-visible {
+  background-color: #ba4000;
+  color: #fff;
+  text-decoration: none;
+}
+
+main a.button.secondary:any-link {
+  display: inline-block;
+  padding: 4px 14px;
+  border: 2px solid #d5d5d5;
+  border-radius: 16px;
+  background-color: transparent;
+  color: #0a0a0a;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: normal;
+  text-decoration: none;
+  transition: border-color 0.13s ease-in-out;
+}
+
+main a.button.secondary:any-link:hover,
+main a.button.secondary:any-link:focus-visible {
+  border-color: #b3b3b3;
+  color: #0a0a0a;
+  text-decoration: none;
+}
+
+/* Seller pages: About Seller copy and the All Products heading rule */
+main .partner-profile-container > .default-content-wrapper p {
+  color: #202021;
+  font-size: 16px;
+  line-height: 28px;
+}
+
+main .partner-profile-container > .default-content-wrapper:has(+ .cards-product-wrapper) h3 {
+  padding-bottom: 10px;
+  border-bottom: 2px solid #d1d1d1;
+}
+
+/* Error page (503): message left, illustration right, source type sizes */
+main > .section.error-page h1 {
+  color: var(--brand-text-color);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 40px;
+}
+
+main > .section.error-page p {
+  color: #949496;
+  font-size: 20px;
+  line-height: 28px;
+}
+
+main > .section.error-page p.button-wrapper {
+  display: inline-block;
+  margin: 30px 20px 0 0;
+}
+
+main > .section.error-page picture img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (min-width: 900px) {
+  main > .section.error-page > .default-content-wrapper {
+    display: grid;
+    grid-template-columns: 60% 39%;
+    column-gap: 1%;
+    align-items: start;
+  }
+
+  main > .section.error-page > .default-content-wrapper > * {
+    grid-column: 1;
+  }
+
+  main > .section.error-page > .default-content-wrapper > p:has(> picture) {
+    grid-column: 2;
+    grid-row: 1 / span 8;
+  }
+
+  main > .section.error-page h1 {
+    font-size: 40px;
+  }
+
+  main > .section.error-page > .default-content-wrapper > p.button-wrapper {
+    grid-column: 1;
+    justify-self: start;
+  }
+}
+
+/* Seller pages: content below the profile stays in the left column (772px at full width),
+   clear of the 365px sidebar, whatever the sidebar's height */
+@media (min-width: 900px) {
+  main > .section:has(> .partner-profile-wrapper ~ .notice-wrapper) > div:not(.partner-profile-wrapper, .notice-wrapper) {
+    padding-right: calc(var(--brand-content-padding) + 388px);
+  }
+}
+
+/* Text links in default content keep the surrounding text size and weight */
+main .default-content-wrapper a:any-link:not(.button) {
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: normal;
 }

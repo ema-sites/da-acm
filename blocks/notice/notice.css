@@ -1,0 +1,151 @@
+/* notice: bordered sidebar box (source .box-profile / .case-specifications) */
+.notice {
+  margin: 0 0 30px;
+  padding: 25px 75px;
+  border: 1px solid #aeafb1;
+  color: #8e8e8e;
+  font-size: var(--brand-body-font-size);
+  line-height: var(--brand-body-line-height);
+  text-align: center;
+}
+
+.notice .notice-body > :first-child {
+  margin-top: 0;
+}
+
+.notice .notice-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* standalone link: spectrum outline secondary button (Contact Seller) */
+main .notice a.notice-action:any-link {
+  box-sizing: border-box;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  padding: 0 18px 0 16px;
+  border: 2px solid #d5d5d5;
+  border-radius: 20px;
+  background-color: transparent;
+  color: #222;
+  font-family: "Adobe Clean", adobe-clean, "Source Sans Pro", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, ubuntu, "Trebuchet MS", "Lucida Grande", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20.8px;
+  letter-spacing: normal;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.13s ease-out;
+}
+
+main .notice a.notice-action:hover,
+main .notice a.notice-action:focus-visible {
+  border-color: #222;
+  color: #222;
+  text-decoration: none;
+}
+
+/* badge image above the box (moved out of the block by notice.js) */
+.notice-wrapper .notice-badge {
+  margin: 0 auto;
+  line-height: 0;
+  text-align: center;
+}
+
+.notice-wrapper .notice-badge p {
+  margin: 0;
+}
+
+.notice-wrapper .notice-badge img {
+  width: 190px;
+  height: auto;
+}
+
+.notice-wrapper .notice-badge .notice-badge-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* titled box: grey header band + address body (source Location box) */
+.notice.notice-titled {
+  padding: 0;
+  text-align: start;
+}
+
+.notice.notice-titled .notice-head {
+  margin: 2px 2px 0;
+  padding: 19px 23px;
+  background-color: var(--brand-light-color);
+}
+
+.notice.notice-titled .notice-head > * {
+  margin: 0;
+  color: var(--brand-heading-color);
+  font-size: 16px;
+  line-height: 17.6px;
+}
+
+.notice.notice-titled .notice-body {
+  padding: 20px 20px 50px;
+  color: var(--brand-text-color);
+}
+
+.notice.notice-titled .notice-body p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4286;
+}
+
+/* warning: yellow message with a leading icon (source .message.notice) */
+.notice.warning {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--brand-text-color);
+  text-align: start;
+}
+
+.notice.warning .notice-body {
+  padding: 14px 20px 13px 45px;
+  background-color: #fdf0d5;
+  color: #6f4400;
+}
+
+.notice.warning .notice-body p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4286;
+}
+
+.notice.warning .notice-icon {
+  position: absolute;
+  top: 13px;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  line-height: 0;
+}
+
+.notice.warning .notice-icon img {
+  width: 24px;
+  height: 24px;
+}
+
+/* desktop: sidebar notices that follow a partner profile sit in a right column */
+@media (width >= 900px) {
+  .notice-wrapper:is(.partner-profile-wrapper ~ .notice-wrapper) {
+    float: right;
+    clear: right;
+    width: 365px;
+    margin: 0 max(var(--brand-content-padding), (100% - var(--brand-content-max-width)) / 2 + var(--brand-content-padding)) 0 3px;
+    padding: 0;
+  }
+}

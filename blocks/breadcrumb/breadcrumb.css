@@ -1,0 +1,42 @@
+.breadcrumb ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.breadcrumb li {
+  display: inline-flex;
+  align-items: center;
+}
+
+.breadcrumb li + li::before {
+  content: '>';
+  padding: 0 8px;
+  opacity: 0.6;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.breadcrumb a:focus-visible {
+  text-decoration: underline;
+}
+
+/* source breadcrumb typography */
+.breadcrumb,
+.breadcrumb a:any-link {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+}
+
+.breadcrumb a:any-link {
+  color: var(--brand-link-color, #0469e3);
+  text-decoration: none;
+}

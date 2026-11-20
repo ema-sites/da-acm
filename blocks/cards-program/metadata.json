@@ -1,0 +1,22 @@
+{
+  "variantName": "cards-program",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "moderate",
+    "hasGrid": true,
+    "imagePattern": "noimg",
+    "structure": "heading + text + link",
+    "purpose": "bordered program cards with title, icon, short description and a Learn more button, four across"
+  },
+  "contentPattern": {
+    "structure": "one row per card; content in order: heading, icon image, description paragraph, link (Learn more) on its own line"
+  },
+  "options": [],
+  "memberVariantIds": [
+    "v_5f380bcbcd68"
+  ],
+  "usage": "Homepage programs row (Assurance Program, Partner Program, Training, Certification).",
+  "reuseGuidance": "Use for promo/feature cards with a call to action. The last link-only paragraph becomes the card footer CTA."
+}

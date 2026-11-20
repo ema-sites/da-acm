@@ -177,9 +177,12 @@ export default async function decorate(block) {
     document.body.insertAdjacentElement('afterbegin', sellerAssistedBuyingBanner);
   }
 
-  // load nav as fragment
-  const navMeta = getMetadata('nav');
-  const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
+  // load nav as fragment — metadata-independent: /content first (localhost), then root (DA/EDS prod)
+  let navResp = await fetch('/content/nav.plain.html');
+  if (!navResp.ok) navResp = await fetch('/nav.plain.html');
+  const navPath = navResp.ok
+    ? new URL(navResp.url).pathname.replace(/\.plain\.html$/, '')
+    : '/nav';
   const fragment = await loadFragment(navPath);
 
   // decorate nav DOM
@@ -188,7 +191,7 @@ export default async function decorate(block) {
   nav.id = 'nav';
   while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
 
-  const classes = ['brand', 'sections', 'tools'];
+  const classes = ['brand', 'sections', 'tools', 'bar'];
   classes.forEach((c, i) => {
     const section = nav.children[i];
     if (section) section.classList.add(`nav-${c}`);
@@ -206,6 +209,8 @@ export default async function decorate(block) {
     navSections
       .querySelectorAll(':scope .default-content-wrapper > ul > li')
       .forEach((navSection) => {
+        navSection.parentElement.classList.add('nav-list');
+        navSection.querySelector(':scope > a')?.classList.add('nav-trigger');
         if (navSection.querySelector('ul')) {
           navSection.classList.add('nav-drop');
           navSection.setAttribute('role', 'button');
@@ -235,6 +240,13 @@ export default async function decorate(block) {
 
   const navTools = nav.querySelector('.nav-tools');
 
+  // Authored tool labels from the nav fragment's tools section, in order:
+  // cart label, sign-in label, search placeholder. Missing ones fall back to placeholders.
+  const toolsCopy = navTools.querySelector(':scope > .default-content-wrapper');
+  const [cartLabel, signInLabel, searchLabel] = [...(toolsCopy?.querySelectorAll('p') || [])]
+    .map((p) => p.textContent.trim());
+  toolsCopy?.remove();
+
   /** Wishlist */
   const wishlist = document.createRange().createContextualFragment(`
      <div class="wishlist-wrapper nav-tools-wrapper">
@@ -259,7 +271,7 @@ export default async function decorate(block) {
 
   const minicart = document.createRange().createContextualFragment(`
      <div class="minicart-wrapper nav-tools-wrapper">
-       <button type="button" class="nav-cart-button" aria-label="${labels.Global?.Cart ?? 'Cart'}" aria-haspopup="dialog" aria-expanded="false" aria-controls="minicart-panel"></button>
+       <button type="button" class="nav-cart-button" aria-label="${labels.Global?.Cart ?? 'Cart'}" aria-haspopup="dialog" aria-expanded="false" aria-controls="minicart-panel">${cartLabel ? `<span class="nav-tools-label">${cartLabel}</span>` : ''}</button>
        <div class="minicart-panel nav-tools-panel" id="minicart-panel"></div>
        <div class="nav-cart-status" role="status" aria-live="polite"></div>
      </div>
@@ -560,6 +572,10 @@ export default async function decorate(block) {
     } else {
       authMenuList.style.display = 'none';
       authDropinContainer.style.display = 'block';
+      if (signInLabel) {
+        authButton.textContent = signInLabel;
+        return;
+      }
       authButton.innerHTML = `
         <svg width="25" height="25" viewBox="0 0 24 24" aria-label="My Account">
           <g fill="none" stroke="#000000" stroke-width="1.5">
@@ -677,6 +693,64 @@ export default async function decorate(block) {
   navWrapper.className = 'nav-wrapper';
   navWrapper.append(nav);
   block.append(navWrapper);
+
+  /** Sub-header bar: inline search + text from the nav fragment's 4th section */
+  const navBar = nav.querySelector('.nav-bar');
+  if (navBar) {
+    const placeholder = searchLabel || labels.Global?.Search || 'Search';
+
+    const bar = document.createElement('div');
+    bar.className = 'nav-bar-wrapper';
+    const barInner = document.createElement('div');
+    barInner.className = 'nav-bar';
+    const barSearch = document.createElement('div');
+    barSearch.className = 'nav-bar-search';
+    const stubForm = document.createElement('form');
+    stubForm.className = 'nav-bar-search-stub';
+    stubForm.setAttribute('role', 'search');
+    const stubInput = document.createElement('input');
+    stubInput.type = 'search';
+    stubInput.name = 'q';
+    stubInput.placeholder = placeholder;
+    stubInput.setAttribute('aria-label', placeholder);
+    stubForm.append(stubInput);
+    barSearch.append(stubForm);
+
+    // Move the commerce search (live results) into the bar; it opens when the stub is used.
+    const searchWrapper = navTools.querySelector('.search-wrapper');
+    if (searchWrapper) barSearch.append(searchWrapper);
+
+    const barText = document.createElement('div');
+    barText.className = 'nav-bar-text';
+    while (navBar.firstElementChild) barText.append(navBar.firstElementChild);
+    navBar.remove();
+
+    barInner.append(barSearch, barText);
+    bar.append(barInner);
+    block.append(bar);
+
+    const openLiveSearch = async () => {
+      const typed = stubInput.value;
+      await toggleSearch(true);
+      const liveInput = searchForm.querySelector('input');
+      if (liveInput) {
+        barSearch.classList.add('is-live');
+        liveInput.placeholder = placeholder;
+        if (typed) {
+          liveInput.value = typed;
+          liveInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        liveInput.focus();
+      }
+    };
+    stubInput.addEventListener('focus', openLiveSearch, { once: true });
+    stubForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (stubInput.value) {
+        window.location.href = `${rootLink('/search')}?q=${encodeURIComponent(stubInput.value)}`;
+      }
+    });
+  }
 
   navWrapper.addEventListener('mouseout', (e) => {
     if (isDesktop.matches && !nav.contains(e.relatedTarget)) {

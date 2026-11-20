@@ -1,0 +1,22 @@
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid currentcolor;
+}
+
+.active-filters .active-filters-title > * {
+  margin: 0;
+}
+
+.active-filters .active-filters-actions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

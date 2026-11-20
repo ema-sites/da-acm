@@ -1,0 +1,22 @@
+{
+  "variantName": "table-data",
+  "baseBlock": "table",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "minimal",
+    "hasGrid": false,
+    "imagePattern": "noimg",
+    "structure": "table",
+    "purpose": "plain data table with a header row"
+  },
+  "contentPattern": {
+    "structure": "one row per table row, one cell per column; the first row is the header row"
+  },
+  "options": [],
+  "memberVariantIds": [
+    "v_60abb6212652"
+  ],
+  "usage": "Legal page (cookie list).",
+  "reuseGuidance": "Use for tabular reference data. Keep cells to short text and links."
+}

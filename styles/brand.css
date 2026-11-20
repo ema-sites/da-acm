@@ -1,0 +1,42 @@
+/*
+ * Commerce Marketplace brand tokens (extracted from https://commercemarketplace.adobe.com/).
+ * Imported first by styles.css.
+ */
+:root {
+  /* fonts (adobe-clean is self-hosted in /fonts) */
+  --brand-heading-font-family: adobe-clean, 'Helvetica Neue', helvetica, arial, sans-serif;
+  --brand-body-font-family: adobe-clean, 'Helvetica Neue', helvetica, arial, sans-serif;
+
+  /* colors */
+  --brand-background-color: #fff;
+  --brand-text-color: #505050;
+  --brand-heading-color: #000;
+  --brand-link-color: #0469e3;
+  --brand-link-hover-color: #006bb4;
+  --brand-dark-color: #31302b;
+  --brand-bar-color: #2b2b2c;
+  --brand-light-color: #f2f3f3;
+  --brand-border-color: #979797;
+
+  /* body text */
+  --brand-body-font-size: 14px;
+  --brand-body-line-height: 20px;
+
+  /* headings (desktop / mobile) */
+  --brand-heading-xxl: 28px;
+  --brand-heading-xxl-mobile: 28px;
+  --brand-heading-xl: 22px;
+  --brand-heading-xl-mobile: 22px;
+  --brand-heading-l: 28px;
+  --brand-heading-l-mobile: 24px;
+  --brand-heading-m: 16px;
+  --brand-heading-m-mobile: 16px;
+  --brand-heading-s: 14px;
+  --brand-heading-xs: 12px;
+
+  /* layout */
+  --brand-content-max-width: 1200px;
+  --brand-content-padding: 30px;
+  --brand-section-padding: 20px;
+  --brand-nav-height: 90px;
+}
