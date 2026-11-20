@@ -112,6 +112,19 @@ Example PLP shell:
 - **Don't re-bundle the import script while a bulk import is using that bundle.** To run a second import at
   the same time, copy the bundle under a new name (`commerce-import-plp.bundle.js`), which also keeps the
   reports separate.
+- **Source links are absolute and end in `.html`.** Seller pages and homepage cards linked to other pages as
+  `https://commercemarketplace.adobe.com/<page>.html` (263 links). Left as they were, these would send
+  visitors back to the old site. `transformers/commercemarketplace-links.js` (afterTransform, in every
+  template import) rewrites links to **migrated** pages as site-relative paths without `.html` (`/<page>`), and
+  keeps the query string and #fragment.
+  - It only rewrites targets listed in `transformers/migrated-paths.js`, which is generated from
+    `page-templates.json` (minus test-page). Regenerate that list when templates change.
+  - Pages that were not migrated (`/partners`, `/contact-us`, `/legal/terms/*`, PDFs under `/static`) still
+    point at the old site.
+  - Audit links site-wide after every import: count absolute source-host links, `.html` links, and targets
+    that weren't imported.
+  - In local preview, site-relative links return 404 because pages are served under `/content/`. They resolve
+    on the real site.
 - **Low completeness scores are expected for commerce shells.** The importer's text-completeness warnings
   (for example, 26.7%) mean nothing here, because the shells drop product text on purpose. Don't send these
   pages into the visual-critique fix loop.

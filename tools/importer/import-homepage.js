@@ -5,6 +5,7 @@ import carouselPromoParser from './parsers/carousel-promo.js';
 import cardsCategoryParser from './parsers/cards-category.js';
 import cardsProgramParser from './parsers/cards-program.js';
 import commercemarketplaceCleanupTransformer from './transformers/commercemarketplace-cleanup.js';
+import commercemarketplaceLinksTransformer from './transformers/commercemarketplace-links.js';
 import commercemarketplaceSectionsTransformer from './transformers/commercemarketplace-sections.js';
 
 const PAGE_TEMPLATE = {
@@ -112,7 +113,8 @@ const fragmentTransformers = [];
 const lateTransformers = [...sectionTransformers, ...fragmentTransformers];
 // Page corrections ({sitename}-page-corrections.js, when it exists) run last.
 const correctionTransformers = [];
-const transformers = [commercemarketplaceCleanupTransformer, ...lateTransformers, ...correctionTransformers];
+// Links to migrated pages become site-relative (afterTransform), before page corrections.
+const transformers = [commercemarketplaceCleanupTransformer, ...lateTransformers, commercemarketplaceLinksTransformer, ...correctionTransformers];
 const earlyTransformers = transformers.filter((fn) => !lateTransformers.includes(fn));
 // Catalog selectors (pageInstances, pageCleanup) count the <script> and <hr> elements the importer
 // removes before transform, so a catalog template finds its targets in preprocess.
