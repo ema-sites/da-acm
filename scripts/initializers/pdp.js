@@ -13,6 +13,7 @@ import {
   loadErrorPage,
   preloadFile,
 } from '../commerce.js';
+import { isListableProduct, resolveMarketplaceProduct } from '../marketplace-product.js';
 
 export const IMAGES_SIZES = {
   width: 960,
@@ -43,12 +44,17 @@ await initializeDropin(async () => {
   // Preload PDP assets immediately when this module is imported
   preloadPDPAssets();
 
-  // Fetch product data
-  const sku = getProductSku();
+  // Resolve the product: authored SKU, or the URL key of /products/<url-key>
   const optionsUIDs = getOptionsUIDsFromUrl();
+  let sku = getProductSku();
 
-  if (!sku && !IS_DA && !IS_EW) {
-    return loadErrorPage();
+  if (!IS_DA && !IS_EW) {
+    const marketplaceProduct = await resolveMarketplaceProduct();
+    // Unknown URL keys and products that aren't Marketplace extensions have no product page.
+    if (!isListableProduct(marketplaceProduct)) {
+      return loadErrorPage();
+    }
+    sku = marketplaceProduct.sku;
   }
 
   const [product, labels] = await Promise.all([

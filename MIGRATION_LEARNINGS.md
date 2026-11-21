@@ -129,6 +129,19 @@ Example PLP shell:
   (for example, 26.7%) mean nothing here, because the shells drop product text on purpose. Don't send these
   pages into the visual-critique fix loop.
 
+### Product page model (decide this before importing product pages)
+- **The boilerplate assumes catalog-driven product URLs.** `getProductLink()` in `scripts/commerce.js`
+  links every product to `/products/<url-key>/<sku>`; product lists, recommendations, cart, orders and
+  search all use it. Importing one document per product at the old root URLs (as done here) leaves all of
+  those links returning 404.
+- **Choose the model first:** a single `/products/default` template with folder mapping, redirects from the
+  old URLs, and generated SEO metadata (`tools/pdp-metadata`), versus one document per product. See
+  `PRODUCT_PAGES_PLAN.md`.
+- **Check the SKU format.** Marketplace SKUs all contain `/`, which the boilerplate's `getSkuFromUrl()`
+  can't read. Look products up by `url_key` instead (it is filterable in Catalog Service).
+- **The catalog can hold more than the sitemap** (here 4,341 against 4,228, including delisted and test
+  products). A template makes all of them reachable, so carry over the old site's visibility rules.
+
 ### Commerce detection
 - **The page-type detector can miss obvious product pages.** It only reads the first ~200k characters of
   `cleaned.html`. Marketplace product pages are over 1 MB, and "Add to cart" sits beyond that point, so the

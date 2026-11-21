@@ -98,6 +98,12 @@ function serializeFilter(filter) {
 }
 
 /**
+ * Filters that product-list-page.js adds to every request (visibility and the Marketplace listing
+ * rules). They are not user choices, so they are kept out of the URL and the filter count.
+ */
+export const BASE_FILTER_ATTRIBUTES = ['visibility', 'ext_attribute_set_id', 'ext_is_delisted_extension'];
+
+/**
  * Reads all search state from the current URL query params.
  * Return shape matches the request object used by applySearchStateToUrl and the search API.
  * @param {URL} url - URL to read from (e.g. new URL(window.location.href))
@@ -138,8 +144,8 @@ export function applySearchStateToUrl(url, request) {
     url.searchParams.set('sort', serializeSort(request.sort));
   }
   if (request?.filter != null) {
-    // Don't add visibility filter to the URL, since we always add it in product-list-page.js
-    const urlFilters = request.filter.filter((f) => f.attribute !== 'visibility');
+    // Don't add the base filters to the URL, since we always add them in product-list-page.js
+    const urlFilters = request.filter.filter((f) => !BASE_FILTER_ATTRIBUTES.includes(f.attribute));
     url.searchParams.set('filter', serializeFilter(urlFilters));
   }
 }

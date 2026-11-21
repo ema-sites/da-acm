@@ -17,7 +17,7 @@ import { events } from '@dropins/tools/event-bus.js';
 // AEM
 import { readBlockConfig } from '../../scripts/aem.js';
 import { fetchPlaceholders, getProductLink } from '../../scripts/commerce.js';
-import { getSearchStateFromUrl, applySearchStateToUrl } from './search-url.js';
+import { getSearchStateFromUrl, applySearchStateToUrl, BASE_FILTER_ATTRIBUTES } from './search-url.js';
 
 // Initializers
 import '../../scripts/initializers/search.js';
@@ -60,7 +60,16 @@ export default async function decorate(block) {
 
   // Default visibility filter for all of our requests
   const visibilityFilter = { attribute: 'visibility', in: ['Search', 'Catalog, Search'] };
-  const userFilters = searchState.filter.filter((f) => f.attribute !== 'visibility');
+  // Marketplace listing rules, as on the old site: only Marketplace extensions (attribute set 12)
+  // that are not delisted are listed. Delisted products keep their product page.
+  const marketplaceFilters = [
+    { attribute: 'ext_attribute_set_id', eq: '12' },
+    { attribute: 'ext_is_delisted_extension', eq: '0' },
+  ];
+  // The page's own category filter isn't a visitor choice either.
+  const isUserFilter = (f) => !BASE_FILTER_ATTRIBUTES.includes(f.attribute)
+    && !(config.urlpath && f.attribute === 'categoryPath' && f.eq === config.urlpath);
+  const userFilters = searchState.filter.filter(isUserFilter);
 
   // Normalize URL (e.g. pipe-separated filter values)
   const normalizedUrl = new URL(window.location.href);
@@ -77,8 +86,9 @@ export default async function decorate(block) {
       sort: searchState?.sort?.length ? searchState.sort : [{ attribute: 'position', direction: 'DESC' }],
       filter: [
         { attribute: 'categoryPath', eq: config.urlpath }, // Add category filter
-        // Always add visibility filter to the request
+        // Always add visibility and Marketplace filters to the request
         visibilityFilter,
+        ...marketplaceFilters,
         ...userFilters,
       ],
     }).catch(() => {
@@ -91,8 +101,8 @@ export default async function decorate(block) {
       currentPage: searchState.currentPage,
       pageSize,
       sort: searchState.sort,
-      // Always add visibility filter to the request
-      filter: [visibilityFilter, ...userFilters],
+      // Always add visibility and Marketplace filters to the request
+      filter: [visibilityFilter, ...marketplaceFilters, ...userFilters],
     }).catch((e) => {
       console.error('Error searching for products', e);
     });
@@ -204,9 +214,10 @@ export default async function decorate(block) {
       ? `${totalCount} results found for <strong>"${payload.request.phrase}"</strong>.`
       : `${totalCount} results found.`;
 
-    // Update the view facets button with the number of filters
-    if (payload.request.filter.length > 0) {
-      $viewFacets.querySelector('button').setAttribute('data-count', payload.request.filter.length);
+    // Update the view facets button with the number of filters the visitor chose
+    const userFilterCount = (payload.request.filter || []).filter(isUserFilter).length;
+    if (userFilterCount > 0) {
+      $viewFacets.querySelector('button').setAttribute('data-count', userFilterCount);
     } else {
       $viewFacets.querySelector('button').removeAttribute('data-count');
     }

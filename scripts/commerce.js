@@ -638,6 +638,18 @@ function getSkuFromUrl() {
 }
 
 /**
+ * Extracts the product URL key from a catalog-driven product URL (/products/<url-key>).
+ * Marketplace SKUs contain a slash, so product URLs carry the URL key only and the product is
+ * looked up by URL key (see scripts/marketplace-product.js).
+ * @returns {string|null} The URL key, or null when the page is not a product URL
+ */
+export function getUrlKeyFromPath() {
+  const result = window.location.pathname.match(/\/products\/([a-z0-9][a-z0-9-]*)\/?$/);
+  if (!result || result[1] === 'default') return null;
+  return result[1];
+}
+
+/**
  * Extracts the defaultSku property from the product-details block element.
  * @returns {string|null} The defaultSku value from the block, or null if not found
  */
@@ -649,6 +661,14 @@ function getDefaultSkuFromBlock() {
 
   const config = readBlockConfig(productDetailsBlock);
   return config.defaultsku || null;
+}
+
+/**
+ * Whether the current page is a product page: it has an authored SKU or a product URL.
+ * @returns {boolean}
+ */
+export function isProductPage() {
+  return Boolean(getProductSku() || getUrlKeyFromPath());
 }
 
 /**
@@ -677,16 +697,19 @@ export function renderCartItemPromotions(ctx) {
   return promotionsWrapper;
 }
 
+/**
+ * Builds a product page link. Marketplace product pages live at /products/<url-key>; the SKU is not
+ * part of the URL (Marketplace SKUs contain a slash). The page resolves the product by URL key.
+ * @param {string} urlKey - The product URL key
+ * @param {string} [sku] - The product SKU (only used in the warning when the URL key is missing)
+ * @returns {string} The product page link
+ */
 export function getProductLink(urlKey, sku) {
   if (!urlKey) {
     console.warn('getProductLink: urlKey is missing or empty', { urlKey, sku });
   }
-  if (!sku) {
-    console.warn('getProductLink: sku is missing or empty', { urlKey, sku });
-  }
   const sanitizedUrlKey = urlKey ? sanitizeName(urlKey) : '';
-  const sanitizedSku = sku ? sanitizeName(sku) : '';
-  return rootLink(`/products/${sanitizedUrlKey}/${sanitizedSku}`);
+  return rootLink(`/products/${sanitizedUrlKey}`);
 }
 
 /**

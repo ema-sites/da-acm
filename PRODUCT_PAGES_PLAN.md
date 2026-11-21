@@ -156,6 +156,20 @@ the current site applies, through its custom search module (`AppStore_LiveSearch
    ready; see the conversation from 2026-11-20.
 
 ### Code (repo; ship through a branch, PR and preview link per AGENTS.md)
+**Status (2026-11-21):** items 7–10 are built on branch `catalog-driven-pdp` and tested in the local
+preview (not yet committed).
+- **Product links:** category product links use `/products/<url-key>`.
+- **URL-key lookup:** works, including URL keys that don't match their SKU.
+- **404:** unknown URL keys and `/products/default` get the 404 page.
+- **Delisted products:** no quantity or Add to Cart.
+- **Product lists:** leave out delisted products and products outside attribute set 12. Payments & Security
+  shows 600 products: 602 visible, minus 2 delisted.
+- **Payment notice:** the Payments & Security check works; the notice shows once the fragment exists.
+
+Not done yet:
+- **The EU "show in EU" rule:** it needs the visitor's region, which the storefront doesn't know.
+- **The old "Contact Vendor" button:** there's no storefront equivalent.
+
 7. **SKU lookup:** `getProductSku()` resolves `/products/<url-key>` to a SKU through Catalog Service
    (`productSearch` filtered on `url_key`). Cache the result per page view. Keep `defaultSku` and `sku`
    metadata as overrides for authored exceptions and for the DA editor preview.

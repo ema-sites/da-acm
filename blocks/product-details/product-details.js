@@ -28,6 +28,21 @@ import ProductCustomizableOptions from '@dropins/storefront-pdp/containers/Produ
 
 // Libs
 import { rootLink, fetchPlaceholders } from '../../scripts/commerce.js';
+import { resolveMarketplaceProduct } from '../../scripts/marketplace-product.js';
+import { loadFragment } from '../fragment/fragment.js';
+
+// Authored payment-security notice, shown on products in Payments & Security.
+const PAYMENT_NOTICE_FRAGMENT = '/fragments/payment-security-notice';
+
+/**
+ * Loads the payment-security notice fragment. The local preview serves content under /content.
+ * @returns {Promise<HTMLElement|null>} The fragment's main element, or null when it doesn't exist
+ */
+async function loadPaymentNotice() {
+  const fragment = await loadFragment(PAYMENT_NOTICE_FRAGMENT);
+  if (fragment || window.location.hostname !== 'localhost') return fragment;
+  return loadFragment(`/content${PAYMENT_NOTICE_FRAGMENT}`);
+}
 
 // Initializers
 import { IMAGES_SIZES } from '../../scripts/initializers/pdp.js';
@@ -124,6 +139,25 @@ export default async function decorate(block) {
   const $attributes = fragment.querySelector('.product-details__attributes');
 
   block.replaceChildren(fragment);
+
+  // Marketplace rules (as on the old site): delisted products can't be added to the cart, and
+  // products in Payments & Security show the payment-security notice.
+  const marketplaceProduct = await resolveMarketplaceProduct();
+  if (marketplaceProduct?.delisted) {
+    block.classList.add('product-details--delisted');
+  }
+  if (marketplaceProduct?.inPaymentsCategory) {
+    loadPaymentNotice().then((notice) => {
+      if (!notice) return;
+      const $notice = document.createElement('div');
+      $notice.className = 'product-details__notice';
+      $notice.append(...notice.childNodes);
+      block.prepend($notice);
+    }).catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error('Payment-security notice failed to load', error);
+    });
+  }
 
   const gallerySlots = {
     CarouselThumbnail: (ctx) => {
