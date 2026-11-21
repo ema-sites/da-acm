@@ -142,6 +142,12 @@ export default async function decorate(block) {
 
   // Marketplace rules (as on the old site): delisted products can't be added to the cart, and
   // products in Payments & Security show the payment-security notice.
+  // Product pages share one template, so the page title comes from the product (server-side titles
+  // for search engines and link previews come from the product metadata sheet).
+  events.on('pdp/data', (data) => {
+    if (data?.name) document.title = data.name;
+  }, { eager: true });
+
   const marketplaceProduct = await resolveMarketplaceProduct();
   if (marketplaceProduct?.delisted) {
     block.classList.add('product-details--delisted');

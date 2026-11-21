@@ -1,4 +1,10 @@
+import { events } from '@dropins/tools/event-bus.js';
 import { getMetadata } from '../../scripts/aem.js';
+
+// Catalog-driven product pages (/products/<url-key>) are all served by one template, so neither the
+// "products" folder nor the template's own title describes the page: the trail is Home > product
+// name, filled in once the product data loads.
+const PRODUCT_PATH = /^\/products\/[a-z0-9][a-z0-9-]*\/?$/;
 
 function titleCase(segment) {
   let text = segment;
@@ -60,6 +66,18 @@ export default function decorate(block) {
     const base = window.location.hostname === 'localhost' && segments[0] === 'content' ? `/${segments.shift()}` : '';
     if (segments[segments.length - 1] === 'index') segments.pop();
     ol.append(crumb(getMetadata('breadcrumb-home') || 'Home', `${base}/`));
+    if (PRODUCT_PATH.test(`/${segments.join('/')}`)) {
+      const current = crumb('', null);
+      ol.append(current);
+      events.on('pdp/data', (product) => {
+        if (product?.name) current.querySelector('span').textContent = product.name;
+      }, { eager: true });
+      const nav = document.createElement('nav');
+      nav.setAttribute('aria-label', 'Breadcrumb');
+      nav.append(ol);
+      block.replaceChildren(nav);
+      return;
+    }
     let path = base;
     segments.forEach((segment, i) => {
       path += `/${segment}`;
