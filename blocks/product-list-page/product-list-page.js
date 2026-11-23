@@ -108,7 +108,10 @@ export default async function decorate(block) {
       console.error('Error searching for products', e);
     });
   };
-  const applyUserFilters = (filters) => runSearch({ filter: [...baseFilters, ...filters], currentPage: 1 });
+  const applyUserFilters = (filters) => runSearch({
+    filter: [...baseFilters, ...filters],
+    currentPage: 1,
+  });
 
   // Request search based on the page type on block load
   await runSearch({});

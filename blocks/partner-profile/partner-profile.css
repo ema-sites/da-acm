@@ -95,7 +95,7 @@ main .partner-profile .partner-profile-social a:any-link {
   height: 18px;
 }
 
-@media (width >= 900px) {
+@media (min-width: 900px) {
   .partner-profile {
     flex-direction: row;
     gap: 20px;

@@ -52,9 +52,9 @@ function buildBadge(text) {
   const sub = rest.join(' ');
   const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="90" height="28" viewBox="0 0 90 28">'
     + '<g font-family="Helvetica Neue,Helvetica,Arial,sans-serif" font-weight="700" fill="#000">'
-    + `<text x="0" y="12" font-size="14">${escapeXml(level)}</text>`
-    + (sub ? `<text x="0" y="24.5" font-size="10.5" textLength="90" lengthAdjust="spacingAndGlyphs">${escapeXml(sub)}</text>` : '')
-    + '</g></svg>';
+    + `<text x="0" y="12" font-size="14">${escapeXml(level)}</text>${
+      sub ? `<text x="0" y="24.5" font-size="10.5" textLength="90" lengthAdjust="spacingAndGlyphs">${escapeXml(sub)}</text>` : ''
+    }</g></svg>`;
   const img = document.createElement('img');
   img.src = `data:image/svg+xml,${encodeURIComponent(svg)}`;
   img.alt = text;

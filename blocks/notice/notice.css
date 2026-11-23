@@ -140,7 +140,7 @@ main .notice a.notice-action:focus-visible {
 }
 
 /* desktop: sidebar notices that follow a partner profile sit in a right column */
-@media (width >= 900px) {
+@media (min-width: 900px) {
   .notice-wrapper:is(.partner-profile-wrapper ~ .notice-wrapper) {
     float: right;
     clear: right;

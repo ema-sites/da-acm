@@ -95,7 +95,8 @@ function decorateFooterSections(footer) {
  */
 export default async function decorate(block) {
   const root = getRootPath();
-  // Load Footer as Fragment — metadata-independent: /content first (localhost), then root (DA/EDS prod)
+  // Load Footer as Fragment — metadata-independent:
+  // /content first (localhost), then root (DA/EDS prod)
   let footerResp = await fetch('/content/footer.plain.html');
   if (!footerResp.ok) footerResp = await fetch('/footer.plain.html');
   const footerPath = footerResp.ok

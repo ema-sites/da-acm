@@ -31,6 +31,11 @@ import { rootLink, fetchPlaceholders } from '../../scripts/commerce.js';
 import { resolveMarketplaceProduct } from '../../scripts/marketplace-product.js';
 import { loadFragment } from '../fragment/fragment.js';
 
+// Initializers
+import { IMAGES_SIZES } from '../../scripts/initializers/pdp.js';
+import '../../scripts/initializers/cart.js';
+import '../../scripts/initializers/wishlist.js';
+
 // Authored payment-security notice, shown on products in Payments & Security.
 const PAYMENT_NOTICE_FRAGMENT = '/fragments/payment-security-notice';
 
@@ -43,11 +48,6 @@ async function loadPaymentNotice() {
   if (fragment || window.location.hostname !== 'localhost') return fragment;
   return loadFragment(`/content${PAYMENT_NOTICE_FRAGMENT}`);
 }
-
-// Initializers
-import { IMAGES_SIZES } from '../../scripts/initializers/pdp.js';
-import '../../scripts/initializers/cart.js';
-import '../../scripts/initializers/wishlist.js';
 
 // Function to update the Add to Cart button text and its accessible name
 function updateAddToCartButtonText(addToCartInstance, inCart, labels, productName) {

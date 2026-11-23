@@ -32,11 +32,6 @@
   text-align: left;
 }
 
-.table-data th,
-.table-data td:first-child {
-  font-weight: 700;
-}
-
 /* mobile: header row hidden, each row stacks name above description */
 .table-data thead {
   display: none;
@@ -53,12 +48,17 @@
   font-weight: 400;
 }
 
+.table-data th,
+.table-data td:first-child {
+  font-weight: 700;
+}
+
 .table-data td:first-child {
   padding-bottom: 0;
   overflow-wrap: anywhere;
 }
 
-@media (width >= 900px) {
+@media (min-width: 900px) {
   .table-data thead {
     display: table-header-group;
   }

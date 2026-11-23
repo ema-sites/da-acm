@@ -12,7 +12,7 @@ header .nav-wrapper {
   width: 100%;
   z-index: 3;
   position: fixed;
-  border-bottom: 1px solid var(--color-neutral-300);
+  border-bottom: 0;
 }
 
 header nav {
@@ -164,8 +164,9 @@ li.nav-drop img {
 }
 
 header nav .nav-brand img {
-  width: 128px;
+  width: 90px;
   height: auto;
+  display: block;
 }
 
 /* sections */
@@ -466,6 +467,7 @@ header nav .nav-sections .authCombineNavElement button:focus-visible {
 }
 
 /* If viewport height is below max, set max height to 90% of viewport */
+
 /* breakpoint-exception: Adobe Commerce boilerplate header rule (mini-cart, search and auth panels), kept as shipped */
 @media (max-height: 819px) {
   .cart-mini-cart:not(:has(.cart-empty-cart)) {
@@ -584,18 +586,6 @@ header .nav-search-input .search_autocomplete .popover-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.dropdown-wrapper.nav-tools-wrapper .nav-auth-menu-panel .authenticated-user-menu li>a {
-  padding: 12px 15px;
-  display: inline-block;
-  width: 100%;
-  text-decoration: none;
-}
-
-.dropdown-wrapper.nav-tools-wrapper .nav-auth-menu-panel .authenticated-user-menu li>a:hover,
-.dropdown-wrapper.nav-tools-wrapper .nav-auth-menu-panel .authenticated-user-menu li>.logoutButton:hover {
-  background-color: lightgray;
 }
 
 .dropdown-wrapper.nav-tools-wrapper .nav-auth-menu-panel .authenticated-user-menu li button {
@@ -920,20 +910,20 @@ header .header.block {
   --marketplace-nav-link: #515050;
   --marketplace-nav-link-hover: #000;
   --marketplace-nav-hover-bg: #f2f3f3;
+
+  /* source header typography (the site body type is lighter and letter-spaced) */
+  color: #505050;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+
+  /* keep the bar's top margin inside the header (no margin collapse onto the fixed nav) */
+  display: flow-root;
 }
 
 header {
   height: calc(var(--nav-height) + 80px);
-}
-
-header .nav-wrapper {
-  border-bottom: 0;
-}
-
-header nav .nav-brand img {
-  width: 90px;
-  height: auto;
-  display: block;
 }
 
 /* The source shows only cart and Sign In on the right */
@@ -991,6 +981,11 @@ header .nav-bar-search .nav-search-panel input::placeholder {
 header .nav-bar-search .search-wrapper,
 header .nav-bar-search .nav-search-button {
   display: none;
+}
+
+header .nav-bar-search-stub {
+  display: block;
+  margin: 0;
 }
 
 header .nav-bar-search.is-live .nav-bar-search-stub {
@@ -1097,23 +1092,41 @@ header .nav-bar-text p {
   }
 }
 
-header .nav-bar-search-stub {
-  display: block;
-  margin: 0;
+header .header.block .nav-bar-text p,
+header .header.block .nav-bar-search-stub input {
+  font-weight: 400;
+  letter-spacing: normal;
 }
 
-/* Source header typography (the site body type is lighter and letter-spaced) */
-header .header.block {
-  color: #505050;
+header .header.block .nav-bar-text p {
+  color: #fff;
+  line-height: 20px;
+}
+
+header .header.block nav .nav-brand,
+header .header.block nav .nav-brand p,
+header .header.block nav .nav-brand a {
+  width: auto;
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
   letter-spacing: normal;
+  color: #0469e3;
 }
 
-header .header.block nav .nav-sections .default-content-wrapper > ul > li > a,
-header .header.block .nav-bar-text p,
-header .header.block .nav-bar-search-stub input {
+header .header.block nav .nav-brand a {
+  display: block;
+}
+
+/* Account menu links (boilerplate) */
+.dropdown-wrapper.nav-tools-wrapper .nav-auth-menu-panel .authenticated-user-menu li>a {
+  padding: 12px 15px;
+  display: inline-block;
+  width: 100%;
+  text-decoration: none;
+}
+
+header .header.block nav .nav-sections .default-content-wrapper > ul > li > a {
   font-weight: 400;
   letter-spacing: normal;
 }
@@ -1130,11 +1143,6 @@ header .header.block .nav-bar-search .nav-search-panel input {
   padding: 12px 48px 12px 16px;
   color: #8e8e8e;
   font-family: roboto, 'Helvetica Neue', helvetica, arial, sans-serif;
-}
-
-header .header.block .nav-bar-text p {
-  color: #fff;
-  line-height: 55px;
 }
 
 header .header.block nav .nav-brand {
@@ -1167,21 +1175,6 @@ header .header.block nav .nav-brand {
   }
 }
 
-header .header.block nav .nav-brand,
-header .header.block nav .nav-brand p,
-header .header.block nav .nav-brand a {
-  width: auto;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: normal;
-  color: #0469e3;
-}
-
-header .header.block nav .nav-brand a {
-  display: block;
-}
-
 @media (min-width: 900px) {
   header .header.block nav .nav-sections .default-content-wrapper > ul {
     padding: 0;
@@ -1209,7 +1202,7 @@ header .header.block nav .nav-tools-label {
   width: 1px;
   height: 1px;
   overflow: hidden;
-  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 
@@ -1223,17 +1216,14 @@ header .header.block nav .nav-tools .nav-dropdown-button {
   white-space: nowrap;
 }
 
-/* keep the bar's top margin inside the header (no margin collapse onto the fixed nav) */
-header .header.block {
-  display: flow-root;
-}
-
-header .header.block .nav-bar-text p {
-  line-height: 20px;
-}
-
 @media (min-width: 900px) {
   header .header.block .nav-bar-text p {
     line-height: 55px;
   }
+}
+
+/* Account menu link hover (boilerplate), kept after the more general nav link rules */
+.dropdown-wrapper.nav-tools-wrapper .nav-auth-menu-panel .authenticated-user-menu li>a:hover,
+.dropdown-wrapper.nav-tools-wrapper .nav-auth-menu-panel .authenticated-user-menu li>.logoutButton:hover {
+  background-color: lightgray;
 }

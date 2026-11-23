@@ -9,7 +9,8 @@ import { CS_FETCH_GRAPHQL, getProductLink, rootLink } from '../../scripts/commer
 /* Product tiles                                                      */
 /* ------------------------------------------------------------------ */
 
-// Partner level lockups (from the old site), keyed by the catalog's ext_connect_partner_level_image.
+// Partner level lockups (from the old site),
+// keyed by the catalog's ext_connect_partner_level_image.
 const PARTNER_LEVEL_IMAGES = {
   'platinum-technology-partner.png': 'platinum-technology-partner.png',
   'gold-technology-partner.png': 'gold-technology-partner.png',
@@ -145,7 +146,10 @@ function bucketLabel(facet, value) {
 function sortBuckets(facet, buckets) {
   const list = buckets.filter((b) => b.title && b.title !== 'undefined');
   if (facet.order) {
-    const rank = (t) => { const i = facet.order.indexOf(t); return i === -1 ? facet.order.length : i; };
+    const rank = (t) => {
+      const i = facet.order.indexOf(t);
+      return i === -1 ? facet.order.length : i;
+    };
     return list.sort((a, b) => rank(a.title) - rank(b.title));
   }
   if (facet.sort === 'alpha') return list.sort((a, b) => a.title.localeCompare(b.title));
@@ -188,7 +192,9 @@ export function renderFacets(container, result, userFilters, apply) {
         const li = el('li', 'plp-facet__item');
         const a = el('a', 'plp-facet__price-link');
         a.href = '#';
-        const selected = current?.range && current.range.from === range.from && current.range.to === range.to;
+        const selected = current?.range
+          && current.range.from === range.from
+          && current.range.to === range.to;
         if (selected) li.classList.add('plp-facet__item--selected');
         a.append(el('span', 'plp-facet__indicator'), el('span', 'plp-facet__label', range.label));
         a.addEventListener('click', (e) => {
@@ -209,7 +215,8 @@ export function renderFacets(container, result, userFilters, apply) {
       max.min = '0';
       max.placeholder = 'Max';
       max.setAttribute('aria-label', 'Maximum price');
-      if (current?.range && !PRICE_RANGES.some((r) => r.from === current.range.from && r.to === current.range.to)) {
+      const isPresetRange = (r) => r.from === current.range.from && r.to === current.range.to;
+      if (current?.range && !PRICE_RANGES.some(isPresetRange)) {
         min.value = current.range.from;
         max.value = current.range.to;
       }
@@ -249,7 +256,9 @@ export function renderFacets(container, result, userFilters, apply) {
           e.preventDefault();
           const values = [];
           for (let v = n; v <= 5; v += 1) values.push(String(v));
-          apply(selectedMin === n ? others : [...others, { attribute: facet.attribute, in: values }]);
+          apply(selectedMin === n
+            ? others
+            : [...others, { attribute: facet.attribute, in: values }]);
         });
         li.append(a);
         ul.append(li);
@@ -313,7 +322,8 @@ export function renderSelectedFilters(container, category, userFilters, apply) {
     const others = userFilters.filter((f) => f !== filter);
     const facet = FACETS.find((f) => f.attribute === filter.attribute) || {};
     if (filter.range) {
-      const range = PRICE_RANGES.find((r) => r.from === filter.range.from && r.to === filter.range.to);
+      const range = PRICE_RANGES
+        .find((r) => r.from === filter.range.from && r.to === filter.range.to);
       pill(facetTitle(filter.attribute), range ? range.label : `$${filter.range.from} - $${filter.range.to}`, () => apply(others));
     } else if (filter.attribute === 'ext_approximate_rating') {
       const n = Math.min(...filter.in.map(Number));
@@ -321,7 +331,8 @@ export function renderSelectedFilters(container, category, userFilters, apply) {
     } else {
       (filter.in || []).forEach((value) => {
         const rest = filter.in.filter((v) => v !== value);
-        pill(facetTitle(filter.attribute), bucketLabel(facet, value), () => apply(rest.length ? [...others, { ...filter, in: rest }] : others));
+        const remove = () => apply(rest.length ? [...others, { ...filter, in: rest }] : others);
+        pill(facetTitle(filter.attribute), bucketLabel(facet, value), remove);
       });
     }
   });
@@ -394,13 +405,20 @@ export function renderCategoryTree(container, tree, categoryPath) {
       const onPath = chain[level] === item.path;
       const count = onPath && tree.totals[item.path] != null ? tree.totals[item.path] : item.count;
       li.append(link(item.path, item.name, count, level));
-      if (onPath && tree.childrenOf[item.path]?.length) li.append(build(tree.childrenOf[item.path], level + 1));
+      if (onPath && tree.childrenOf[item.path]?.length) {
+        li.append(build(tree.childrenOf[item.path], level + 1));
+      }
       ul.append(li);
     });
     return ul;
   };
-  let top = tree.top.length ? tree.top : [{ path: chain[0], name: tree.names[chain[0]] || chain[0], count: tree.totals[chain[0]] }];
-  if (!top.some((t) => t.path === chain[0])) top = [{ path: chain[0], name: tree.names[chain[0]] || chain[0], count: tree.totals[chain[0]] }, ...top];
+  const rootItem = {
+    path: chain[0],
+    name: tree.names[chain[0]] || chain[0],
+    count: tree.totals[chain[0]],
+  };
+  let top = tree.top.length ? tree.top : [rootItem];
+  if (!top.some((t) => t.path === chain[0])) top = [rootItem, ...top];
   group.append(build(top, 0));
   container.replaceChildren(group);
 }

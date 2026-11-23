@@ -111,14 +111,14 @@ main .cards-program .cards-program-card-cta a.button:any-link {
   white-space: nowrap;
 }
 
-@media (width >= 600px) {
+@media (min-width: 600px) {
   .cards-program > ul {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 14px;
   }
 }
 
-@media (width >= 900px) {
+@media (min-width: 900px) {
   .cards-program > ul {
     grid-template-columns: repeat(4, minmax(0, 278px));
     justify-content: space-between;

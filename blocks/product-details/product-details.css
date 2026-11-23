@@ -33,16 +33,6 @@
   margin: 0;
 }
 
-/* Delisted products: no quantity or Add to Cart, as on the old site */
-.product-details.product-details--delisted .product-details__quantity,
-.product-details.product-details--delisted .product-details__buttons__add-to-cart {
-  display: none;
-}
-
-.product-details.product-details--delisted .product-details__buttons {
-  grid-template-columns: auto;
-}
-
 .product-details__header {
   margin-bottom: var(--spacing-medium);
 }
@@ -81,6 +71,16 @@
   grid-template-columns: 1fr auto;
   gap: var(--grid-1-gutters);
   grid-auto-rows: max-content;
+}
+
+/* Delisted products: no quantity or Add to Cart, as on the old site */
+.product-details.product-details--delisted .product-details__quantity,
+.product-details.product-details--delisted .product-details__buttons__add-to-cart {
+  display: none;
+}
+
+.product-details.product-details--delisted .product-details__buttons {
+  grid-template-columns: auto;
 }
 
 .product-details__buttons > div {

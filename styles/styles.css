@@ -149,10 +149,14 @@ html {
 
 body {
   font: var(--type-body-1-default-font);
-  letter-spacing: var(--type-body-1-default-letter-spacing);
+  font-family: var(--brand-body-font-family);
+  font-size: var(--brand-body-font-size);
+  font-weight: 400;
+  line-height: var(--brand-body-line-height);
+  letter-spacing: normal;
   margin: 0;
-  color: var(--color-neutral-800);
-  background-color: var(--background-color);
+  color: var(--brand-text-color);
+  background-color: var(--brand-background-color);
   display: grid;
   grid-template-rows: auto 1fr auto;
   grid-template-columns: 100%;
@@ -282,6 +286,22 @@ a:not(.dropin-design a) {
   letter-spacing: var(--type-body-1-strong-letter-spacing);
   text-decoration: none;
   overflow-wrap: break-word;
+}
+
+/* Marketplace link colors (migrated) */
+main a:any-link {
+  color: var(--brand-link-color);
+  text-decoration: none;
+}
+
+main a:hover {
+  color: var(--brand-link-hover-color);
+  text-decoration: underline;
+}
+
+main a:focus-visible {
+  outline: 2px solid var(--brand-link-color);
+  outline-offset: 2px;
 }
 
 a:not(.dropin-design a):hover {
@@ -467,9 +487,10 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1200px;
+  box-sizing: border-box;
+  max-width: var(--brand-content-max-width);
   margin: auto;
-  padding: 0 var(--spacing-medium);
+  padding: 0 var(--brand-section-padding);
 }
 
 main > .section:first-of-type {
@@ -480,23 +501,6 @@ main > .section:first-of-type {
   main > .section > div {
     padding: 0 var(--spacing-big);
   }
-}
-
-/* Category pages (product-list-page): breadcrumb, title and listing spaced as on the old
-   Marketplace category page (breadcrumb 10px below the header bar, title 10px below it). */
-main > .breadcrumb-container:has(+ .product-list-page-container) {
-  margin-bottom: 10px;
-  padding-top: 10px;
-}
-
-main > .product-list-page-container {
-  margin-top: 0;
-  margin-bottom: 75px;
-}
-
-main > .product-list-page-container h1 {
-  margin: 0 0 25px;
-  line-height: 33.6px;
 }
 
 /* section metadata - styles - start */
@@ -670,16 +674,6 @@ main[hidden] {
 /* ---------------------------------------------------------------
  * Commerce Marketplace global design (migrated from the source)
  * ------------------------------------------------------------- */
-body {
-  font-family: var(--brand-body-font-family);
-  font-size: var(--brand-body-font-size);
-  font-weight: 400;
-  line-height: var(--brand-body-line-height);
-  letter-spacing: normal;
-  color: var(--brand-text-color);
-  background-color: var(--brand-background-color);
-}
-
 main h1,
 main h2,
 main h3,
@@ -736,21 +730,6 @@ main p {
   margin: 0 0 10px;
 }
 
-main a:any-link {
-  color: var(--brand-link-color);
-  text-decoration: none;
-}
-
-main a:hover {
-  color: var(--brand-link-hover-color);
-  text-decoration: underline;
-}
-
-main a:focus-visible {
-  outline: 2px solid var(--brand-link-color);
-  outline-offset: 2px;
-}
-
 /* EDS button reset: authored links stay links unless a block styles them */
 main .button-container {
   display: inline;
@@ -767,12 +746,6 @@ main a.button:any-link {
   margin: 0;
   text-decoration: none;
   white-space: normal;
-}
-
-main > .section > div {
-  max-width: var(--brand-content-max-width);
-  padding-left: var(--brand-section-padding);
-  padding-right: var(--brand-section-padding);
 }
 
 @media (min-width: 900px) {
@@ -796,11 +769,6 @@ main > .section > div {
     padding-left: var(--brand-content-padding);
     padding-right: var(--brand-content-padding);
   }
-}
-
-/* source content box: 1200px including the 30px side padding (1140px of content) */
-main > .section > div {
-  box-sizing: border-box;
 }
 
 /* Seller pages: the partner profile and its sidebar notices sit side by side, as on the source */
@@ -913,6 +881,23 @@ main .partner-profile-container > .default-content-wrapper p {
 main .partner-profile-container > .default-content-wrapper:has(+ .cards-product-wrapper) h3 {
   padding-bottom: 10px;
   border-bottom: 2px solid #d1d1d1;
+}
+
+/* Category pages (product-list-page): breadcrumb, title and listing spaced as on the old
+   Marketplace category page (breadcrumb 10px below the header bar, title 10px below it). */
+main > .breadcrumb-container:has(+ .product-list-page-container) {
+  margin-bottom: 10px;
+  padding-top: 10px;
+}
+
+main > .product-list-page-container {
+  margin-top: 0;
+  margin-bottom: 75px;
+}
+
+main > .product-list-page-container h1 {
+  margin: 0 0 25px;
+  line-height: 33.6px;
 }
 
 /* Error page (503): message left, illustration right, source type sizes */

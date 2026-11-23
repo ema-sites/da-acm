@@ -251,10 +251,6 @@
   font-weight: 400;
 }
 
-.block.product-list-page .plp-facet__price-link:hover .plp-facet__label {
-  text-decoration: underline;
-}
-
 .block.product-list-page .plp-facet__indicator {
   display: none;
   width: 3px;
@@ -276,10 +272,6 @@
   margin: 0 0 13px;
   padding: 0 0 10px 5px;
   border-bottom: 1px solid #e0e0e0;
-}
-
-.block.product-list-page .plp-facet__price-ranges .plp-facet__item:last-child {
-  margin-bottom: 0;
 }
 
 .block.product-list-page .plp-facet__price-link {
@@ -345,10 +337,6 @@
   line-height: 18.5714px;
 }
 
-.block.product-list-page .plp-facet--rating .plp-facet__label {
-  font-size: 13px;
-}
-
 .block.product-list-page .plp-facet__stars {
   display: inline-flex;
   gap: 2px;
@@ -366,7 +354,17 @@
 
 .block.product-list-page .plp-facet--rating .plp-facet__label {
   margin-left: 4px;
+  font-size: 13px;
   white-space: pre;
+}
+
+/* Kept after the less specific facet rules above (stylelint no-descending-specificity) */
+.block.product-list-page .plp-facet__price-ranges .plp-facet__item:last-child {
+  margin-bottom: 0;
+}
+
+.block.product-list-page .plp-facet__price-link:hover .plp-facet__label {
+  text-decoration: underline;
 }
 
 /* ---------------- Results ---------------- */
@@ -691,7 +689,7 @@
 }
 
 /* Media Queries */
-@media only screen and (width >= 768px) {
+@media only screen and (min-width: 768px) {
   .block.product-list-page .search__wrapper {
     grid-template-areas: "sidebar main";
     grid-template-columns: 250px minmax(0, 1fr);
@@ -707,7 +705,7 @@
   }
 }
 
-@media only screen and (width >= 1024px) {
+@media only screen and (min-width: 1024px) {
   .block.product-list-page .product-discovery-product-list__grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }

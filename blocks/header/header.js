@@ -177,7 +177,8 @@ export default async function decorate(block) {
     document.body.insertAdjacentElement('afterbegin', sellerAssistedBuyingBanner);
   }
 
-  // load nav as fragment — metadata-independent: /content first (localhost), then root (DA/EDS prod)
+  // load nav as fragment — metadata-independent:
+  // /content first (localhost), then root (DA/EDS prod)
   let navResp = await fetch('/content/nav.plain.html');
   if (!navResp.ok) navResp = await fetch('/nav.plain.html');
   const navPath = navResp.ok
