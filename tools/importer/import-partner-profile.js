@@ -328,7 +328,10 @@ export default {
     const rawPath = new URL(params.originalURL).pathname
       .replace(/\/$/, '')
       .replace(/\.html?$/, '');
-    const path = WebImporter.FileUtils.sanitizePath(rawPath === '' ? '/index' : rawPath);
+    // These seller pages are the old site's pages for disabled extensions, at the product's address.
+    // Product pages now live at /products/<url-key>, where an authored page overrides the template;
+    // the old root address redirects there.
+    const path = WebImporter.FileUtils.sanitizePath(`/products${rawPath}`);
 
     return [{
       element: main,

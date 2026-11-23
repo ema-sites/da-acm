@@ -7,10 +7,11 @@
  * Links to the source site (absolute https://commercemarketplace.adobe.com/... or relative) whose
  * target is a migrated page become site-relative links in Edge Delivery form: no host, no .html,
  * no trailing slash ('/' for the homepage); query strings and #fragments are kept.
+ * Product pages (old /<url-key>) become /products/<url-key>, where the new site serves them.
  * Links to source pages that were not migrated (e.g. /partners, /contact-us, /legal/terms/...,
  * files under /static or /media) and links to other hosts are left unchanged.
  */
-import MIGRATED_PATHS from './migrated-paths.js';
+import MIGRATED_PATHS, { PRODUCT_PATHS } from './migrated-paths.js';
 
 const SOURCE_HOSTS = ['commercemarketplace.adobe.com', 'www.commercemarketplace.adobe.com'];
 const SOURCE_ORIGIN = 'https://commercemarketplace.adobe.com';
@@ -30,7 +31,9 @@ export function rewriteHref(href) {
   if (!/^https?:$/.test(url.protocol) || !SOURCE_HOSTS.includes(url.hostname)) return null;
   const path = normalizePath(url.pathname);
   if (!MIGRATED_PATHS.has(path)) return null;
-  const rewritten = `${path}${url.search}${url.hash}`;
+  // Product pages live at /products/<url-key> on the new site (the old root path redirects there).
+  const target = PRODUCT_PATHS.has(path) ? `/products${path}` : path;
+  const rewritten = `${target}${url.search}${url.hash}`;
   return rewritten === href ? null : rewritten;
 }
 

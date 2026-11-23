@@ -132,8 +132,15 @@ the current site applies, through its custom search module (`AppStore_LiveSearch
 ### Content (DA)
 1. Create the product template document `/products/default`. It holds a `product-details` block with no
    SKU, plus any shared content: default notice text, shared banners.
+   - **DONE (2026-11-21):** uploaded to DA and previewed. The block has an empty `defaultSku` row, so
+     authors can enter a SKU to preview the template in DA.
+   - There's no page metadata, because every product page would inherit it.
+   - On its own, `/products/default` goes to the 404 page (it has no product).
 2. **Disabled extensions** (decision 3): move the 8 seller pages from `/<url-key>` to
    `/products/<url-key>` in DA, so they override the template.
+   - **Local: DONE (2026-11-21).** The partner-profile import now writes to `/products/<url-key>`, the 8
+     pages were re-imported there, and the old root copies were removed.
+   - The DA upload is still to do.
 3. **Redirects:** add a row for each of the 4,228 old product URLs, plus the 8 disabled ones, to the site's
    redirects sheet:
    - `/<url-key>` → `/products/<url-key>`;
@@ -141,6 +148,15 @@ the current site applies, through its custom search module (`AppStore_LiveSearch
 
    Generate the rows from the catalog or the import list. **Test that `.html` sources redirect** before
    relying on them.
+   - **Local: DONE (2026-11-21).** `content/redirects.json` has 8,356 rows: 4,170 product pages plus the 8
+     disabled extensions, each as `/<url-key>` and `/<url-key>.html`. Every target was checked against
+     the catalog.
+   - **58 old product pages were left out:** they're no longer in the catalog under any address, so a
+     redirect would only reach the 404 page. The list is in
+     `migration-work/da-cleanup/products-not-in-catalog.txt`. Decide whether to redirect them elsewhere,
+     e.g. to a category.
+   - The DA upload and preview are still to do. Redirects take precedence over existing pages, so the old
+     product documents still in DA don't block them.
 4. **Remove the per-product documents** from DA and the preview (3,615; decision 4).
    - **Preview:** 3,614 of 3,615 removed with the bulk tool (tools.aem.live, "unpreview"), checked
      2026-11-21. `mirasvit-module-gtm` is still previewed.
@@ -152,8 +168,25 @@ the current site applies, through its custom search module (`AppStore_LiveSearch
 ### Site configuration
 5. **Folder mapping:** map `/products/` to `/products/default`, so every product URL serves the template
    (an admin change on the site configuration).
-6. **Commerce settings:** replace the sandbox settings with the catalog the products live in. The draft is
-   ready; see the conversation from 2026-11-20.
+   - **DONE (2026-11-21):** `folders: {"/products/": "/products/default"}` was added to the site
+     configuration; the API accepted it despite the docs' feature-flag note.
+   - **Verified on aem.page:**
+     - the right product shows for normal, mismatched-SKU and delisted URL keys (delisted: no Add to
+       Cart);
+     - unknown URL keys go to the 404 page.
+   - **Found:**
+     - every product page's title is "Product Details", and its breadcrumb is "Home > Products > Product
+       Details", where "Products" links to a page that doesn't exist;
+     - server-side titles need the metadata job (item 12); the browser title and the breadcrumb need a
+       code fix.
+6. **Commerce settings. DONE (2026-11-21):** the site's public configuration now uses the Marketplace's
+   own catalog:
+   - store endpoint `https://commercemarketplace.adobe.com/graphql`;
+   - Catalog Service `https://catalog-service.adobe.io/graphql`, environment
+     `536cf842-9bc2-4438-8282-dbacb21c2f96`.
+
+   It replaces the ACCS sandbox. Cart, sign-in and checkout still fail until the store endpoint accepts
+   requests from the new domains (see 2.6).
 
 ### Code (repo; ship through a branch, PR and preview link per AGENTS.md)
 **Status (2026-11-21):** items 7–10 are built on branch `catalog-driven-pdp` and tested in the local
@@ -184,6 +217,9 @@ Not done yet:
    (rule per decision 2). Keep the text in one authored fragment, so it's still editable.
 11. **Seller and home pages:** the link transformer (`tools/importer/transformers/commercemarketplace-links.js`)
     sends product links to `/products/<url-key>` instead of `/<url-key>`, then re-import those 9 pages.
+    - **Local: DONE (2026-11-21).** All 263 product links on the seller pages and homepage now use
+      `/products/<url-key>`, and none points at an old product address.
+    - The DA upload of the 9 pages is still to do.
 
 ### SEO
 12. **Product metadata:** adapt `tools/pdp-metadata` to the new path (`products/<url-key>`) and to the
