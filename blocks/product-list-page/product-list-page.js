@@ -1,51 +1,67 @@
 // Product Discovery Dropins
 import SearchResults from '@dropins/storefront-product-discovery/containers/SearchResults.js';
-import Facets from '@dropins/storefront-product-discovery/containers/Facets.js';
-import SortBy from '@dropins/storefront-product-discovery/containers/SortBy.js';
-import Pagination from '@dropins/storefront-product-discovery/containers/Pagination.js';
 import { render as provider } from '@dropins/storefront-product-discovery/render.js';
 import { Button, Icon, provider as UI } from '@dropins/tools/components.js';
 import { search } from '@dropins/storefront-product-discovery/api.js';
-// Wishlist Dropin
-import { WishlistToggle } from '@dropins/storefront-wishlist/containers/WishlistToggle.js';
-import { render as wishlistRender } from '@dropins/storefront-wishlist/render.js';
-// Cart Dropin
-import * as cartApi from '@dropins/storefront-cart/api.js';
-import { tryRenderAemAssetsImage } from '@dropins/tools/lib/aem/assets.js';
 // Event Bus
 import { events } from '@dropins/tools/event-bus.js';
 // AEM
 import { readBlockConfig } from '../../scripts/aem.js';
 import { fetchPlaceholders, getProductLink } from '../../scripts/commerce.js';
 import { getSearchStateFromUrl, applySearchStateToUrl, BASE_FILTER_ATTRIBUTES } from './search-url.js';
+import {
+  buildTileHeader,
+  buildTileName,
+  buildTileFooter,
+  fetchCategoryTree,
+  renderCategoryTree,
+  renderFacets,
+  renderSelectedFilters,
+  renderResultsBar,
+  renderControls,
+  sortOptionFor,
+  SORT_OPTIONS,
+} from './marketplace-plp.js';
 
 // Initializers
 import '../../scripts/initializers/search.js';
-import '../../scripts/initializers/wishlist.js';
 
+/**
+ * Marketplace category / search page: the old Marketplace layout (filters sidebar, results bar,
+ * 4-column product tiles, paging) on top of the Product Discovery drop-in's search.
+ * Config: urlPath (category path), pageSize (default 36).
+ * @param {Element} block
+ */
 export default async function decorate(block) {
   const labels = await fetchPlaceholders();
 
   const config = readBlockConfig(block);
-  const pageSize = parseInt(config.pagesize, 10) || 9;
+  let pageSize = parseInt(config.pagesize, 10) || 36;
 
   const fragment = document.createRange().createContextualFragment(`
     <div class="search__wrapper">
-      <div class="search__result-info" role="status" aria-live="polite"></div>
       <div class="search__view-facets"></div>
-      <div class="search__facets"></div>
-      <div class="search__product-sort"></div>
-      <div class="search__product-list"></div>
-      <div class="search__pagination"></div>
+      <aside class="plp-sidebar" aria-label="Filters">
+        <div class="plp-selected"></div>
+        <div class="plp-categories"></div>
+        <div class="plp-facets"></div>
+      </aside>
+      <div class="plp-main">
+        <div class="plp-results"></div>
+        <div class="search__product-list"></div>
+        <div class="plp-controls"></div>
+      </div>
     </div>
   `);
 
-  const $resultInfo = fragment.querySelector('.search__result-info');
   const $viewFacets = fragment.querySelector('.search__view-facets');
-  const $facets = fragment.querySelector('.search__facets');
-  const $productSort = fragment.querySelector('.search__product-sort');
+  const $sidebar = fragment.querySelector('.plp-sidebar');
+  const $selected = fragment.querySelector('.plp-selected');
+  const $categories = fragment.querySelector('.plp-categories');
+  const $facets = fragment.querySelector('.plp-facets');
+  const $results = fragment.querySelector('.plp-results');
   const $productList = fragment.querySelector('.search__product-list');
-  const $pagination = fragment.querySelector('.search__pagination');
+  const $controls = fragment.querySelector('.plp-controls');
 
   block.innerHTML = '';
   block.appendChild(fragment);
@@ -66,6 +82,8 @@ export default async function decorate(block) {
     { attribute: 'ext_attribute_set_id', eq: '12' },
     { attribute: 'ext_is_delisted_extension', eq: '0' },
   ];
+  const categoryFilter = config.urlpath ? [{ attribute: 'categoryPath', eq: config.urlpath }] : [];
+  const baseFilters = [...categoryFilter, visibilityFilter, ...marketplaceFilters];
   // The page's own category filter isn't a visitor choice either.
   const isUserFilter = (f) => !BASE_FILTER_ATTRIBUTES.includes(f.attribute)
     && !(config.urlpath && f.attribute === 'categoryPath' && f.eq === config.urlpath);
@@ -76,152 +94,121 @@ export default async function decorate(block) {
   applySearchStateToUrl(normalizedUrl, searchState);
   window.history.replaceState({}, '', normalizedUrl.toString());
 
-  // Request search based on the page type on block load
-  if (config.urlpath) {
-    // If it's a category page...
-    await search({
-      phrase: '', // search all products in the category
-      currentPage: searchState.currentPage,
-      pageSize,
-      sort: searchState?.sort?.length ? searchState.sort : [{ attribute: 'position', direction: 'DESC' }],
-      filter: [
-        { attribute: 'categoryPath', eq: config.urlpath }, // Add category filter
-        // Always add visibility and Marketplace filters to the request
-        visibilityFilter,
-        ...marketplaceFilters,
-        ...userFilters,
-      ],
-    }).catch(() => {
-      console.error('Error searching for products');
-    });
-  } else {
-    // Search page: dropin uses only the request (no URL parsing).
-    await search({
-      phrase: searchState.phrase,
-      currentPage: searchState.currentPage,
-      pageSize,
-      sort: searchState.sort,
-      // Always add visibility and Marketplace filters to the request
-      filter: [visibilityFilter, ...marketplaceFilters, ...userFilters],
-    }).catch((e) => {
+  let lastRequest = {
+    phrase: config.urlpath ? '' : searchState.phrase,
+    currentPage: searchState.currentPage,
+    pageSize,
+    sort: searchState?.sort?.length ? searchState.sort : SORT_OPTIONS[0].sort,
+    filter: [...baseFilters, ...userFilters],
+  };
+
+  const runSearch = (changes) => {
+    lastRequest = { ...lastRequest, ...changes };
+    return search(lastRequest).catch((e) => {
       console.error('Error searching for products', e);
     });
+  };
+  const applyUserFilters = (filters) => runSearch({ filter: [...baseFilters, ...filters], currentPage: 1 });
+
+  // Request search based on the page type on block load
+  await runSearch({});
+
+  // Category tree (category pages only)
+  if (config.urlpath) {
+    fetchCategoryTree(config.urlpath, [visibilityFilter, ...marketplaceFilters])
+      .then((tree) => {
+        renderCategoryTree($categories, tree, config.urlpath);
+        // The breadcrumb is generated from the URL; use the catalog's category names, as the
+        // old site did (e.g. "Accounting & Finance", and "Extensions" rather than the page title).
+        document.querySelectorAll('main .breadcrumb li').forEach((li) => {
+          const a = li.querySelector('a[href]');
+          const path = a ? new URL(a.href).pathname.replace(/^\/content/, '').replace(/^\/|\/$/g, '') : config.urlpath;
+          const target = a || li.querySelector('[aria-current="page"]');
+          if (target && tree.names[path]) target.textContent = tree.names[path];
+        });
+        // The Selected Filters pill uses the category name from the tree.
+        const last = events.lastPayload('search/result');
+        if (last) render(last);
+      })
+      .catch((e) => console.error('Category tree failed to load', e));
   }
-
-  const requiresPdpConfiguration = (product) => product.typename === 'ComplexProductView'
-    || product.attributes?.some((attr) => attr.name === 'ac_giftcard');
-
-  const getAddToCartButton = (product) => {
-    const productName = product.name || product.sku;
-    const addToCartLabel = `${labels.Global?.AddProductToCart} ${productName}`;
-
-    if (requiresPdpConfiguration(product)) {
-      const button = document.createElement('div');
-      UI.render(Button, {
-        'aria-label': addToCartLabel,
-        children: labels.Global?.AddProductToCart,
-        icon: Icon({ source: 'Cart' }),
-        href: getProductLink(product.urlKey, product.sku),
-        variant: 'primary',
-      })(button);
-      return button;
-    }
-    const button = document.createElement('div');
-    UI.render(Button, {
-      'aria-label': addToCartLabel,
-      children: labels.Global?.AddProductToCart,
-      icon: Icon({ source: 'Cart' }),
-      onClick: () => cartApi.addProductsToCart([{ sku: product.sku, quantity: 1 }]),
-      variant: 'primary',
-      disabled: !product.inStock,
-    })(button);
-    return button;
+  const categoryInfo = () => {
+    if (!config.urlpath) return null;
+    const crumbs = config.urlpath.split('/');
+    const h1 = document.querySelector('main h1')?.textContent.trim();
+    const treeName = $categories.querySelector('.plp-category__link--selected .plp-category__name')?.textContent;
+    return {
+      name: treeName || h1 || crumbs[crumbs.length - 1],
+      parentPath: crumbs.slice(0, -1).join('/'),
+    };
   };
 
   await Promise.all([
-    // Sort By
-    provider.render(SortBy, {})($productSort),
-
-    // Pagination
-    provider.render(Pagination, {
-      onPageChange: () => {
-        // scroll to the top of the page
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      },
-    })($pagination),
-
-    // View Facets Button
+    // View Facets Button (small screens)
     UI.render(Button, {
-      children: labels.Global?.Filters,
+      children: labels.Global?.Filters || 'Filters',
       icon: Icon({ source: 'Burger' }),
       variant: 'secondary',
       onClick: () => {
-        $facets.classList.toggle('search__facets--visible');
+        $sidebar.classList.toggle('plp-sidebar--visible');
       },
     })($viewFacets),
 
-    // Facets
-    provider.render(Facets, {})($facets),
-    // Product List
+    // Product List: Marketplace tiles (logo, Assurance badge, name, vendor, rating, partner level,
+    // price). The whole tile links to the product; there is no Add to Cart on the list.
     provider.render(SearchResults, {
       routeProduct: (product) => getProductLink(product.urlKey, product.sku),
+      skeletonCount: pageSize,
       slots: {
         ProductImage: (ctx) => {
-          const { product, defaultImageProps } = ctx;
-          const anchorWrapper = document.createElement('a');
-          anchorWrapper.href = getProductLink(product.urlKey, product.sku);
-          anchorWrapper.setAttribute('aria-label', product.name || product.sku);
-
-          tryRenderAemAssetsImage(ctx, {
-            alias: product.sku,
-            imageProps: defaultImageProps,
-            wrapper: anchorWrapper,
-            params: {
-              width: defaultImageProps.width,
-              height: defaultImageProps.height,
-            },
-          });
+          ctx.replaceWith(buildTileHeader(ctx.product));
+        },
+        ProductName: (ctx) => {
+          ctx.replaceWith(buildTileName(ctx.product));
+        },
+        ProductPrice: (ctx) => {
+          ctx.replaceWith(buildTileFooter(ctx.product));
         },
         ProductActions: (ctx) => {
-          const actionsWrapper = document.createElement('div');
-          actionsWrapper.className = 'product-discovery-product-actions';
-          // Add to Cart Button
-          const addToCartBtn = getAddToCartButton(ctx.product);
-          addToCartBtn.className = 'product-discovery-product-actions__add-to-cart';
-          // Wishlist Button
-          const $wishlistToggle = document.createElement('div');
-          $wishlistToggle.classList.add('product-discovery-product-actions__wishlist-toggle');
-          wishlistRender.render(WishlistToggle, {
-            product: ctx.product,
-            variant: 'tertiary',
-          })($wishlistToggle);
-          actionsWrapper.appendChild(addToCartBtn);
-          actionsWrapper.appendChild($wishlistToggle);
-          ctx.replaceWith(actionsWrapper);
+          ctx.replaceWith(document.createElement('span'));
         },
       },
     })($productList),
   ]);
 
-  // Listen for search results (event is fired before the block is rendered; eager: true)
-  events.on('search/result', (payload) => {
-    const totalCount = payload.result?.totalCount || 0;
+  function render(payload) {
+    const result = payload.result || {};
+    const totalCount = result.totalCount || 0;
+    const request = payload.request || lastRequest;
+    const currentUserFilters = (request.filter || []).filter(isUserFilter);
 
     block.classList.toggle('product-list-page--empty', totalCount === 0);
 
-    // Results Info
-    $resultInfo.innerHTML = payload.request?.phrase
-      ? `${totalCount} results found for <strong>"${payload.request.phrase}"</strong>.`
-      : `${totalCount} results found.`;
+    renderSelectedFilters($selected, categoryInfo(), currentUserFilters, applyUserFilters);
+    renderFacets($facets, result, currentUserFilters, applyUserFilters);
+    renderResultsBar($results, totalCount, sortOptionFor(request.sort).value, (value) => {
+      const option = SORT_OPTIONS.find((o) => o.value === value) || SORT_OPTIONS[0];
+      runSearch({ sort: option.sort, currentPage: 1 });
+    });
+    renderControls($controls, result.pageInfo, request.pageSize || pageSize, (page) => {
+      runSearch({ currentPage: page });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, (size) => {
+      pageSize = size;
+      runSearch({ pageSize: size, currentPage: 1 });
+    });
 
     // Update the view facets button with the number of filters the visitor chose
-    const userFilterCount = (payload.request.filter || []).filter(isUserFilter).length;
+    const userFilterCount = currentUserFilters.length;
     if (userFilterCount > 0) {
-      $viewFacets.querySelector('button').setAttribute('data-count', userFilterCount);
+      $viewFacets.querySelector('button')?.setAttribute('data-count', userFilterCount);
     } else {
-      $viewFacets.querySelector('button').removeAttribute('data-count');
+      $viewFacets.querySelector('button')?.removeAttribute('data-count');
     }
-  }, { eager: true });
+  }
+
+  // Listen for search results (event is fired before the block is rendered; eager: true)
+  events.on('search/result', render, { eager: true });
 
   // Listen for search results (event is fired after the block is rendered; eager: false)
   // URL is owned by this project; update it when search state changes.

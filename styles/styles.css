@@ -482,6 +482,23 @@ main > .section:first-of-type {
   }
 }
 
+/* Category pages (product-list-page): breadcrumb, title and listing spaced as on the old
+   Marketplace category page (breadcrumb 10px below the header bar, title 10px below it). */
+main > .breadcrumb-container:has(+ .product-list-page-container) {
+  margin-bottom: 10px;
+  padding-top: 10px;
+}
+
+main > .product-list-page-container {
+  margin-top: 0;
+  margin-bottom: 75px;
+}
+
+main > .product-list-page-container h1 {
+  margin: 0 0 25px;
+  line-height: 33.6px;
+}
+
 /* section metadata - styles - start */
 main .section.light,
 main .section.highlight {
