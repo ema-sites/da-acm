@@ -22,6 +22,9 @@ function titleCase(segment) {
 }
 
 function currentPageTitle(lastSegment) {
+  // Authors can set a shorter breadcrumb label than the page title (metadata "breadcrumb-title").
+  const authored = getMetadata('breadcrumb-title');
+  if (authored) return authored;
   const h1 = document.querySelector('main h1');
   if (h1?.textContent.trim()) return h1.textContent.trim();
   const title = getMetadata('og:title') || document.title;

@@ -4727,6 +4727,32 @@
       ],
       "description": "Empty leftover page from a security test: header and footer only, no content",
       "blocks": []
+    },
+    {
+      "name": "partners",
+      "urls": [
+        "https://commercemarketplace.adobe.com/partners"
+      ],
+      "description": "Partner directory: title, then a partner-directory block (search, filters, partner tiles, paging). Imported with tools/importer/import-partners.js from a snapshot carrying every partner with an Adobe partner level; not in the source sitemap (added 2026-11-23).",
+      "blocks": [
+        "partner-directory"
+      ],
+      "sections": [
+        {
+          "id": "partners",
+          "name": "partners",
+          "selector": [
+            "#maincontent"
+          ],
+          "style": null,
+          "blocks": [
+            "partner-directory"
+          ],
+          "defaultContent": [
+            "#maincontent h1"
+          ]
+        }
+      ]
     }
   ],
   "metadata": {

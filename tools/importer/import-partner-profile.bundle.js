@@ -3376,6 +3376,7 @@ var CustomImportScript = (() => {
     "/paradoxlabs-stripe",
     "/paradoxlabs-subscriptions",
     "/partnerize-conversion-tracking",
+    "/partners",
     "/payabl-payabl-payments",
     "/paydibs-module-paymentgateway",
     "/paydock-magento2-powerboard",

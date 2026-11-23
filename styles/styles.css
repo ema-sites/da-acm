@@ -883,14 +883,15 @@ main .partner-profile-container > .default-content-wrapper:has(+ .cards-product-
   border-bottom: 2px solid #d1d1d1;
 }
 
-/* Category pages (product-list-page): breadcrumb, title and listing spaced as on the old
-   Marketplace category page (breadcrumb 10px below the header bar, title 10px below it). */
-main > .breadcrumb-container:has(+ .product-list-page-container) {
+/* Category pages (product-list-page) and the Partners directory: breadcrumb, title and listing
+   spaced as on the old Marketplace pages (breadcrumb 10px below the header bar, title 10px below). */
+main > .breadcrumb-container:has(+ .product-list-page-container, + .partner-directory-container) {
   margin-bottom: 10px;
   padding-top: 10px;
 }
 
-main > .product-list-page-container {
+main > .product-list-page-container,
+main > .partner-directory-container {
   margin-top: 0;
   margin-bottom: 75px;
 }
@@ -898,6 +899,10 @@ main > .product-list-page-container {
 main > .product-list-page-container h1 {
   margin: 0 0 25px;
   line-height: 33.6px;
+}
+
+main > .partner-directory-container h1 {
+  margin: 0 0 25px;
 }
 
 /* Error page (503): message left, illustration right, source type sizes */

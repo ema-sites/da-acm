@@ -1,0 +1,317 @@
+/* Partner directory, as on the old Marketplace /partners page (measured from its stylesheets) */
+
+.partner-directory {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  color: #2b2b2c;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.partner-directory a {
+  text-decoration: none;
+}
+
+/* Filters */
+.partner-directory .partner-directory-filters {
+  order: 2;
+}
+
+.partner-directory .partner-directory-facet {
+  margin: 0 0 20px;
+  padding: 0 0 15px;
+}
+
+.partner-directory .partner-directory-facet:last-child {
+  margin-bottom: 0;
+}
+
+.partner-directory .partner-directory-facet-title {
+  margin: 0 0 15px;
+  padding: 10px;
+  background-color: #f4f4f4;
+  color: #2b2b2c;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 19.2px;
+}
+
+.partner-directory .partner-directory-facet-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 13px;
+  margin: 0 0 20px;
+  padding: 0 5px;
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 13px;
+}
+
+.partner-directory .partner-directory-facet-label {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin-right: 10px;
+}
+
+.partner-directory .partner-directory-facet-label input {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  margin: 0 5px 0 0;
+}
+
+.partner-directory .partner-directory-facet-count {
+  flex: none;
+  padding-left: 10px;
+  color: #999;
+  font-size: 13px;
+  text-align: right;
+}
+
+.partner-directory .partner-directory-show-more {
+  display: inline-block;
+  padding: 4px 0;
+  color: #007cba;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18.5714px;
+}
+
+.partner-directory .partner-directory-show-more:hover {
+  text-decoration: underline;
+}
+
+/* Results */
+.partner-directory .partner-directory-results {
+  order: 1;
+  min-width: 0;
+}
+
+.partner-directory .partner-directory-search {
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  margin: 0 0 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  color: #2b2b2c;
+  font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+  font-size: 16px;
+  line-height: 22.8571px;
+}
+
+.partner-directory .partner-directory-search::placeholder {
+  color: #8e8e8e;
+}
+
+.partner-directory .partner-directory-stats {
+  margin: 0 0 20px;
+  padding: 10px;
+  background-color: #f4f4f4;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22.8571px;
+}
+
+.partner-directory .partner-directory-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.partner-directory.partner-directory--loading .partner-directory-grid {
+  opacity: 0.5;
+}
+
+.partner-directory .partner-directory-empty {
+  grid-column: 1 / -1;
+  color: #666;
+}
+
+/* Tile */
+.partner-directory .partner-directory-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  background-color: #fff;
+  text-align: center;
+}
+
+.partner-directory .partner-directory-badge {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  margin: 0 0 15px;
+  padding: 0 10px;
+}
+
+.partner-directory .partner-directory-badge img {
+  display: block;
+  width: auto;
+  height: 35px;
+  max-width: 100%;
+}
+
+.partner-directory .partner-directory-logo {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 160px;
+  margin: 0 0 20px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.partner-directory .partner-directory-logo img {
+  display: block;
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+
+.partner-directory .partner-directory-name {
+  display: block;
+  width: 100%;
+  margin: 0 0 20px;
+  color: #333;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22.8571px;
+}
+
+.partner-directory .partner-directory-name:hover {
+  color: #333;
+  text-decoration: underline;
+}
+
+.partner-directory .partner-directory-more {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 8px 20px;
+  border: 2px solid #1473e6;
+  border-radius: 4px;
+  color: #1473e6;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.partner-directory .partner-directory-more:hover {
+  background-color: #1473e6;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Paging */
+.partner-directory .partner-directory-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin: 87px 0 15px;
+}
+
+.partner-directory .partner-directory-limiter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 10px;
+  padding: 4px 8px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  color: #424242;
+  font-weight: 600;
+}
+
+.partner-directory .partner-directory-limiter label {
+  color: #666;
+  font-weight: 600;
+}
+
+.partner-directory .partner-directory-limiter select {
+  box-sizing: border-box;
+  width: 60px;
+  height: 30px;
+  padding: 2px 6px;
+  border: 1px solid #aeafb1;
+  border-radius: 4px;
+  background: #fff;
+  color: #666;
+  font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+  font-size: 14px;
+}
+
+.partner-directory .partner-directory-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.partner-directory .partner-directory-page {
+  display: block;
+  min-width: 10px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #666;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 15.6px;
+  text-align: center;
+}
+
+.partner-directory a.partner-directory-page:hover {
+  border-color: #e9ecef;
+  background-color: #fff;
+  color: #0073e6;
+}
+
+.partner-directory .partner-directory-page-current {
+  border-color: #0073e6;
+  background-color: #0073e6;
+  box-shadow: 0 2px 4px rgb(0 115 230 / 30%);
+  color: #fff;
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .partner-directory {
+    grid-template-columns: 285px minmax(0, 1fr);
+  }
+
+  .partner-directory .partner-directory-filters {
+    order: 0;
+  }
+
+  .partner-directory .partner-directory-results {
+    order: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .partner-directory .partner-directory-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

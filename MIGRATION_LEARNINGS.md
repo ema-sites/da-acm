@@ -69,6 +69,16 @@ Example PLP shell:
 - **Sitemap discovery worked:** 4,353 URLs from `sitemap.xml`, all in one locale. About 97% are product pages
   (4,228), so the migration is mostly a commerce problem. Spend scoping effort on the few non-product
   templates.
+- **The sitemap misses pages the navigation links to.** `/partners` (the partner directory, in the main nav
+  and the footer) isn't in `sitemap.xml`, so scoping never saw it. The nav kept pointing at the old site
+  until it was migrated separately (2026-11-23, `import-partners.js` and the `partner-directory` block).
+  - **Cross-check:** after scoping, compare every nav and footer link against the scoped URL list.
+  - **Partner profile pages** (`/partner/<name>`, ~9,600) aren't in the sitemap either. Directory tiles
+    still link to them on the old site.
+- **Listing pages can be server-paged.** `/partners` renders only its first 36 partners; the other ~9,560
+  come from `/partners-search/search`, which has no CORS headers for the new domains.
+  - The import snapshot was augmented with every partner that has an Adobe partner level (111).
+  - The block switches to the live endpoint automatically once it answers from the new domain.
 - **The site rate-limits page loads.** Analysis is slow, and many failures are timeouts, not real errors.
   When the user chose "keep analyzing all", this was worth it: retrying the timed-out pages recovered most of
   them (6 of 8).
