@@ -274,6 +274,32 @@ const gqlFilter = (filters) => `[${filters.map((f) => {
 
 const parentPath = (path) => path.split('/').slice(0, -1).join('/');
 
+// The tree is the same for every page and visitor filter, so it's kept for a few minutes in the
+// session. The key includes the endpoint (with the customer group) and the store headers.
+const TREE_CACHE_TTL = 5 * 60 * 1000;
+
+async function fetchCategoryBuckets(baseFilters) {
+  const query = TREE_QUERY(gqlFilter(baseFilters));
+  const { endpoint, fetchGraphQlHeaders } = CS_FETCH_GRAPHQL.getConfig();
+  const key = `plp-category-tree:${JSON.stringify([endpoint, fetchGraphQlHeaders, query])}`;
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(key));
+    if (cached && Date.now() - cached.time < TREE_CACHE_TTL) return cached.buckets;
+  } catch { /* no usable cache entry */ }
+
+  const res = await CS_FETCH_GRAPHQL
+    .fetchGraphQl(query, { method: 'GET' })
+    .then(({ data }) => data?.productSearch)
+    .catch(() => null);
+  const buckets = (res?.facets || []).find((f) => f.attribute === 'categories')?.buckets?.filter((b) => b.path) || [];
+  if (buckets.length) {
+    try {
+      sessionStorage.setItem(key, JSON.stringify({ time: Date.now(), buckets }));
+    } catch { /* storage full or unavailable */ }
+  }
+  return buckets;
+}
+
 /**
  * Loads the category tree around a category: top-level categories, and the children of each
  * category on the path down to the current one, with product counts.
@@ -284,11 +310,7 @@ const parentPath = (path) => path.split('/').slice(0, -1).join('/');
 export async function fetchCategoryTree(categoryPath, baseFilters) {
   const parts = categoryPath.split('/');
   const chain = parts.map((_, i) => parts.slice(0, i + 1).join('/'));
-  const res = await CS_FETCH_GRAPHQL
-    .fetchGraphQl(TREE_QUERY(gqlFilter(baseFilters)), { method: 'GET' })
-    .then(({ data }) => data?.productSearch)
-    .catch(() => null);
-  const all = (res?.facets || []).find((f) => f.attribute === 'categories')?.buckets?.filter((b) => b.path) || [];
+  const all = await fetchCategoryBuckets(baseFilters);
   const byPath = Object.fromEntries(all.map((b) => [b.path, b]));
   const tree = {
     top: all.filter((b) => !b.path.includes('/')), childrenOf: {}, totals: {}, names: {},
