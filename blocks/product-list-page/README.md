@@ -78,7 +78,7 @@ The category tree is one Catalog Service search without a category filter (visib
 2. **Sort change**: User changes sort via SortBy; dropin calls `search()` with updated sort; block receives `search/result` and updates the URL.
 3. **Filter change**: User toggles facets in the drop-in's Facets container; the drop-in calls `search()` with the updated filter (keeping every filter whose attribute isn't a facet, such as the base filters); block updates result count and URL.
 4. **Pagination**: User changes page; dropin calls `search()` with new page; block scrolls to top and URL is updated.
-5. **Add to cart / wishlist**: Product cards include add-to-cart and wishlist actions; cart and wishlist behavior are handled by their respective dropins. For simple products, the add-to-cart button is disabled when `product.inStock` is falsy. Complex products always link to the PDP where stock is validated by the PDP drop-in.
+5. **Product tiles**: The whole tile links to the product page; tiles have no add-to-cart or wishlist actions (no `ProductActions` slot, so the drop-in renders no actions area).
 
 ### Error Handling
 

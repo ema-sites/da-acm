@@ -164,7 +164,8 @@ export default async function decorate(block) {
     })($facets),
 
     // Product List: Marketplace tiles (logo, Assurance badge, name, vendor, rating, partner level,
-    // price). The whole tile links to the product; there is no Add to Cart on the list.
+    // price). The whole tile links to the product; there is no Add to Cart on the list, so there
+    // is no ProductActions slot (the drop-in renders the actions area only for that slot).
     provider.render(SearchResults, {
       routeProduct: (product) => getProductLink(product.urlKey, product.sku),
       skeletonCount: pageSize,
@@ -172,9 +173,6 @@ export default async function decorate(block) {
         ProductImage: tileHeaderSlot,
         ProductName: tileNameSlot,
         ProductPrice: tileFooterSlot,
-        ProductActions: (ctx) => {
-          ctx.replaceWith(document.createElement('span'));
-        },
       },
     })($productList),
   ]);
