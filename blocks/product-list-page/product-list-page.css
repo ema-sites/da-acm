@@ -584,6 +584,11 @@
   object-fit: contain;
 }
 
+/* Products without images: the empty box, as on the old site (not the drop-in's shimmer) */
+.block.product-list-page .dropin-product-item-card__image img[src=""] {
+  visibility: hidden;
+}
+
 .block.product-list-page .plp-tile__assurance {
   display: block;
   width: 84px;
