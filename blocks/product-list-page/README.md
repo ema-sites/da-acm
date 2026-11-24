@@ -60,7 +60,7 @@ The filters are the drop-in's `Facets` container, adapted to the old Marketplace
 - `SelectedFacets`: adds the "Selected Filters" header and the page's category (a link to the parent category). The visitor's filters and Clear All are the drop-in's.
 - `Facets`: places the category tree (navigation, rendered by the block) above the filters.
 
-The category tree's current level (subcategories and counts) comes from the drop-in's own search: the search initializer's `ProductSearchResult` transformer keeps the `categories` facet as `result.categories`. The top level and the ancestor levels need searches with other category filters, so they stay separate requests (Catalog Service returns no facets for aliased searches). When the page opens with visitor filters, the current level is requested separately too, because the tree shows unfiltered counts.
+The category tree is one Catalog Service search without a category filter (visibility and Marketplace filters only): its `categories` facet lists every level with name, path and count, which gives the top level, the children of each category on the path and each category's total. The drop-in's own search can't provide it: on category pages it is filtered by the page's category, so its facet only lists that category's children, and its counts follow the visitor's filters.
 
 **Store configuration required:** the drop-in only keeps a request filter when its attribute is not a facet. The Marketplace base filters (`visibility`, `ext_attribute_set_id`, `ext_is_delisted_extension`) must therefore not be facets in the store's search facet settings; otherwise the first filter change drops them. Price ranges and the value order of facets without an `order` list also come from those settings.
 

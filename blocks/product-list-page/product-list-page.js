@@ -110,9 +110,7 @@ export default async function decorate(block) {
   };
 
   // Request search based on the page type on block load
-  const initialResult = await runSearch({});
-  // Without visitor filters, this search is also the category tree's current level.
-  const unfilteredResult = lastRequest.filter.some(isUserFilter) ? null : initialResult;
+  await runSearch({});
 
   // Category tree (category pages only), placed above the filters by the Facets slot
   const $categories = document.createElement('div');
@@ -132,7 +130,7 @@ export default async function decorate(block) {
   selectedHeader.setCategory(categoryInfo());
 
   if (config.urlpath) {
-    fetchCategoryTree(config.urlpath, [visibilityFilter, ...marketplaceFilters], unfilteredResult)
+    fetchCategoryTree(config.urlpath, [visibilityFilter, ...marketplaceFilters])
       .then((tree) => {
         renderCategoryTree($categories, tree, config.urlpath);
         // The breadcrumb is generated from the URL; use the catalog's category names, as the

@@ -259,10 +259,10 @@ export function buildSelectedHeader() {
 /* Category tree                                                      */
 /* ------------------------------------------------------------------ */
 
-// One search per request: Catalog Service returns no facets for aliased (multi-search) queries.
+// Without a category filter, the `categories` facet lists the categories of every level (name,
+// path, count). One such search gives the whole tree; counts don't depend on the visitor's filters.
 const TREE_QUERY = (filter) => `query MARKETPLACE_CATEGORY_TREE {
   productSearch(phrase: "", page_size: 1, filter: ${filter}) {
-    total_count
     facets { attribute buckets { ... on CategoryView { name path count } } }
   }
 }`;
@@ -272,45 +272,31 @@ const gqlFilter = (filters) => `[${filters.map((f) => {
   return `{attribute: ${JSON.stringify(f.attribute)}, eq: ${JSON.stringify(f.eq)}}`;
 }).join(', ')}]`;
 
+const parentPath = (path) => path.split('/').slice(0, -1).join('/');
+
 /**
  * Loads the category tree around a category: top-level categories, and the children of each
  * category on the path down to the current one, with product counts.
- * The current category's level is the drop-in's own search (same filters) when the page's search
- * has no visitor filters; pass it as `current` and only the other levels are requested. Visitor
- * filters change the counts, so then all levels are requested, as the tree shows unfiltered counts.
  * @param {string} categoryPath - e.g. "extensions/accounting-finance"
  * @param {Array} baseFilters - visibility and Marketplace filters (no category)
- * @param {?{categories: Array, totalCount: number}} [current] - the drop-in's search result for
- *   the category without visitor filters (`categories` is added by the search initializer)
  * @returns {Promise<{top: Array, childrenOf: Object, totals: Object, names: Object}>}
  */
-export async function fetchCategoryTree(categoryPath, baseFilters, current = null) {
+export async function fetchCategoryTree(categoryPath, baseFilters) {
   const parts = categoryPath.split('/');
   const chain = parts.map((_, i) => parts.slice(0, i + 1).join('/'));
-  const buckets = (res) => (res?.facets || []).find((f) => f.attribute === 'categories')?.buckets?.filter((b) => b.path) || [];
-  const fetchLevel = (filter) => CS_FETCH_GRAPHQL
-    .fetchGraphQl(TREE_QUERY(gqlFilter(filter)), { method: 'GET' })
+  const res = await CS_FETCH_GRAPHQL
+    .fetchGraphQl(TREE_QUERY(gqlFilter(baseFilters)), { method: 'GET' })
     .then(({ data }) => data?.productSearch)
-    .then((res) => ({ total: res?.total_count ?? null, children: buckets(res) }))
-    .catch(() => ({ total: null, children: [] }));
-  const fromDropin = Array.isArray(current?.categories)
-    ? { total: current.totalCount ?? null, children: current.categories.filter((b) => b.path) }
-    : null;
-  const [top, ...levels] = await Promise.all([
-    fetchLevel(baseFilters),
-    ...chain.map((path, i) => (i === chain.length - 1 && fromDropin
-      ? fromDropin
-      : fetchLevel([{ attribute: 'categoryPath', eq: path }, ...baseFilters]))),
-  ]);
+    .catch(() => null);
+  const all = (res?.facets || []).find((f) => f.attribute === 'categories')?.buckets?.filter((b) => b.path) || [];
+  const byPath = Object.fromEntries(all.map((b) => [b.path, b]));
   const tree = {
-    // Without a category filter the facet lists categories of every level; keep the top level.
-    top: top.children.filter((b) => !b.path.includes('/')), childrenOf: {}, totals: {}, names: {},
+    top: all.filter((b) => !b.path.includes('/')), childrenOf: {}, totals: {}, names: {},
   };
-  tree.top.forEach((b) => { tree.names[b.path] = b.name; });
-  chain.forEach((path, i) => {
-    tree.totals[path] = levels[i].total;
-    tree.childrenOf[path] = levels[i].children;
-    tree.childrenOf[path].forEach((b) => { tree.names[b.path] = b.name; });
+  all.forEach((b) => { tree.names[b.path] = b.name; });
+  chain.forEach((path) => {
+    tree.totals[path] = byPath[path]?.count ?? null;
+    tree.childrenOf[path] = all.filter((b) => parentPath(b.path) === path);
   });
   return tree;
 }

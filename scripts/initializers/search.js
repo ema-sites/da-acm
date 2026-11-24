@@ -15,18 +15,6 @@ await initializeDropin(async () => {
     },
   };
 
-  // The drop-in drops the `categories` facet from its result on category pages. Keep its buckets
-  // (the category's subcategories with counts) as `result.categories` for the category tree.
-  const models = {
-    ProductSearchResult: {
-      transformer: (data) => ({
-        categories: data?.productSearch?.facets
-          ?.find((facet) => facet.attribute === 'categories')
-          ?.buckets?.filter((bucket) => bucket.path) ?? [],
-      }),
-    },
-  };
-
   // Initialize search
-  return initializers.mountImmediately(initialize, { langDefinitions, models });
+  return initializers.mountImmediately(initialize, { langDefinitions });
 })();
