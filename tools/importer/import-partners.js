@@ -12,7 +12,9 @@
  *   source | <partner search endpoint>   (the block uses it when it answers from the new domain)
  *   page-size | 36
  *   logo | name (link to the partner page) | partner level | country | solution types | certifications
+ * Partner links point at the migrated profiles (/partner/<slug>, see the link transformer).
  */
+import { rewriteHref } from './transformers/commercemarketplace-links.js';
 
 const ORIGIN = 'https://commercemarketplace.adobe.com';
 const SEARCH_ENDPOINT = `${ORIGIN}/partners-search/search`;
@@ -56,7 +58,7 @@ export default {
         logo.append(img);
       }
       const name = document.createElement('a');
-      name.href = href;
+      name.href = rewriteHref(href) || href;
       name.textContent = p.name || p.screen_name || '';
       rows.push([
         logo,

@@ -878,9 +878,23 @@ main .partner-profile-container > .default-content-wrapper p {
   line-height: 28px;
 }
 
-main .partner-profile-container > .default-content-wrapper:has(+ .cards-product-wrapper) h3 {
+/* Seller profile template (partner-page): About Seller spacing below the section tabs, as on the
+   source (heading 20px below the tab bar's gap, copy 20px further down, 20px right inset) */
+main .partner-page-wrapper + .default-content-wrapper > h3:first-child {
+  margin-bottom: 30px;
+}
+
+main .partner-page-wrapper + .default-content-wrapper > p {
+  padding-right: 20px;
+}
+
+main .partner-page-wrapper ~ .default-content-wrapper:has(+ .cards-product-wrapper) > h3 {
+  margin-top: 22px;
+}
+
+main .partner-profile-container > .default-content-wrapper:has(+ .cards-product-wrapper) > h3:last-child {
   padding-bottom: 10px;
-  border-bottom: 2px solid #d1d1d1;
+  border-bottom: 2px solid #aeafb1;
 }
 
 /* Category pages (product-list-page) and the Partners directory: breadcrumb, title and listing

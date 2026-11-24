@@ -37,6 +37,24 @@
   margin-bottom: var(--spacing-medium);
 }
 
+/* "by <seller>" under the title (source .by-company) */
+.product-details__seller:not(:empty) {
+  margin: calc(-1 * var(--spacing-medium) + 4px) 0 var(--spacing-medium);
+  color: #202021;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.product-details__seller a:any-link {
+  color: #0469e3;
+  font-size: inherit;
+  text-decoration: none;
+}
+
+.product-details__seller a:any-link:hover {
+  text-decoration: underline;
+}
+
 .product-details__price {
   margin-top: var(--spacing-medium);
 }

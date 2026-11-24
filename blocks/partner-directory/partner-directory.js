@@ -9,6 +9,7 @@
  * If `source` (the old site's partner search endpoint) answers from this domain, the directory is
  * live (all partners, server-side search, filters and counts). Otherwise it uses the authored rows.
  */
+import { partnerPathFromOld } from '../../scripts/partner-profiles.js';
 
 const CONFIG_KEYS = ['source', 'page-size'];
 const PAGE_SIZES = [36, 72, 144];
@@ -80,7 +81,8 @@ function fromLive(hit, sourceUrl) {
   const abs = (path) => (path ? new URL(path, origin).href : '');
   return {
     name: hit.name || hit.screen_name || '',
-    url: abs(hit.developer_page_url || (hit.screen_name ? `/partner/${encodeURIComponent(hit.screen_name)}` : '')),
+    // Profiles live on this site: the old /partner/<name> becomes /partner/<slug>.
+    url: partnerPathFromOld(hit.developer_page_url || (hit.screen_name ? `/partner/${encodeURIComponent(hit.screen_name)}` : '')),
     avatar: abs(hit.avatar),
     partner_level: hit.partner_level || '',
     country: hit.country || '',

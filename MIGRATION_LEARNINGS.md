@@ -151,6 +151,13 @@ Example PLP shell:
   can't read. Look products up by `url_key` instead (it is filterable in Catalog Service).
 - **The catalog can hold more than the sitemap** (here 4,341 against 4,228, including delisted and test
   products). A template makes all of them reachable, so carry over the old site's visibility rules.
+- **Seller (partner) profiles follow the same model, but only half their data is in the catalog.**
+  Products per seller come live from Catalog Service (`ext_developer_id`), which is what the old page
+  does too. The profile details (website, social links, email, address, biography) are rendered by
+  Magento from the seller account, and no API the new site can call returns them. Seed a sheet
+  once (from a store export, or a crawl of the profile pages), then serve every `/partner/<slug>`
+  from one template. Count profiles from the product pages' seller links, not from the directory:
+  here 824 are linked, against 111 directory tiles. See `PARTNER_PROFILES_PLAN.md`.
 
 ### Commerce detection
 - **The page-type detector can miss obvious product pages.** It only reads the first ~200k characters of

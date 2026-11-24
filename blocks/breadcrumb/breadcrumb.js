@@ -5,6 +5,19 @@ import { getMetadata } from '../../scripts/aem.js';
 // "products" folder nor the template's own title describes the page: the trail is Home > product
 // name, filled in once the product data loads.
 const PRODUCT_PATH = /^\/products\/[a-z0-9][a-z0-9-]*\/?$/;
+// Seller profiles (/partner/<slug>) share one template too: Home > Partners > seller name, as on
+// the old site, filled in once the profile loads.
+const PARTNER_PATH = /^\/partner\/[^/]+\/?$/;
+const PARTNERS_PAGE = '/partners';
+
+function dynamicTrail(ol, base, label, href, eventName) {
+  if (label) ol.append(crumb(label, `${base}${href}`));
+  const current = crumb('', null);
+  ol.append(current);
+  events.on(eventName, (data) => {
+    if (data?.name) current.querySelector('span').textContent = data.name;
+  }, { eager: true });
+}
 
 function titleCase(segment) {
   let text = segment;
@@ -69,12 +82,11 @@ export default function decorate(block) {
     const base = window.location.hostname === 'localhost' && segments[0] === 'content' ? `/${segments.shift()}` : '';
     if (segments[segments.length - 1] === 'index') segments.pop();
     ol.append(crumb(getMetadata('breadcrumb-home') || 'Home', `${base}/`));
-    if (PRODUCT_PATH.test(`/${segments.join('/')}`)) {
-      const current = crumb('', null);
-      ol.append(current);
-      events.on('pdp/data', (product) => {
-        if (product?.name) current.querySelector('span').textContent = product.name;
-      }, { eager: true });
+    const sitePath = `/${segments.join('/')}`;
+    const isProduct = PRODUCT_PATH.test(sitePath);
+    if (isProduct || PARTNER_PATH.test(sitePath)) {
+      if (isProduct) dynamicTrail(ol, base, '', '', 'pdp/data');
+      else dynamicTrail(ol, base, 'Partners', PARTNERS_PAGE, 'partner/data');
       const nav = document.createElement('nav');
       nav.setAttribute('aria-label', 'Breadcrumb');
       nav.append(ol);

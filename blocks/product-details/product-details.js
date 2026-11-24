@@ -29,6 +29,7 @@ import ProductCustomizableOptions from '@dropins/storefront-pdp/containers/Produ
 // Libs
 import { rootLink, fetchPlaceholders } from '../../scripts/commerce.js';
 import { resolveMarketplaceProduct } from '../../scripts/marketplace-product.js';
+import { getPartnerPath } from '../../scripts/partner-profiles.js';
 import { loadFragment } from '../fragment/fragment.js';
 
 // Initializers
@@ -146,6 +147,27 @@ export default async function decorate(block) {
   // for search engines and link previews come from the product metadata sheet).
   events.on('pdp/data', (data) => {
     if (data?.name) document.title = data.name;
+  }, { eager: true });
+
+  // "by <seller>" under the title, linking to the seller's profile as on the old site.
+  const $seller = document.createElement('p');
+  $seller.className = 'product-details__seller';
+  $header.after($seller);
+  events.on('pdp/data', async (data) => {
+    const attribute = (id) => data?.attributes?.find((a) => a.id === id)?.value;
+    const name = attribute('ext_developer_name');
+    if (!name) {
+      $seller.replaceChildren();
+      return;
+    }
+    const path = await getPartnerPath(attribute('ext_developer_id'));
+    let seller = name;
+    if (path) {
+      seller = document.createElement('a');
+      seller.href = rootLink(path);
+      seller.textContent = name;
+    }
+    $seller.replaceChildren('by ', seller);
   }, { eager: true });
 
   const marketplaceProduct = await resolveMarketplaceProduct();

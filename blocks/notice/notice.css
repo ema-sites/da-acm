@@ -94,7 +94,11 @@ main .notice a.notice-action:focus-visible {
 
 .notice.notice-titled .notice-body {
   padding: 20px 20px 50px;
-  color: var(--brand-text-color);
+  color: #8e8e8e;
+}
+
+.notice.notice-titled .notice-body strong {
+  font-weight: 600;
 }
 
 .notice.notice-titled .notice-body p {

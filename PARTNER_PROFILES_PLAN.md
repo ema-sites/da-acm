@@ -1,6 +1,7 @@
 # Plan: partner profile pages (`/partner/<name>`)
 
-Status: options for review (2026-11-24). Nothing here is built yet.
+Status (2026-11-24): **Option C chosen and built locally** (see section 6). Not yet committed,
+uploaded or previewed.
 Not served on the site (`*.md` is in `.hlxignore`).
 
 ## 1. What these pages are
@@ -105,3 +106,67 @@ These links still go to the old store because they're store features, not conten
 **Before the domain moves to Edge Delivery,** decide for each one: route it at the CDN to the Magento
 store, or rebuild it with drop-ins (cart, account and checkout drop-ins exist). Otherwise these
 addresses will 404 on the new site.
+
+## 6. Implementation (Option C)
+
+### Where the old site's profile data comes from
+Checked 2026-11-24. There is **no backend the new site can reuse for the profile details**:
+- The profile page is rendered by Magento on the server from the seller account (screen name, logo,
+  website, social links, support email, address, biography). Its scripts only switch tabs and
+  scroll (`AppStore_Partners/js/partner-details`), and it embeds no data feed.
+- The store GraphQL (`/graphql`) answers 403 to requests from outside the store, has no CORS for
+  the new domains, and the profile isn't one of its types.
+- The partner search endpoint returns only name, logo, level, country, ID and old address, and only
+  to server requests with the store's Origin header (no CORS).
+- **Catalog Service is reusable** and is what the old page itself uses for the product grid: the
+  page's own settings carry the same endpoint, environment ID, API key and filters (attribute set
+  12, visibility, not delisted) as our category pages. Every product also carries its seller's
+  `ext_developer_id`, `ext_developer_name` and partner level.
+
+So the template takes the products live from Catalog Service, and the profile details come from a
+sheet seeded once from the live pages. An export of the seller accounts from the store owners would
+still be a better seed (it would include sellers without products and stay exact); the sheet's
+columns are the account fields, so an export can replace the crawl later.
+
+### Coverage
+Every product page on the old site links its seller ("by <seller>" and "Seller profile"), so the
+directory's 111 partners are not enough: **824 profiles** are linked (111 from the directory, 713
+more from product pages). All 824 were fetched on 2026-11-24: 820 have profiles, 1 is a 404 on the
+old site (`commercema1679`), and 3 are the same seller linked with a trailing slash.
+
+### What was built
+| Piece | Where |
+|-------|-------|
+| Template block: profile from the sheet, products live, 404 for unknown sellers | `blocks/partner-page` |
+| Template page (one block) | `content/partner/default` |
+| Profiles workbook: `data` (full rows) and `ids` (id, name, path) | `content/partner/profiles.json` |
+| Sheet builder (from saved profile pages) + redirects and metadata rows | `tools/importer/build-partner-profiles.js` |
+| Shared lookups (sheet fetch, seller ID → profile, old → new address) | `scripts/partner-profiles.js` |
+| Breadcrumb: Home > Partners > seller | `blocks/breadcrumb` |
+| Product pages: "by <seller>" linking the profile | `blocks/product-details` |
+| Directory tiles and live directory links → `/partner/<slug>` | `import-partners.js`, link transformer, `blocks/partner-directory` |
+
+The page reuses the seller page blocks (`partner-profile`, `notice`, `cards-product`) and was
+measured against the old page at 1440px: header, sidebar boxes, tab bar and headings line up within
+1px. Fixes found on the way that also apply to the 8 authored seller pages: grey address text,
+the All Products rule colour (`#aeafb1`), and no rule under About Seller.
+
+### Still to do (each needs an explicit request)
+1. **DA: done 2026-11-24.** `/partner/default` and the `/partner/profiles` workbook are uploaded and previewed.
+2. **Site configuration: done 2026-11-24.** Folder mapping `/partner/` → `/partner/default`.
+3. **Redirects: done 2026-11-24** (uploaded and previewed). The sheet's 341 profile rows don't fire
+   under `/partner/`: folder mapping answers first, so the template forwards old addresses to the new
+   one in the browser instead. 72 old addresses with `+` or `%` get a 404 from Edge Delivery before
+   either; they need a redirect at the CDN when the domain moves.
+4. **Bulk metadata:** add the title/description rows (`migration-work/partner-profiles/metadata.json`)
+   to the site's metadata sheet, with the product rows.
+5. **Partners page: done 2026-11-24.** Re-imported page uploaded and previewed.
+6. **Code:** commit and merge the template, so the preview site draws the profiles.
+
+### Known limits
+- The `data` sheet is about 880 KB for 820 profiles and every profile view loads it (the `ids` sheet
+  for product pages is about 60 KB). If that is too heavy, split `data` by first letter.
+- Logos and product images still load from the old domain's `/media/` folder, like the rest of the
+  catalog. They need a route or a copy before the domain moves.
+- The 8 authored seller pages don't have the tab bar; they could switch to this template (a page
+  with the block and a `partner` row) to pick it up.

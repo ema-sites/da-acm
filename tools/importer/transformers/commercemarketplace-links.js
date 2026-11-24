@@ -10,8 +10,10 @@
  * Product pages (old /<url-key>) become /products/<url-key>, where the new site serves them.
  * Documents the new site hosts (the legal terms and the Marketplace info sheet PDFs) are linked
  * directly, whether the source links the /legal/terms/... page or its static PDF.
+ * Seller profiles (old /partner/<name>, any capitals, "+" or dots) become /partner/<slug>, the
+ * address the profile template serves (same rule as tools/importer/build-partner-profiles.js).
  * Links to source pages that were not migrated (e.g. /contact-us, which needs a Magento account
- * sign-in, /partner/<name>, files under /media) and links to other hosts are left unchanged.
+ * sign-in, files under /media) and links to other hosts are left unchanged.
  */
 import MIGRATED_PATHS, { PRODUCT_PATHS } from './migrated-paths.js';
 
@@ -30,6 +32,15 @@ export const DOCUMENT_LINKS = {
   [`${STATIC_PDF}/footer/Marketplace-Infosheet.pdf`]: '/documents/marketplace-infosheet.pdf',
 };
 
+/** Old profile name -> new slug. Keep in step with normalizeSlug in build-partner-profiles.js. */
+export function partnerSlug(oldSlug) {
+  let s = oldSlug;
+  try { s = decodeURIComponent(s.replace(/\+/g, ' ')); } catch (e) { /* keep as is */ }
+  return s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function normalizePath(pathname) {
   let p;
   try { p = decodeURIComponent(pathname); } catch (e) { p = pathname; }
@@ -45,6 +56,8 @@ export function rewriteHref(href) {
   if (!/^https?:$/.test(url.protocol) || !SOURCE_HOSTS.includes(url.hostname)) return null;
   const doc = DOCUMENT_LINKS[url.pathname] || DOCUMENT_LINKS[url.pathname.replace(/\/+$/, '')];
   if (doc) return `${doc}${url.hash}`;
+  const profile = url.pathname.match(/^\/partner\/([^/]+)\/?$/);
+  if (profile && partnerSlug(profile[1])) return `/partner/${partnerSlug(profile[1])}${url.hash}`;
   const path = normalizePath(url.pathname);
   if (!MIGRATED_PATHS.has(path)) return null;
   // Product pages live at /products/<url-key> on the new site (the old root path redirects there).

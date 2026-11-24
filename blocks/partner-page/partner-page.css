@@ -1,0 +1,37 @@
+/* The template's config rows are replaced by the profile once it loads; never show them. */
+.partner-page > div {
+  display: none;
+}
+
+/* "About Seller | All Products" bar (source .product-info-nav, measured at 1440px). The gap above
+   is padding: the bar clears the floated sidebar, which would swallow a top margin. */
+.partner-page:has(.partner-page-tabs) {
+  padding-top: 20px;
+}
+
+.partner-page .partner-page-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 0 55px;
+  padding: 0 19px;
+  background-color: #f2f3f3;
+  font-family: var(--brand-body-font-family);
+}
+
+.partner-page .partner-page-tabs a:any-link {
+  padding: 12px 28px;
+  color: #0469e3;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 23px;
+  text-decoration: none;
+}
+
+.partner-page .partner-page-tabs a[aria-current] {
+  background-color: #fff;
+  color: #2b2b2c;
+}
+
+.partner-page .partner-page-tabs a:any-link:hover {
+  text-decoration: underline;
+}
