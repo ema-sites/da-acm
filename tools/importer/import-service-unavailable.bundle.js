@@ -8786,6 +8786,16 @@ var CustomImportScript = (() => {
   // tools/importer/transformers/commercemarketplace-links.js
   var SOURCE_HOSTS = ["commercemarketplace.adobe.com", "www.commercemarketplace.adobe.com"];
   var SOURCE_ORIGIN = "https://commercemarketplace.adobe.com";
+  var STATIC_PDF = "/static/version1794834731/frontend/Aheadworks/marketplace/en_US/pdf";
+  var DOCUMENT_LINKS = {
+    "/legal/terms/master-terms": "/legal/terms/master-terms.pdf",
+    "/legal/terms/development-terms": "/legal/terms/development-terms.pdf",
+    "/legal/terms/customer-agreement": "/legal/terms/customer-agreement.pdf",
+    [`${STATIC_PDF}/legal/master-terms.pdf`]: "/legal/terms/master-terms.pdf",
+    [`${STATIC_PDF}/legal/development-terms.pdf`]: "/legal/terms/development-terms.pdf",
+    [`${STATIC_PDF}/legal/customer-agreement.pdf`]: "/legal/terms/customer-agreement.pdf",
+    [`${STATIC_PDF}/footer/Marketplace-Infosheet.pdf`]: "/documents/marketplace-infosheet.pdf"
+  };
   function normalizePath(pathname) {
     let p;
     try {
@@ -8805,6 +8815,8 @@ var CustomImportScript = (() => {
       return null;
     }
     if (!/^https?:$/.test(url.protocol) || !SOURCE_HOSTS.includes(url.hostname)) return null;
+    const doc = DOCUMENT_LINKS[url.pathname] || DOCUMENT_LINKS[url.pathname.replace(/\/+$/, "")];
+    if (doc) return `${doc}${url.hash}`;
     const path = normalizePath(url.pathname);
     if (!migrated_paths_default.has(path)) return null;
     const target = PRODUCT_PATHS.has(path) ? `/products${path}` : path;
