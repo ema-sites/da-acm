@@ -39,12 +39,6 @@ function formatPrice(product) {
   return attr(product, 'subscription_available') === 'yes' ? `${value} / year` : value;
 }
 
-/** Runs `fn` for the slot's current context and again whenever the drop-in updates it. */
-function bindSlot(ctx, fn) {
-  fn(ctx);
-  ctx.onChange((next) => fn(next));
-}
-
 /**
  * ProductImage slot: the drop-in's image (the extension logo, see the search initializer) and,
  * for assured extensions, the Assurance Program badge.
@@ -54,7 +48,7 @@ export function tileHeaderSlot(ctx) {
   badge.setAttribute('role', 'img');
   badge.setAttribute('aria-label', 'Assurance Program');
   ctx.appendChild(badge);
-  bindSlot(ctx, ({ product }) => {
+  ctx.onRender(({ product }) => {
     badge.hidden = String(attr(product, 'ext_is_assured')) !== '1';
   });
 }
@@ -64,7 +58,7 @@ export function tileNameSlot(ctx) {
   const vendor = el('p', 'plp-tile__vendor');
   ctx.appendChild(vendor);
   ctx.appendChild(el('hr', 'plp-tile__divider'));
-  bindSlot(ctx, ({ product }) => {
+  ctx.onRender(({ product }) => {
     vendor.textContent = attr(product, 'ext_developer_name') || '';
   });
 }
@@ -167,7 +161,7 @@ export function facetSlots({ categories, selectedHeader }) {
 
     // Hide store facets the old site didn't show; order the rest as on the old site.
     Facet: (ctx, element) => {
-      bindSlot(ctx, ({ data }) => {
+      ctx.onRender(({ data }) => {
         if (!element) return;
         const index = FACETS.findIndex((f) => f.attribute === data.attribute);
         element.dataset.plpFacet = data.attribute;
@@ -178,7 +172,7 @@ export function facetSlots({ categories, selectedHeader }) {
 
     FacetHeading: (ctx) => {
       const title = el('div', 'plp-facet__title');
-      bindSlot(ctx, ({ data }) => {
+      ctx.onRender(({ data }) => {
         title.textContent = facetConfig(data.attribute)?.title || data.title;
       });
       ctx.replaceWith(title);
@@ -186,7 +180,7 @@ export function facetSlots({ categories, selectedHeader }) {
 
     // Order values as on the old site; hide the empty value (products without the attribute).
     FacetBucket: (ctx, element) => {
-      bindSlot(ctx, ({ data }) => {
+      ctx.onRender(({ data }) => {
         if (!element) return;
         element.hidden = !String(data.title ?? '').trim();
         const rank = FACETS.reduce((found, f) => {
@@ -200,7 +194,7 @@ export function facetSlots({ categories, selectedHeader }) {
     // "<label> <count>" as two spans (count right-aligned); old-site price labels.
     FacetBucketLabel: (ctx) => {
       const wrapper = el('span', 'plp-facet__bucket-label');
-      bindSlot(ctx, ({ data }) => {
+      ctx.onRender(({ data }) => {
         const isRange = data.__typename === 'RangeBucket';
         const text = isRange
           ? priceLabel(data)
