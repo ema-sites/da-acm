@@ -50,6 +50,12 @@ This block does not use localStorage.
 
 A visibility filter `{ attribute: 'visibility', in: ['Search', 'Catalog, Search'] }` is always added to the request; it is not persisted in the URL but is included when syncing the URL after each result.
 
+### Product tiles (Marketplace)
+
+The tiles are the drop-in's `SearchResults` cards. The slots keep the drop-in's own content and add the Marketplace parts with `appendChild`/`prependChild`, updating them on every render (`onChange`):
+
+- `ProductImage` (`tileHeaderSlot()`): the drop-in's image link, shown as the 50px logo; the Assurance Program badge is appended (hidden for extensions that aren't assured). The drop-in shows `images[0]`; a `Product` transformer in `scripts/initializers/search.js` puts the `small_image` (the extension logo) there, for this block and the header search.
+
 ### Filters sidebar (Marketplace)
 
 The filters are the drop-in's `Facets` container, adapted to the old Marketplace sidebar with its slots (`facetSlots()` in `marketplace-plp.js`) and CSS:

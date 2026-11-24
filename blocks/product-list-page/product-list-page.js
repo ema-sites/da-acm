@@ -11,7 +11,7 @@ import { readBlockConfig } from '../../scripts/aem.js';
 import { fetchPlaceholders, getProductLink, rootLink } from '../../scripts/commerce.js';
 import { getSearchStateFromUrl, applySearchStateToUrl, BASE_FILTER_ATTRIBUTES } from './search-url.js';
 import {
-  buildTileHeader,
+  tileHeaderSlot,
   buildTileName,
   buildTileFooter,
   fetchCategoryTree,
@@ -169,9 +169,7 @@ export default async function decorate(block) {
       routeProduct: (product) => getProductLink(product.urlKey, product.sku),
       skeletonCount: pageSize,
       slots: {
-        ProductImage: (ctx) => {
-          ctx.replaceWith(buildTileHeader(ctx.product));
-        },
+        ProductImage: tileHeaderSlot,
         ProductName: (ctx) => {
           ctx.replaceWith(buildTileName(ctx.product));
         },

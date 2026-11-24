@@ -39,28 +39,24 @@ function formatPrice(product) {
   return attr(product, 'subscription_available') === 'yes' ? `${value} / year` : value;
 }
 
-/** Tile header: logo and, for assured extensions, the Assurance Program badge. */
-export function buildTileHeader(product) {
-  const header = el('div', 'plp-tile__header');
-  const thumb = el('div', 'plp-tile__thumb');
-  const image = product.images?.find((i) => i.roles?.includes('small_image')) || product.images?.[0];
-  if (image?.url) {
-    const img = el('img');
-    img.src = image.url.replace(/^\/\//, 'https://');
-    img.alt = product.name || '';
-    img.width = 50;
-    img.height = 50;
-    img.loading = 'lazy';
-    thumb.append(img);
-  }
-  header.append(thumb);
-  if (String(attr(product, 'ext_is_assured')) === '1') {
-    const badge = el('span', 'plp-tile__assurance');
-    badge.setAttribute('role', 'img');
-    badge.setAttribute('aria-label', 'Assurance Program');
-    header.append(badge);
-  }
-  return header;
+/** Runs `fn` for the slot's current context and again whenever the drop-in updates it. */
+function bindSlot(ctx, fn) {
+  fn(ctx);
+  ctx.onChange((next) => fn(next));
+}
+
+/**
+ * ProductImage slot: the drop-in's image (the extension logo, see the search initializer) and,
+ * for assured extensions, the Assurance Program badge.
+ */
+export function tileHeaderSlot(ctx) {
+  const badge = el('span', 'plp-tile__assurance');
+  badge.setAttribute('role', 'img');
+  badge.setAttribute('aria-label', 'Assurance Program');
+  ctx.appendChild(badge);
+  bindSlot(ctx, ({ product }) => {
+    badge.hidden = String(attr(product, 'ext_is_assured')) !== '1';
+  });
 }
 
 /** Tile name block: name (links the whole tile), vendor, divider. */
@@ -145,12 +141,6 @@ function priceLabel(bucket) {
   if (!bucket.from) return `Under ${formatAmount(bucket.to)}`;
   if (bucket.to == null || bucket.to >= PRICE_OPEN_END) return `${formatAmount(bucket.from)} & Above`;
   return `${formatAmount(bucket.from)} - ${formatAmount(bucket.to)}`;
-}
-
-/** Runs `fn` for the slot's current context and again whenever the drop-in updates it. */
-function bindSlot(ctx, fn) {
-  fn(ctx);
-  ctx.onChange((next) => fn(next));
 }
 
 function facetGroup(className, title) {

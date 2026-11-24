@@ -550,14 +550,17 @@
   display: none;
 }
 
-.block.product-list-page .plp-tile__header {
+/* Tile header (ProductImage slot): the drop-in's image link, shown as the logo, and the
+   Assurance Program badge */
+.block.product-list-page .dropin-product-item-card__image {
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
   height: 50px;
   margin: 0 0 15px;
 }
 
-.block.product-list-page .plp-tile__thumb {
+.block.product-list-page .dropin-product-item-card__image > a {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -569,17 +572,22 @@
   background-color: #f8f8f8;
 }
 
-.block.product-list-page .plp-tile__thumb img {
+.block.product-list-page .dropin-product-item-card__image img {
   width: 50px;
   height: 50px;
+  aspect-ratio: 1;
   object-fit: contain;
 }
 
 .block.product-list-page .plp-tile__assurance {
+  display: block;
   width: 84px;
   height: 50px;
-  margin-left: auto;
   background: url("/icons/mp-assurance-program-badge.svg") no-repeat center / contain;
+}
+
+.block.product-list-page .plp-tile__assurance[hidden] {
+  display: none;
 }
 
 .block.product-list-page .plp-tile__title {
@@ -665,10 +673,6 @@
   height: auto;
   aspect-ratio: auto;
   object-fit: contain;
-}
-
-.block.product-list-page .dropin-product-item-card .plp-tile__thumb img {
-  aspect-ratio: 1;
 }
 
 .block.product-list-page .plp-tile__price {
