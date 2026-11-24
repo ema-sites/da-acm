@@ -59,6 +59,9 @@
 
 /* ---------------- Sidebar ---------------- */
 
+/* The filters are the Product Discovery drop-in's Facets container (product-discovery-facet*
+   and dropin-* classes); these rules give it the old Marketplace look. */
+
 .block.product-list-page .plp-sidebar {
   grid-area: sidebar;
   display: none;
@@ -69,7 +72,19 @@
   display: block;
 }
 
-/* Selected Filters */
+/* Selected Filters: header, the page's category, the drop-in's selected filters and Clear All */
+.block.product-list-page .product-discovery-facet-list__selected-filters {
+  position: relative;
+  gap: 5px;
+  margin: 0 0 36px;
+  padding: 0 5px;
+}
+
+.block.product-list-page .product-discovery-facet-list__selected-filters > [data-slot-html-element],
+.block.product-list-page .plp-selected {
+  display: contents;
+}
+
 .block.product-list-page .plp-selected__header,
 .block.product-list-page .plp-facet__title {
   background-color: #f9f9f9;
@@ -82,40 +97,31 @@
 }
 
 .block.product-list-page .plp-selected__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-basis: 100%;
+  margin: 0 -5px 5px;
 }
 
-.block.product-list-page .plp-selected__clear {
-  color: #636363;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-}
-
-.block.product-list-page .plp-selected__clear:hover {
-  text-decoration: underline;
-}
-
-.block.product-list-page .plp-selected__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 0 0 36px;
-  padding: 0 5px;
-}
-
-.block.product-list-page .plp-selected__pill {
+.block.product-list-page .plp-selected__pill,
+.block.product-list-page .product-discovery-facet-list__selected-filters > .dropin-button {
   display: flex;
   align-items: stretch;
   height: 30px;
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   background-color: #f9f9f9;
   border: 1px solid #d0d0d0;
   border-radius: 3px;
-  color: #0469e3;
+  color: #636363;
   overflow: hidden;
+}
+
+.block.product-list-page .product-discovery-facet-list__selected-filters > .dropin-button {
+  flex-direction: row-reverse;
+  gap: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18.5714px;
 }
 
 .block.product-list-page .plp-selected__remove {
@@ -130,7 +136,17 @@
   font-weight: 700;
 }
 
-.block.product-list-page .plp-selected__pill-label {
+.block.product-list-page .product-discovery-facet-list__selected-filters > .dropin-button svg {
+  box-sizing: border-box;
+  width: 30px;
+  height: 100%;
+  padding: 7px;
+  background-color: #ddd;
+  color: #333;
+}
+
+.block.product-list-page .plp-selected__pill-label,
+.block.product-list-page .product-discovery-facet-list__selected-filters > .dropin-button > span {
   display: flex;
   align-items: center;
   padding: 4px 8px;
@@ -146,19 +162,59 @@
   margin-right: 2px;
 }
 
-/* Filter groups */
-.block.product-list-page .plp-facet {
+/* Filter groups, in the old site's order (set by the Facet slot) */
+.block.product-list-page .product-discovery-facet-list__facet-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.block.product-list-page .product-discovery-facet-list__facet-options > [data-slot-html-element] {
+  order: -1;
+}
+
+.block.product-list-page .plp-facet,
+.block.product-list-page .product-discovery-facet {
   border-bottom: 1px solid #e0e0e0;
   margin: 0 0 20px;
   padding: 0 0 15px;
+}
+
+.block.product-list-page .product-discovery-facet {
+  display: flex;
+  flex-direction: column;
+}
+
+.block.product-list-page .product-discovery-facet__header {
+  order: -1;
+  margin: 0;
 }
 
 .block.product-list-page .plp-facet__items {
   padding: 0 0 0 5px;
 }
 
-.block.product-list-page .plp-facet__item {
+.block.product-list-page .plp-facet__item,
+.block.product-list-page .product-discovery-facet__bucket {
   margin: 0 0 8px;
+}
+
+.block.product-list-page .product-discovery-facet__bucket {
+  padding: 0 0 0 5px;
+}
+
+/* "Show more" / "Show less" stays below the values */
+.block.product-list-page .product-discovery-facet > .dropin-button {
+  order: 1000;
+  align-self: flex-start;
+  margin: 0 0 0 5px;
+  color: #636363;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.block.product-list-page .plp-facet__bucket-label {
+  display: flex;
+  align-items: center;
 }
 
 .block.product-list-page .plp-facet__count {
@@ -170,21 +226,31 @@
   line-height: 18.5714px;
 }
 
-.block.product-list-page .plp-facet__checkbox-label {
+/* Checkboxes */
+.block.product-list-page .product-discovery-facet .dropin-checkbox {
   display: flex;
   align-items: center;
   min-height: 21px;
   color: #666;
   cursor: pointer;
-  font-size: 14px;
-  line-height: 20px;
 }
 
-.block.product-list-page .plp-facet__checkbox-label input {
+.block.product-list-page .product-discovery-facet .dropin-checkbox__box {
   width: 13px;
   height: 13px;
   margin: 0 5px 0 0;
+  border-radius: 2px;
   flex: none;
+}
+
+.block.product-list-page .product-discovery-facet .dropin-checkbox__label {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  color: #666;
+  font-family: var(--body-font-family);
+  font-size: 14px;
+  line-height: 20px;
 }
 
 /* Category tree */
@@ -242,128 +308,124 @@
   font-weight: 700;
 }
 
-/* Price */
-.block.product-list-page .plp-facet__price-link,
-.block.product-list-page .plp-facet__rating-link {
-  display: flex;
-  align-items: center;
-  color: #505050;
-  font-weight: 400;
-}
-
-.block.product-list-page .plp-facet__indicator {
-  display: none;
-  width: 3px;
-  height: 16px;
-  margin: 0 8px 0 0;
-  background-color: #39c;
-}
-
-.block.product-list-page .plp-facet__item--selected .plp-facet__indicator {
-  display: inline-block;
-}
-
-.block.product-list-page .plp-facet__item--selected .plp-facet__label {
-  font-weight: 700;
-}
-
-/* Price: range links, a divider, then the Min/Max inputs */
-.block.product-list-page .plp-facet__price-ranges {
-  margin: 0 0 13px;
-  padding: 0 0 10px 5px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.block.product-list-page .plp-facet__price-link {
-  height: 20px;
-}
-
-.block.product-list-page .plp-facet__price-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-}
-
-.block.product-list-page .plp-facet__price-input input {
-  box-sizing: border-box;
-  width: 75px;
-  height: 40px;
-  margin: 0;
-  padding: 5px 8px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  background: #fff;
-  color: #8e8e8e;
-  font-family: "Helvetica Neue", helvetica, arial, sans-serif;
-  font-size: 13px;
-  text-align: center;
-  appearance: textfield;
-}
-
-.block.product-list-page .plp-facet__price-input input::-webkit-inner-spin-button,
-.block.product-list-page .plp-facet__price-input input::-webkit-outer-spin-button {
-  appearance: none;
-  margin: 0;
-}
-
-.block.product-list-page .plp-facet__price-dash {
-  color: #505050;
-}
-
-.block.product-list-page .plp-facet__price-go {
-  box-sizing: border-box;
-  height: 40px;
-  margin: 0;
-  padding: 12px 15px;
-  border: 0;
-  border-radius: 3px;
-  background-color: #ddd;
-  color: #444;
-  cursor: pointer;
-  font-family: "Helvetica Neue", helvetica, arial, sans-serif;
-  font-size: 15px;
+/* Ratings: the value shown as stars (filled, then empty) */
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label {
+  font-size: 0;
+  letter-spacing: 2px;
   line-height: 16px;
 }
 
-/* Ratings */
-.block.product-list-page .plp-facet--rating .plp-facet__item {
-  margin: 0 0 4px;
-}
-
-.block.product-list-page .plp-facet__rating-link {
-  padding: 5px 0;
-  color: #636363;
-  line-height: 18.5714px;
-}
-
-.block.product-list-page .plp-facet__stars {
-  display: inline-flex;
-  gap: 2px;
-}
-
-.block.product-list-page .plp-facet__star {
-  color: #d8d8d8;
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label::before,
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label::after {
   font-size: 16px;
-  line-height: 16px;
 }
 
-.block.product-list-page .plp-facet__star--filled {
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label::before {
   color: #464646;
 }
 
-.block.product-list-page .plp-facet--rating .plp-facet__label {
-  margin-left: 4px;
-  font-size: 13px;
-  white-space: pre;
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label::after {
+  color: #d8d8d8;
 }
 
-/* Kept after the less specific facet rules above (stylelint no-descending-specificity) */
-.block.product-list-page .plp-facet__price-ranges .plp-facet__item:last-child {
-  margin-bottom: 0;
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label[data-value="5"]::before {
+  content: "★★★★★";
 }
 
-.block.product-list-page .plp-facet__price-link:hover .plp-facet__label {
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label[data-value="4"]::before {
+  content: "★★★★";
+}
+
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label[data-value="4"]::after {
+  content: "★";
+}
+
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label[data-value="3"]::before {
+  content: "★★★";
+}
+
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label[data-value="3"]::after {
+  content: "★★";
+}
+
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label[data-value="2"]::before {
+  content: "★★";
+}
+
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label[data-value="2"]::after {
+  content: "★★★";
+}
+
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label[data-value="1"]::before {
+  content: "★";
+}
+
+.block.product-list-page [data-plp-facet="ext_approximate_rating"] .plp-facet__label[data-value="1"]::after {
+  content: "★★★★";
+}
+
+/* Price: the drop-in's radio buttons shown as the old site's range links, the selected range
+   marked with a bar and bold label */
+.block.product-list-page .product-discovery-facet .dropin-radio-button {
+  padding: 0;
+}
+
+.block.product-list-page .product-discovery-facet .dropin-radio-button__label {
+  height: 20px;
+  color: #505050;
+  font-family: var(--body-font-family);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.block.product-list-page .product-discovery-facet .dropin-radio-button__label::before {
+  display: none;
+}
+
+.block.product-list-page .product-discovery-facet .dropin-radio-button__input:checked + .dropin-radio-button__label::before {
+  display: inline-block;
+  width: 3px;
+  height: 16px;
+  margin: 0 8px 0 0;
+  border: 0;
+  border-radius: 0;
+  background-color: #39c;
+}
+
+.block.product-list-page .product-discovery-facet .dropin-radio-button__input:checked + .dropin-radio-button__label::after {
+  display: none;
+}
+
+.block.product-list-page .product-discovery-facet .dropin-radio-button__label:hover .plp-facet__label {
+  text-decoration: underline;
+}
+
+.block.product-list-page .product-discovery-facet .dropin-radio-button__input:checked + .dropin-radio-button__label .plp-facet__label {
+  font-weight: 700;
+}
+
+/* The drop-in's Clear All (the only selected-filters button without an icon), in the header */
+.block.product-list-page .product-discovery-facet-list__selected-filters > .dropin-button:not(:has(svg)) {
+  position: absolute;
+  top: 15px;
+  right: 10px;
+  height: auto;
+  border: 0;
+  background: none;
+  color: #636363;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  text-transform: capitalize;
+}
+
+.block.product-list-page .product-discovery-facet-list__selected-filters > .dropin-button:not(:has(svg)) > span {
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.block.product-list-page .product-discovery-facet-list__selected-filters > .dropin-button:not(:has(svg)):hover {
   text-decoration: underline;
 }
 

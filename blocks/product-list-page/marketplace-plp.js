@@ -1,7 +1,8 @@
 /**
- * Marketplace product listing: the parts of the old Marketplace category page that the Product
- * Discovery drop-in doesn't provide (product tiles, filters sidebar, results bar, paging), rendered
- * from the drop-in's search results and the catalog.
+ * Marketplace product listing: the old Marketplace category page on top of the Product Discovery
+ * drop-in. Product tiles and filters are drop-in slots; the category tree, results bar and paging
+ * (which the drop-in doesn't provide in the old site's form) are rendered from its search results
+ * and the catalog.
  */
 import { CS_FETCH_GRAPHQL, getProductLink, rootLink } from '../../scripts/commerce.js';
 
@@ -103,15 +104,16 @@ export function buildTileFooter(product) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Filters sidebar                                                    */
+/* Filters sidebar (Product Discovery drop-in Facets container slots) */
 /* ------------------------------------------------------------------ */
 
 // The old site's filters, in its order and with its titles. Other store facets are not shown.
+// `order` lists the old site's value order; values not listed keep the store's order.
 export const FACETS = [
   { attribute: 'ext_certification', title: 'Certification' },
-  { attribute: 'ext_all_editions', title: 'Edition', sort: 'alpha' },
+  { attribute: 'ext_all_editions', title: 'Edition' },
   { attribute: 'ext_mde_compatibility', title: 'Compatibility' },
-  { attribute: 'price', title: 'Price', type: 'price' },
+  { attribute: 'price', title: 'Price' },
   {
     attribute: 'ext_connect_partner_level_title',
     title: 'Partner Type',
@@ -120,44 +122,35 @@ export const FACETS = [
       'Adobe Silver Technology Partner', 'Adobe Gold Solution Partner', 'Adobe Silver Solution Partner', 'Adobe Commerce',
     ],
   },
-  { attribute: 'ext_approximate_rating', title: 'Ratings', type: 'rating' },
-  {
-    attribute: 'subscription_available', title: 'Subscription', order: ['yes', 'no'], labels: { yes: 'Yes', no: 'No' },
-  },
+  { attribute: 'ext_approximate_rating', title: 'Ratings', order: ['5', '4', '3', '2', '1'] },
+  { attribute: 'subscription_available', title: 'Subscription', order: ['yes', 'no'] },
   { attribute: 'ext_package_type', title: 'Package Type', order: ['Extension', 'App', 'Theme'] },
 ];
 
-const PRICE_RANGES = [
-  { from: 0, to: 50, label: 'Under $50' },
-  { from: 50, to: 100, label: '$50 - $100' },
-  { from: 100, to: 150, label: '$100 - $150' },
-  { from: 150, to: 200, label: '$150 - $200' },
-  { from: 200, to: 10100, label: '$200 - $10,100' },
-  { from: 10100, to: 20000, label: '$10,100 - $20,000' },
-  { from: 20000, to: 100000000, label: '$20,000 & Above' },
-];
+// Bucket labels that differ from the catalog value. The drop-in shows yes/no buckets as
+// "<Facet>" / "Not <Facet>"; the old site showed "Yes" / "No".
+const VALUE_LABELS = { yes: 'Yes', no: 'No' };
 
-const facetTitle = (attribute) => FACETS.find((f) => f.attribute === attribute)?.title || attribute;
+// Open-ended top price bucket (the old site's "$20,000 & Above").
+const PRICE_OPEN_END = 100000000;
 
-function bucketLabel(facet, value) {
-  return facet.labels?.[value] || value;
+const facetConfig = (attribute) => FACETS.find((f) => f.attribute === attribute);
+
+const formatAmount = (value) => new Intl.NumberFormat('en-US', {
+  style: 'currency', currency: 'USD', maximumFractionDigits: 0,
+}).format(value);
+
+/** Price bucket label as on the old site: "Under $50", "$50 - $100", "$20,000 & Above". */
+function priceLabel(bucket) {
+  if (!bucket.from) return `Under ${formatAmount(bucket.to)}`;
+  if (bucket.to == null || bucket.to >= PRICE_OPEN_END) return `${formatAmount(bucket.from)} & Above`;
+  return `${formatAmount(bucket.from)} - ${formatAmount(bucket.to)}`;
 }
 
-function sortBuckets(facet, buckets) {
-  const list = buckets.filter((b) => b.title && b.title !== 'undefined');
-  if (facet.order) {
-    const rank = (t) => {
-      const i = facet.order.indexOf(t);
-      return i === -1 ? facet.order.length : i;
-    };
-    return list.sort((a, b) => rank(a.title) - rank(b.title));
-  }
-  if (facet.sort === 'alpha') return list.sort((a, b) => a.title.localeCompare(b.title));
-  return list;
-}
-
-function filterFor(filters, attribute) {
-  return filters.find((f) => f.attribute === attribute);
+/** Runs `fn` for the slot's current context and again whenever the drop-in updates it. */
+function bindSlot(ctx, fn) {
+  fn(ctx);
+  ctx.onChange((next) => fn(next));
 }
 
 function facetGroup(className, title) {
@@ -171,172 +164,95 @@ function countSpan(count) {
 }
 
 /**
- * Renders the filters (everything below the category tree) for a search result.
- * @param {HTMLElement} container
- * @param {Object} result - search/result payload.result
- * @param {Array} userFilters - the visitor's filters
- * @param {(filters: Array) => void} apply - runs a search with new user filters
+ * Facets container slots: show the old site's filters in its order, with its titles and labels.
+ * Filtering itself (selection, search requests, Clear All) stays with the drop-in.
+ * @param {{ categories: HTMLElement, selectedHeader: HTMLElement }} parts - category tree and
+ *   Selected Filters header, rendered by the block and placed by the slots
  */
-export function renderFacets(container, result, userFilters, apply) {
-  const facets = result?.facets || [];
-  const groups = [];
-  FACETS.forEach((facet) => {
-    const data = facets.find((f) => f.attribute === facet.attribute);
-    const current = filterFor(userFilters, facet.attribute);
-    const others = userFilters.filter((f) => f.attribute !== facet.attribute);
+export function facetSlots({ categories, selectedHeader }) {
+  return {
+    // Category tree (navigation, not a facet) above the filters, as on the old site.
+    Facets: (ctx) => {
+      ctx.prependChild(categories);
+    },
 
-    if (facet.type === 'price') {
-      const group = facetGroup('plp-facet--price', facet.title);
-      const ul = el('ul', 'plp-facet__items plp-facet__price-ranges');
-      PRICE_RANGES.forEach((range) => {
-        const li = el('li', 'plp-facet__item');
-        const a = el('a', 'plp-facet__price-link');
-        a.href = '#';
-        const selected = current?.range
-          && current.range.from === range.from
-          && current.range.to === range.to;
-        if (selected) li.classList.add('plp-facet__item--selected');
-        a.append(el('span', 'plp-facet__indicator'), el('span', 'plp-facet__label', range.label));
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          apply(selected ? others : [...others, { attribute: 'price', range: { from: range.from, to: range.to } }]);
-        });
-        li.append(a);
-        ul.append(li);
+    // Hide store facets the old site didn't show; order the rest as on the old site.
+    Facet: (ctx, element) => {
+      bindSlot(ctx, ({ data }) => {
+        if (!element) return;
+        const index = FACETS.findIndex((f) => f.attribute === data.attribute);
+        element.dataset.plpFacet = data.attribute;
+        element.hidden = index === -1;
+        element.style.order = String(index);
       });
-      const form = el('form', 'plp-facet__price-input');
-      const min = el('input');
-      min.type = 'number';
-      min.min = '0';
-      min.placeholder = 'Min';
-      min.setAttribute('aria-label', 'Minimum price');
-      const max = el('input');
-      max.type = 'number';
-      max.min = '0';
-      max.placeholder = 'Max';
-      max.setAttribute('aria-label', 'Maximum price');
-      const isPresetRange = (r) => r.from === current.range.from && r.to === current.range.to;
-      if (current?.range && !PRICE_RANGES.some(isPresetRange)) {
-        min.value = current.range.from;
-        max.value = current.range.to;
-      }
-      const go = el('button', 'plp-facet__price-go', 'Go');
-      go.type = 'submit';
-      form.append(min, el('span', 'plp-facet__price-dash', '-'), max, go);
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const from = Number(min.value) || 0;
-        const to = Number(max.value) || 100000000;
-        apply([...others, { attribute: 'price', range: { from, to } }]);
-      });
-      group.append(ul, form);
-      groups.push(group);
-      return;
-    }
+    },
 
-    if (!data?.buckets?.length) return;
-
-    if (facet.type === 'rating') {
-      const counts = Object.fromEntries(data.buckets.map((b) => [String(b.title), b.count || 0]));
-      const group = facetGroup('plp-facet--rating', facet.title);
-      const ul = el('ul', 'plp-facet__items');
-      const selectedMin = current?.in?.length ? Math.min(...current.in.map(Number)) : null;
-      [5, 4, 3, 2, 1].forEach((n) => {
-        let count = 0;
-        for (let v = n; v <= 5; v += 1) count += counts[String(v)] || 0;
-        const li = el('li', 'plp-facet__item');
-        if (selectedMin === n) li.classList.add('plp-facet__item--selected');
-        const a = el('a', 'plp-facet__rating-link');
-        a.href = '#';
-        const stars = el('span', 'plp-facet__stars');
-        for (let s = 1; s <= 5; s += 1) stars.append(el('span', `plp-facet__star${s <= n ? ' plp-facet__star--filled' : ''}`, s <= n ? '★' : '☆'));
-        a.append(el('span', 'plp-facet__indicator'), stars, el('span', 'plp-facet__label', n < 5 ? ' & Up' : ''), countSpan(count));
-        a.setAttribute('aria-label', `${n} stars${n < 5 ? ' and up' : ''} (${count})`);
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          const values = [];
-          for (let v = n; v <= 5; v += 1) values.push(String(v));
-          apply(selectedMin === n
-            ? others
-            : [...others, { attribute: facet.attribute, in: values }]);
-        });
-        li.append(a);
-        ul.append(li);
+    FacetHeading: (ctx) => {
+      const title = el('div', 'plp-facet__title');
+      bindSlot(ctx, ({ data }) => {
+        title.textContent = facetConfig(data.attribute)?.title || data.title;
       });
-      group.append(ul);
-      groups.push(group);
-      return;
-    }
+      ctx.replaceWith(title);
+    },
 
-    const buckets = sortBuckets(facet, data.buckets);
-    if (!buckets.length) return;
-    const group = facetGroup(`plp-facet--${facet.attribute.replace(/_/g, '-')}`, facet.title);
-    const ul = el('ul', 'plp-facet__items');
-    const selected = new Set(current?.in || []);
-    buckets.forEach((bucket) => {
-      const li = el('li', 'plp-facet__item');
-      const label = el('label', 'plp-facet__checkbox-label');
-      const input = el('input');
-      input.type = 'checkbox';
-      input.value = bucket.title;
-      input.checked = selected.has(bucket.title);
-      input.addEventListener('change', () => {
-        const next = new Set(selected);
-        if (input.checked) next.add(bucket.title); else next.delete(bucket.title);
-        apply(next.size ? [...others, { attribute: facet.attribute, in: [...next] }] : others);
+    // Order values as on the old site.
+    FacetBucket: (ctx, element) => {
+      bindSlot(ctx, ({ data }) => {
+        if (!element) return;
+        const rank = FACETS.reduce((found, f) => {
+          if (found !== -1 || !f.order) return found;
+          return f.order.indexOf(data.title);
+        }, -1);
+        element.style.order = String(rank === -1 ? FACETS.length * 10 : rank);
       });
-      label.append(input, el('span', 'plp-facet__label', bucketLabel(facet, bucket.title)), countSpan(bucket.count));
-      li.append(label);
-      ul.append(li);
-    });
-    group.append(ul);
-    groups.push(group);
-  });
-  container.replaceChildren(...groups);
+    },
+
+    // "<label> <count>" as two spans (count right-aligned); old-site price labels.
+    FacetBucketLabel: (ctx) => {
+      const wrapper = el('span', 'plp-facet__bucket-label');
+      bindSlot(ctx, ({ data }) => {
+        const isRange = data.__typename === 'RangeBucket';
+        const text = isRange
+          ? priceLabel(data)
+          : (VALUE_LABELS[data.title] || data.name || data.title);
+        const label = el('span', 'plp-facet__label', text);
+        label.dataset.value = data.title;
+        wrapper.replaceChildren(label);
+        if (!isRange && data.count != null) wrapper.append(countSpan(data.count));
+      });
+      ctx.replaceWith(wrapper);
+    },
+
+    // "Selected Filters" header and the page's category above the drop-in's selected filters.
+    SelectedFacets: (ctx) => {
+      ctx.prependChild(selectedHeader);
+    },
+  };
 }
 
 /**
- * Renders the Selected Filters box: the page's category, then the visitor's filters.
+ * Builds the Selected Filters header and the page's category pill (a link to the parent
+ * category, as on the old site). The visitor's filters and Clear All come from the drop-in.
+ * @returns {{ element: HTMLElement, setCategory: (category: ?{name, href}) => void }}
  */
-export function renderSelectedFilters(container, category, userFilters, apply) {
-  const header = el('div', 'plp-selected__header');
-  header.append(el('span', 'plp-selected__title', 'Selected Filters'));
-  const clear = el('a', 'plp-selected__clear', 'Clear All');
-  clear.href = '#';
-  clear.addEventListener('click', (e) => { e.preventDefault(); apply([]); });
-  header.append(clear);
-
-  const list = el('div', 'plp-selected__list');
-  const pill = (labelText, valueText, onRemove, href) => {
-    const a = el('a', 'plp-selected__pill');
-    a.href = href || '#';
-    a.title = 'Remove';
-    const label = el('span', 'plp-selected__pill-label');
-    label.append(el('strong', '', `${labelText}:`), ` ${valueText}`);
-    a.append(el('span', 'plp-selected__remove', 'X'), label);
-    if (onRemove) a.addEventListener('click', (e) => { e.preventDefault(); onRemove(); });
-    list.append(a);
+export function buildSelectedHeader() {
+  const element = el('div', 'plp-selected');
+  element.append(el('div', 'plp-selected__header', 'Selected Filters'));
+  const pill = el('a', 'plp-selected__pill');
+  pill.title = 'Remove';
+  const label = el('span', 'plp-selected__pill-label');
+  pill.append(el('span', 'plp-selected__remove', 'X'), label);
+  pill.hidden = true;
+  element.append(pill);
+  return {
+    element,
+    setCategory(category) {
+      pill.hidden = !category?.name;
+      if (!category?.name) return;
+      pill.href = category.href;
+      label.replaceChildren(el('strong', '', 'Category:'), ` ${category.name}`);
+    },
   };
-  if (category?.name) pill('Category', category.name, null, category.parentPath ? rootLink(`/${category.parentPath}`) : rootLink('/'));
-  userFilters.forEach((filter) => {
-    const others = userFilters.filter((f) => f !== filter);
-    const facet = FACETS.find((f) => f.attribute === filter.attribute) || {};
-    if (filter.range) {
-      const range = PRICE_RANGES
-        .find((r) => r.from === filter.range.from && r.to === filter.range.to);
-      pill(facetTitle(filter.attribute), range ? range.label : `$${filter.range.from} - $${filter.range.to}`, () => apply(others));
-    } else if (filter.attribute === 'ext_approximate_rating') {
-      const n = Math.min(...filter.in.map(Number));
-      pill(facetTitle(filter.attribute), `${n}${n < 5 ? ' & Up' : ''}`, () => apply(others));
-    } else {
-      (filter.in || []).forEach((value) => {
-        const rest = filter.in.filter((v) => v !== value);
-        const remove = () => apply(rest.length ? [...others, { ...filter, in: rest }] : others);
-        pill(facetTitle(filter.attribute), bucketLabel(facet, value), remove);
-      });
-    }
-  });
-  container.replaceChildren(header, list);
 }
 
 /* ------------------------------------------------------------------ */

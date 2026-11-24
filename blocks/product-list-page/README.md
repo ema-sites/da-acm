@@ -50,11 +50,23 @@ This block does not use localStorage.
 
 A visibility filter `{ attribute: 'visibility', in: ['Search', 'Catalog, Search'] }` is always added to the request; it is not persisted in the URL but is included when syncing the URL after each result.
 
+### Filters sidebar (Marketplace)
+
+The filters are the drop-in's `Facets` container, adapted to the old Marketplace sidebar with its slots (`facetSlots()` in `marketplace-plp.js`) and CSS:
+
+- `Facet`: shows only the facets in `FACETS`, in that order (other store facets are hidden).
+- `FacetHeading`: the old site's titles. `FacetBucket`: the old site's value order (`order` in `FACETS`).
+- `FacetBucketLabel`: label and right-aligned count; `yes`/`no` as Yes/No; price ranges as "Under $50", "$50 - $100", "$20,000 & Above". Rating values are shown as stars by CSS.
+- `SelectedFacets`: adds the "Selected Filters" header and the page's category (a link to the parent category). The visitor's filters and Clear All are the drop-in's.
+- `Facets`: places the category tree (navigation, rendered by the block) above the filters.
+
+**Store configuration required:** the drop-in only keeps a request filter when its attribute is not a facet. The Marketplace base filters (`visibility`, `ext_attribute_set_id`, `ext_is_delisted_extension`) must therefore not be facets in the store's search facet settings; otherwise the first filter change drops them. Price ranges and the value order of facets without an `order` list also come from those settings.
+
 ### User Interaction Flows
 
 1. **Initial load**: Block reads URL via `getSearchStateFromUrl`, normalizes the URL, then calls `search()` with phrase, page, sort, and filter (including visibility and, on category pages, categoryPath).
 2. **Sort change**: User changes sort via SortBy; dropin calls `search()` with updated sort; block receives `search/result` and updates the URL.
-3. **Filter change**: User toggles facets; dropin calls `search()` with updated filter; block updates result count and URL.
+3. **Filter change**: User toggles facets in the drop-in's Facets container; the drop-in calls `search()` with the updated filter (keeping every filter whose attribute isn't a facet, such as the base filters); block updates result count and URL.
 4. **Pagination**: User changes page; dropin calls `search()` with new page; block scrolls to top and URL is updated.
 5. **Add to cart / wishlist**: Product cards include add-to-cart and wishlist actions; cart and wishlist behavior are handled by their respective dropins. For simple products, the add-to-cart button is disabled when `product.inStock` is falsy. Complex products always link to the PDP where stock is validated by the PDP drop-in.
 
