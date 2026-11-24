@@ -12,7 +12,7 @@ import { fetchPlaceholders, getProductLink, rootLink } from '../../scripts/comme
 import { getSearchStateFromUrl, applySearchStateToUrl, BASE_FILTER_ATTRIBUTES } from './search-url.js';
 import {
   tileHeaderSlot,
-  buildTileName,
+  tileNameSlot,
   buildTileFooter,
   fetchCategoryTree,
   renderCategoryTree,
@@ -170,9 +170,7 @@ export default async function decorate(block) {
       skeletonCount: pageSize,
       slots: {
         ProductImage: tileHeaderSlot,
-        ProductName: (ctx) => {
-          ctx.replaceWith(buildTileName(ctx.product));
-        },
+        ProductName: tileNameSlot,
         ProductPrice: (ctx) => {
           ctx.replaceWith(buildTileFooter(ctx.product));
         },

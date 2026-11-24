@@ -4,7 +4,7 @@
  * (which the drop-in doesn't provide in the old site's form) are rendered from its search results
  * and the catalog.
  */
-import { CS_FETCH_GRAPHQL, getProductLink, rootLink } from '../../scripts/commerce.js';
+import { CS_FETCH_GRAPHQL, rootLink } from '../../scripts/commerce.js';
 
 /* ------------------------------------------------------------------ */
 /* Product tiles                                                      */
@@ -59,15 +59,14 @@ export function tileHeaderSlot(ctx) {
   });
 }
 
-/** Tile name block: name (links the whole tile), vendor, divider. */
-export function buildTileName(product) {
-  const wrapper = el('div', 'plp-tile__name-block');
-  const title = el('h3', 'plp-tile__title');
-  const link = el('a', 'plp-tile__link', (product.name || product.sku || '').trim());
-  link.href = getProductLink(product.urlKey, product.sku);
-  title.append(link);
-  wrapper.append(title, el('p', 'plp-tile__vendor', attr(product, 'ext_developer_name') || ''), el('hr', 'plp-tile__divider'));
-  return wrapper;
+/** ProductName slot: the drop-in's name link (it links the whole tile), then vendor and divider. */
+export function tileNameSlot(ctx) {
+  const vendor = el('p', 'plp-tile__vendor');
+  ctx.appendChild(vendor);
+  ctx.appendChild(el('hr', 'plp-tile__divider'));
+  bindSlot(ctx, ({ product }) => {
+    vendor.textContent = attr(product, 'ext_developer_name') || '';
+  });
 }
 
 /** Tile footer block: star rating, partner level lockup and price. */

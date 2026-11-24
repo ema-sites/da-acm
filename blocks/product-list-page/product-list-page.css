@@ -590,26 +590,26 @@
   display: none;
 }
 
-.block.product-list-page .plp-tile__title {
+/* Tile name (ProductName slot): the drop-in's name link, vendor and divider. The link has the
+   old title's heading type. */
+.block.product-list-page .dropin-product-item-card__title > a {
   display: -webkit-box;
   margin: 0 0 15px;
   height: 45px;
   overflow: hidden;
   color: #333;
+  font-family: var(--brand-heading-font-family);
   font-size: 15px;
   font-weight: 700;
   line-height: 21px;
+  letter-spacing: normal;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   text-overflow: ellipsis;
 }
 
-.block.product-list-page .plp-tile__link {
-  color: inherit;
-}
-
 /* The whole tile links to the product */
-.block.product-list-page .plp-tile__link::after {
+.block.product-list-page .dropin-product-item-card__title > a::after {
   content: "";
   position: absolute;
   inset: 0;

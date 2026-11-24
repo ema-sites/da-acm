@@ -55,6 +55,7 @@ A visibility filter `{ attribute: 'visibility', in: ['Search', 'Catalog, Search'
 The tiles are the drop-in's `SearchResults` cards. The slots keep the drop-in's own content and add the Marketplace parts with `appendChild`/`prependChild`, updating them on every render (`onChange`):
 
 - `ProductImage` (`tileHeaderSlot()`): the drop-in's image link, shown as the 50px logo; the Assurance Program badge is appended (hidden for extensions that aren't assured). The drop-in shows `images[0]`; a `Product` transformer in `scripts/initializers/search.js` puts the `small_image` (the extension logo) there, for this block and the header search.
+- `ProductName` (`tileNameSlot()`): the drop-in's name link (it covers the whole tile, so the tile links to the product), with the vendor and divider appended.
 
 ### Filters sidebar (Marketplace)
 
