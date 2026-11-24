@@ -63,33 +63,45 @@ export function tileNameSlot(ctx) {
   });
 }
 
-/** Tile footer block: star rating, partner level lockup and price. */
-export function buildTileFooter(product) {
-  const wrapper = el('div', 'plp-tile__meta');
-  const rating = Math.max(0, Math.min(5, parseFloat(attr(product, 'ext_approximate_rating')) || 0));
+/**
+ * ProductPrice slot: star rating, then partner level lockup and price.
+ * The price replaces the drop-in's price link: the old site's " / year" for subscriptions is part
+ * of the price text (it wraps with it on narrow tiles), which can't be added to the drop-in's link.
+ * The lockup shares the price's row, so both shrink together as on the old site.
+ */
+export function tileFooterSlot(ctx) {
   const stars = el('div', 'plp-tile__rating');
   stars.setAttribute('role', 'img');
-  stars.setAttribute('aria-label', `Rated ${rating} out of 5`);
   const filled = el('span', 'plp-tile__rating-filled');
-  filled.style.width = `${(rating / 5) * 100}%`;
   stars.append(filled);
-
+  const partner = el('div', 'plp-tile__partner');
+  const price = el('div', 'plp-tile__price');
   const footer = el('div', 'plp-tile__footer');
-  const levelImage = PARTNER_LEVEL_IMAGES[attr(product, 'ext_connect_partner_level_image')];
-  const badge = el('div', 'plp-tile__partner');
-  if (levelImage) {
-    const img = el('img');
-    img.src = `/icons/partner-levels/${levelImage}`;
-    img.alt = attr(product, 'ext_connect_partner_level_title') || '';
-    img.width = 90;
-    img.loading = 'lazy';
-    badge.append(img);
-  }
-  footer.append(badge);
-  const price = formatPrice(product);
-  if (price) footer.append(el('div', 'plp-tile__price', price));
-  wrapper.append(stars, footer);
-  return wrapper;
+  footer.append(partner, price);
+  ctx.replaceWith(footer);
+  ctx.prependChild(stars);
+  ctx.onRender(({ product }) => {
+    const rating = Math.max(0, Math.min(5, parseFloat(attr(product, 'ext_approximate_rating')) || 0));
+    stars.setAttribute('aria-label', `Rated ${rating} out of 5`);
+    filled.style.width = `${(rating / 5) * 100}%`;
+
+    const levelImage = PARTNER_LEVEL_IMAGES[attr(product, 'ext_connect_partner_level_image')];
+    const src = levelImage ? `/icons/partner-levels/${levelImage}` : '';
+    if ((partner.firstChild?.getAttribute('src') || '') !== src) {
+      partner.replaceChildren();
+      if (src) {
+        const img = el('img');
+        img.src = src;
+        img.alt = attr(product, 'ext_connect_partner_level_title') || '';
+        img.width = 90;
+        img.loading = 'lazy';
+        partner.append(img);
+      }
+    }
+
+    price.textContent = formatPrice(product);
+    price.hidden = !price.textContent;
+  });
 }
 
 /* ------------------------------------------------------------------ */

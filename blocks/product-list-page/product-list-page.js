@@ -13,7 +13,7 @@ import { getSearchStateFromUrl, applySearchStateToUrl, BASE_FILTER_ATTRIBUTES } 
 import {
   tileHeaderSlot,
   tileNameSlot,
-  buildTileFooter,
+  tileFooterSlot,
   fetchCategoryTree,
   renderCategoryTree,
   facetSlots,
@@ -171,9 +171,7 @@ export default async function decorate(block) {
       slots: {
         ProductImage: tileHeaderSlot,
         ProductName: tileNameSlot,
-        ProductPrice: (ctx) => {
-          ctx.replaceWith(buildTileFooter(ctx.product));
-        },
+        ProductPrice: tileFooterSlot,
         ProductActions: (ctx) => {
           ctx.replaceWith(document.createElement('span'));
         },

@@ -56,6 +56,7 @@ The tiles are the drop-in's `SearchResults` cards. The slots keep the drop-in's 
 
 - `ProductImage` (`tileHeaderSlot()`): the drop-in's image link, shown as the 50px logo; the Assurance Program badge is appended (hidden for extensions that aren't assured). The drop-in shows `images[0]`; a `Product` transformer in `scripts/initializers/search.js` puts the `small_image` (the extension logo) there, for this block and the header search.
 - `ProductName` (`tileNameSlot()`): the drop-in's name link (it covers the whole tile, so the tile links to the product), with the vendor and divider appended.
+- `ProductPrice` (`tileFooterSlot()`): the star rating is prepended; the drop-in's price link is replaced by the partner level lockup and the price. The old site's " / year" for subscriptions is part of the price text and wraps with it on narrow tiles, which an element added next to the drop-in's link can't do; the lockup shares the price's row so both shrink together.
 
 ### Filters sidebar (Marketplace)
 
