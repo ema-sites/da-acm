@@ -55,7 +55,7 @@ A visibility filter `{ attribute: 'visibility', in: ['Search', 'Catalog, Search'
 The filters are the drop-in's `Facets` container, adapted to the old Marketplace sidebar with its slots (`facetSlots()` in `marketplace-plp.js`) and CSS:
 
 - `Facet`: shows only the facets in `FACETS`, in that order (other store facets are hidden).
-- `FacetHeading`: the old site's titles. `FacetBucket`: the old site's value order (`order` in `FACETS`).
+- `FacetHeading`: the old site's titles. `FacetBucket`: the old site's value order (`order` in `FACETS`); empty values (products without the attribute) are hidden.
 - `FacetBucketLabel`: label and right-aligned count; `yes`/`no` as Yes/No; price ranges as "Under $50", "$50 - $100", "$20,000 & Above". Rating values are shown as stars by CSS.
 - `SelectedFacets`: adds the "Selected Filters" header and the page's category (a link to the parent category). The visitor's filters and Clear All are the drop-in's.
 - `Facets`: places the category tree (navigation, rendered by the block) above the filters.

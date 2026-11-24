@@ -111,7 +111,7 @@ export function buildTileFooter(product) {
 // `order` lists the old site's value order; values not listed keep the store's order.
 export const FACETS = [
   { attribute: 'ext_certification', title: 'Certification' },
-  { attribute: 'ext_all_editions', title: 'Edition' },
+  { attribute: 'ext_all_editions', title: 'Edition', order: ['Adobe Commerce (cloud)', 'Adobe Commerce (on-prem)', 'Magento Open Source'] },
   { attribute: 'ext_mde_compatibility', title: 'Compatibility' },
   { attribute: 'price', title: 'Price' },
   {
@@ -195,10 +195,11 @@ export function facetSlots({ categories, selectedHeader }) {
       ctx.replaceWith(title);
     },
 
-    // Order values as on the old site.
+    // Order values as on the old site; hide the empty value (products without the attribute).
     FacetBucket: (ctx, element) => {
       bindSlot(ctx, ({ data }) => {
         if (!element) return;
+        element.hidden = !String(data.title ?? '').trim();
         const rank = FACETS.reduce((found, f) => {
           if (found !== -1 || !f.order) return found;
           return f.order.indexOf(data.title);
