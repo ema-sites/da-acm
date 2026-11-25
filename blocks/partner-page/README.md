@@ -11,10 +11,13 @@ workbook `/partner/profiles.json`, sheet `data`:
 - page title (h1), then a `partner-profile` header (logo, name, website, social links);
 - `notice` boxes: partner level badge and "Contact Seller" (mail link), then Location (address);
 - an "About Seller | All Products" tab bar (kept in this block);
-- the biography, then the seller's products live from Catalog Service (`ext_developer_id`, listed
-  Marketplace extensions only, by name) as `cards-product` tiles.
+- the biography, then the seller's products: the Product Discovery drop-in's `SearchResults`
+  container (search scope `partner`), searched by `ext_developer_id` for listed Marketplace
+  extensions, by name, up to 500. Tiles use the category pages' slots
+  (`scripts/marketplace-tiles.js`, styles in `styles/marketplace-tiles.css`) without the vendor line,
+  as on the old profile tiles.
 
-It reuses the seller page blocks, so the page looks like the migrated seller pages. A seller
+The header and boxes reuse the seller page blocks, so the page looks like the migrated seller pages. A seller
 without a row goes to the 404 page. The breadcrumb reads Home > Partners > seller name.
 
 ## Authoring (Document Authoring)

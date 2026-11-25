@@ -888,11 +888,12 @@ main .partner-page-wrapper + .default-content-wrapper > p {
   padding-right: 20px;
 }
 
-main .partner-page-wrapper ~ .default-content-wrapper:has(+ .cards-product-wrapper) > h3 {
+main .partner-page-wrapper ~ .default-content-wrapper:has(+ .partner-page-wrapper) > h3 {
   margin-top: 22px;
 }
 
-main .partner-profile-container > .default-content-wrapper:has(+ .cards-product-wrapper) > h3:last-child {
+/* All Products heading rule: above the authored grid (seller pages) or the drop-in's (profiles) */
+main .partner-profile-container > .default-content-wrapper:has(+ .cards-product-wrapper, + .partner-page-wrapper) > h3:last-child {
   padding-bottom: 10px;
   border-bottom: 2px solid #aeafb1;
 }

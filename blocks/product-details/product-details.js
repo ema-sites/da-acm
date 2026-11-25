@@ -255,7 +255,8 @@ export default async function decorate(block) {
     })($gallery),
 
     // Header
-    pdpRendered.render(ProductHeader, {})($header),
+    // The old Marketplace header shows the title and "by <seller>" (added below), not the SKU.
+    pdpRendered.render(ProductHeader, { hideSku: true })($header),
 
     // Price
     pdpRendered.render(ProductPrice, {})($price),

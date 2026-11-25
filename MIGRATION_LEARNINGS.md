@@ -159,6 +159,37 @@ Example PLP shell:
   from one template. Count profiles from the product pages' seller links, not from the directory:
   here 824 are linked, against 111 directory tiles. See `PARTNER_PROFILES_PLAN.md`.
 
+### Drop-in pages: extend the drop-in, don't rebuild it
+A Storefront Engineer's review (PR #1, merged 2026-11-25) replaced the category page's custom filters
+sidebar and rebuilt tiles with the Product Discovery drop-in's `Facets` and `SearchResults` containers.
+The first run had optimized for visual parity with the saved capture. It never mapped the old behavior
+onto the drop-in's extension points, and no drop-in limit forced the custom code.
+- **Map before you build.** List the drop-in's containers and slots, then map each old behavior to
+  config, a slot, a model transformer, CSS or an event. Write custom code only for the gaps that remain
+  (here: the category tree, Min/Max price inputs, cumulative "N & Up" ratings), and name them in the
+  commit.
+- **Keep native nodes in slots.** Use `appendChild` / `prependChild` (or the sibling methods) with
+  `onRender`. Use `replaceWith` only when the DOM order or text flow can't be reached otherwise, and say
+  why in a comment. Replacing drops the drop-in's links, `aria-label`s, analytics and price updates.
+- **To remove an area, omit its slot** when the container renders the area only if the slot is given.
+  Don't replace it with an empty element and hide it.
+- **`onRender` also runs on the first render,** so don't call the update yourself too. `onChange` is
+  deprecated.
+- **Fix data, not markup.** If the drop-in shows the wrong data (here `images[0]` was a screenshot, not
+  the logo), fix it in a `models.*.transformer`.
+- **One request, not one per level.** Before adding a request, check whether the drop-in's own payload
+  can carry the data (`build.mjs` fragments plus a transformer). If it can't, make one request and cache
+  results that don't depend on the visitor (the category tree went from 1 + depth searches to one,
+  cached in the session).
+- **Check the store settings the drop-in relies on.** The `Facets` container drops earlier filters
+  whose attribute is also a facet, so base filters must not be facets. Here `ext_attribute_set_id` and
+  `ext_is_delisted_extension` are, so 15–21 extra products appear after a filter click until the store
+  removes them. The drop-in searches by GET, so a fetch before-hook can't add filters back, and a
+  `ProductSearchResult` transformer can't remove facets, because its output is merged by array index.
+- **Verify against the real endpoint.** Clear `sessionStorage.config` and the HTTP cache when switching
+  configs; a demo catalog or stub gives different facets whatever the code does.
+- **Never edit `scripts/__dropins__`;** check `git diff --stat` before committing.
+
 ### Commerce detection
 - **The page-type detector can miss obvious product pages.** It only reads the first ~200k characters of
   `cleaned.html`. Marketplace product pages are over 1 MB, and "Add to cart" sits beyond that point, so the
@@ -198,7 +229,8 @@ Example PLP shell:
 ### Working environment
 - **The command guard blocks some inline commands.** It rejected inline scripts containing `/g` regexes,
   `cd -`, or bare `"/"` strings. Write helper scripts to `/tmp/scope-scripts/*.js` and run those instead.
-- **Lint tools (ESLint, stylelint) are not installed,** so only `node --check` syntax checks ran.
+- **Run `npm run lint` (ESLint and stylelint) before every commit.** The Build check on pull requests
+  runs the same lint.
 
 ---
 
@@ -216,7 +248,10 @@ Example PLP shell:
 5. Write one import script for PDP and PLP that branches on JSON-LD. Import from snapshots, run a pilot, then
    the full list in the background.
 6. Check every output file for a SKU or `urlPath`, and check for empty snapshots. Retry the failures.
-7. Tell the user plainly:
+7. Before styling a commerce block to match the old site, map each old behavior to the drop-in's
+   containers, slots and transformers (see "Drop-in pages" above). Report the store settings the
+   drop-in depends on, such as base filters that must not be facets.
+8. Tell the user plainly:
    - the site configuration needs Commerce settings from an org admin;
    - the preview shows no real products until then;
    - all changes are local until they ask for an upload or publish.

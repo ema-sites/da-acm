@@ -1,19 +1,29 @@
 import { events } from '@dropins/tools/event-bus.js';
+import SearchResults from '@dropins/storefront-product-discovery/containers/SearchResults.js';
+import { render as provider } from '@dropins/storefront-product-discovery/render.js';
+import { search } from '@dropins/storefront-product-discovery/api.js';
 import {
-  decorateBlock, loadBlock, readBlockConfig, toClassName,
+  decorateBlock, loadBlock, loadCSS, readBlockConfig, toClassName,
 } from '../../scripts/aem.js';
-import { CS_FETCH_GRAPHQL, getProductLink, loadErrorPage } from '../../scripts/commerce.js';
+import { getProductLink, loadErrorPage } from '../../scripts/commerce.js';
 import { fetchProfileRows, PROFILES_SHEET } from '../../scripts/partner-profiles.js';
+import { tileHeaderSlot, tileNameSlot, tileFooterSlot } from '../../scripts/marketplace-tiles.js';
+import '../../scripts/initializers/search.js';
 
 /*
  * Seller profile template for /partner/<slug> (served by /partner/default through folder mapping).
  * The profile (logo, website, social links, level, contact email, address, biography) comes from
- * the "partner profiles" sheet; the product grid comes live from Catalog Service by seller ID.
- * The page is built from the same blocks as the authored seller pages (partner-profile, notice,
- * cards-product), so it shares their design.
+ * the "partner profiles" sheet and is drawn with the authored seller pages' blocks
+ * (partner-profile, notice). The product grid is the Product Discovery drop-in's SearchResults
+ * container, searched by seller ID, with the category pages' tile slots (no vendor line, as on the
+ * old profile tiles).
  */
 
 const TEMPLATE_SLUG = 'default';
+// The grid's own search scope, apart from the category page and the header search popover.
+const SEARCH_SCOPE = 'partner';
+// The old profile page asked for up to 500 products; the largest seller has 275.
+const PAGE_SIZE = 500;
 const MARKETPLACE_FILTERS = [
   { attribute: 'visibility', in: ['Search', 'Catalog, Search'] },
   { attribute: 'ext_attribute_set_id', eq: '12' },
@@ -35,18 +45,6 @@ const SOCIAL_LABELS = [
   [/youtube\.com|youtu\.be/, 'YouTube'],
   [/instagram\.com/, 'Instagram'],
 ];
-
-const PRODUCTS_QUERY = `query PARTNER_PRODUCTS($filter: [SearchClauseInput!], $sort: [ProductSearchSortInput!]) {
-  productSearch(phrase: "", page_size: 500, filter: $filter, sort: $sort) {
-    items { productView {
-      name sku urlKey
-      images(roles: ["small_image"]) { url }
-      attributes(roles: []) { name value }
-      ... on SimpleProductView { price { final { amount { value currency } } } }
-      ... on ComplexProductView { priceRange { minimum { final { amount { value currency } } } } }
-    } }
-  }
-}`;
 
 const el = (tag, props = {}, ...children) => {
   const node = document.createElement(tag);
@@ -90,34 +88,41 @@ function findProfile(rows, slug) {
     || rows.find((r) => r['old-path'] && r['old-path'].split('/').pop().toLowerCase() === want);
 }
 
-async function fetchProducts(sellerId) {
-  if (!sellerId) return [];
-  try {
-    const { data, errors } = await CS_FETCH_GRAPHQL.fetchGraphQl(PRODUCTS_QUERY, {
-      method: 'GET',
-      variables: {
-        filter: [{ attribute: 'ext_developer_id', eq: String(sellerId) }, ...MARKETPLACE_FILTERS],
-        sort: [{ attribute: 'name', direction: 'ASC' }],
-      },
-    });
-    if (errors?.length) throw new Error(errors.map((e) => e.message).join('; '));
-    return (data?.productSearch?.items || []).map((i) => i.productView).filter(Boolean);
-  } catch (error) {
+/**
+ * The seller's listed products, as the old profile page searched them (its Live Search widget):
+ * listed Marketplace extensions by seller ID, by name. Returns the drop-in's search result.
+ */
+function searchProducts(sellerId) {
+  if (!sellerId) return Promise.resolve(null);
+  return search({
+    phrase: '',
+    currentPage: 1,
+    pageSize: PAGE_SIZE,
+    sort: [{ attribute: 'name', direction: 'ASC' }],
+    filter: [{ attribute: 'ext_developer_id', eq: String(sellerId) }, ...MARKETPLACE_FILTERS],
+  }, { scope: SEARCH_SCOPE }).catch((error) => {
     // eslint-disable-next-line no-console
-    console.error('Partner products lookup failed', error);
-    return [];
-  }
+    console.error('Partner products search failed', error);
+    return null;
+  });
 }
 
-const attr = (product, name) => product.attributes?.find((a) => a.name === name)?.value;
-
-/** Price as the old seller pages show it: "$5100.00", "$110.00 / year". */
-function priceText(product) {
-  const amount = product.price?.final?.amount ?? product.priceRange?.minimum?.final?.amount;
-  if (!amount || typeof amount.value !== 'number') return '';
-  const symbol = !amount.currency || amount.currency === 'USD' ? '$' : `${amount.currency} `;
-  const value = `${symbol}${amount.value.toFixed(2)}`;
-  return attr(product, 'subscription_available') === 'yes' ? `${value} / year` : value;
+/** The drop-in's product grid for this page's search scope, with the Marketplace tile slots. */
+function productGrid() {
+  const list = el('div', { class: 'partner-page-products marketplace-tiles' });
+  const rendered = provider.render(SearchResults, {
+    scope: SEARCH_SCOPE,
+    routeProduct: (product) => getProductLink(product.urlKey, product.sku),
+    skeletonCount: 8,
+    slots: {
+      ProductImage: tileHeaderSlot,
+      ProductName: (ctx) => tileNameSlot(ctx, { vendor: false }),
+      ProductPrice: tileFooterSlot,
+    },
+  })(list);
+  // A second element of this block, so the grid's styles stay scoped to the block.
+  const products = el('div', { class: 'partner-page partner-page--products' }, list);
+  return { wrapper: el('div', { class: 'partner-page-wrapper' }, products), rendered };
 }
 
 /** A block element in authored form (rows of cells), wrapped as a decorated section child. */
@@ -173,20 +178,6 @@ function locationNotice(profile) {
   return authoredBlock('notice', [[[el('h4', { text: 'Location' }), el('p', {}, el('strong', { text: 'Address' })), p]]]);
 }
 
-function productCards(products) {
-  return authoredBlock('cards-product', products.map((product) => {
-    const image = product.images?.[0]?.url;
-    const rating = Math.max(0, Math.min(5, parseFloat(attr(product, 'ext_approximate_rating')) || 0));
-    return [
-      image ? el('picture', {}, el('img', { src: image.replace(/^\/\//, 'https://'), alt: product.name || '', loading: 'lazy' })) : '',
-      el('h3', {}, el('a', { href: getProductLink(product.urlKey, product.sku), text: (product.name || product.sku || '').trim() })),
-      `${Math.round((rating / 5) * 100)}%`,
-      attr(product, 'ext_connect_partner_level_title') || '',
-      priceText(product),
-    ];
-  }));
-}
-
 /**
  * "About Seller | All Products" bar, as on the old site: each tab jumps to its heading and becomes
  * the current one. The bar reuses this block's own element, so its styles stay scoped to it.
@@ -235,8 +226,14 @@ export default async function decorate(block) {
     return;
   }
 
-  // Products load while the profile is drawn.
-  const productsPromise = fetchProducts(profile.id);
+  // The grid is rendered first so it receives the search result; products load while the profile
+  // is drawn.
+  const grid = productGrid();
+  const productsPromise = Promise.all([
+    searchProducts(profile.id),
+    loadCSS(`${window.hlx.codeBasePath}/styles/marketplace-tiles.css`),
+    grid.rendered,
+  ]).then(([result]) => result);
   document.title = profile.name;
   events.emit('partner/data', profile);
 
@@ -260,22 +257,22 @@ export default async function decorate(block) {
       });
       return p;
     });
-  const products = await productsPromise;
+  const result = await productsPromise;
+  const hasProducts = (result?.totalCount || result?.items?.length || 0) > 0;
   const tabs = [];
   if (about.length) tabs.push({ id: 'about-seller', label: 'About Seller' });
-  if (products.length) tabs.push({ id: 'all-products', label: 'All Products' });
+  if (hasProducts) tabs.push({ id: 'all-products', label: 'All Products' });
   if (tabs.length) parts.push(buildTabs(block, tabs));
   if (about.length) parts.push(defaultContent(el('h3', { id: 'about-seller', text: 'About Seller' }), ...about));
-  if (products.length) {
+  if (hasProducts) {
     parts.push(defaultContent(el('h3', { id: 'all-products', text: 'All Products' })));
-    parts.push(productCards(products));
+    parts.push(grid);
   }
 
   const nodes = parts.map((p) => p.wrapper || p);
   if (wrapper !== block) wrapper.remove();
   anchor.replaceWith(...nodes);
   section?.classList.add('partner-profile-container', 'notice-container');
-  if (products.length) section?.classList.add('cards-product-container');
 
   const blocks = parts.filter((p) => p.block).map((p) => p.block);
   blocks.forEach((b) => decorateBlock(b));

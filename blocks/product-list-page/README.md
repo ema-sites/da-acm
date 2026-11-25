@@ -52,6 +52,10 @@ A visibility filter `{ attribute: 'visibility', in: ['Search', 'Catalog, Search'
 
 ### Product tiles (Marketplace)
 
+The tile slots live in `scripts/marketplace-tiles.js` and their styles in
+`styles/marketplace-tiles.css` (on the `.marketplace-tiles` product list), shared with the seller
+profiles (`blocks/partner-page`, which leaves out the vendor line).
+
 The tiles are the drop-in's `SearchResults` cards. The slots keep the drop-in's own content and add the Marketplace parts with `appendChild`/`prependChild`, updating them on every render (`onRender`, which also runs on the first render):
 
 - `ProductImage` (`tileHeaderSlot()`): the drop-in's image link, shown as the 50px logo; the Assurance Program badge is appended (hidden for extensions that aren't assured). The drop-in shows `images[0]`; a `Product` transformer in `scripts/initializers/search.js` puts the `small_image` (the extension logo) there, for this block and the header search.

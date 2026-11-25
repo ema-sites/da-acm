@@ -1,6 +1,33 @@
 /* The template's config rows are replaced by the profile once it loads; never show them. */
-.partner-page > div {
+.partner-page > div:not([class]) {
   display: none;
+}
+
+/* All Products: the drop-in's product grid (tiles: styles/marketplace-tiles.css). Old profile
+   tiles: 4 per row in the 752px column (181px wide, 10px apart), 240px tall, no vendor line. */
+.partner-page .partner-page-products .product-discovery-product-list__header:empty {
+  display: none;
+}
+
+/* 45px below the All Products heading, as on the seller pages */
+.partner-page .partner-page-products {
+  padding-top: 35px;
+}
+
+.partner-page .partner-page-products .product-discovery-product-list__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.partner-page .partner-page-products .dropin-product-item-card {
+  min-height: 240px;
+}
+
+@media (min-width: 900px) {
+  .partner-page .partner-page-products .product-discovery-product-list__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* "About Seller | All Products" bar (source .product-info-nav, measured at 1440px). The gap above

@@ -39,7 +39,7 @@
 
 /* "by <seller>" under the title (source .by-company) */
 .product-details__seller:not(:empty) {
-  margin: calc(-1 * var(--spacing-medium) + 4px) 0 var(--spacing-medium);
+  margin: calc(-1 * var(--spacing-medium) + 15px) 0 var(--spacing-medium);
   color: #202021;
   font-size: 14px;
   line-height: 20px;

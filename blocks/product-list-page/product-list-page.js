@@ -7,7 +7,7 @@ import { search } from '@dropins/storefront-product-discovery/api.js';
 // Event Bus
 import { events } from '@dropins/tools/event-bus.js';
 // AEM
-import { readBlockConfig } from '../../scripts/aem.js';
+import { loadCSS, readBlockConfig } from '../../scripts/aem.js';
 import { fetchPlaceholders, getProductLink, rootLink } from '../../scripts/commerce.js';
 import { getSearchStateFromUrl, applySearchStateToUrl, BASE_FILTER_ATTRIBUTES } from './search-url.js';
 import {
@@ -35,7 +35,11 @@ import '../../scripts/initializers/search.js';
  * @param {Element} block
  */
 export default async function decorate(block) {
-  const labels = await fetchPlaceholders();
+  // Tile styles are shared with the seller profiles (blocks/partner-page).
+  const [labels] = await Promise.all([
+    fetchPlaceholders(),
+    loadCSS(`${window.hlx.codeBasePath}/styles/marketplace-tiles.css`),
+  ]);
 
   const config = readBlockConfig(block);
   let pageSize = parseInt(config.pagesize, 10) || 36;
@@ -48,7 +52,7 @@ export default async function decorate(block) {
       </aside>
       <div class="plp-main">
         <div class="plp-results"></div>
-        <div class="search__product-list"></div>
+        <div class="search__product-list marketplace-tiles"></div>
         <div class="plp-controls"></div>
       </div>
     </div>
