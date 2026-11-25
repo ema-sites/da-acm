@@ -1,5 +1,6 @@
 // Product Discovery Dropins
 import SearchResults from '@dropins/storefront-product-discovery/containers/SearchResults.js';
+import Facets from '@dropins/storefront-product-discovery/containers/Facets.js';
 import { render as provider } from '@dropins/storefront-product-discovery/render.js';
 import { Button, Icon, provider as UI } from '@dropins/tools/components.js';
 import { search } from '@dropins/storefront-product-discovery/api.js';
@@ -7,16 +8,16 @@ import { search } from '@dropins/storefront-product-discovery/api.js';
 import { events } from '@dropins/tools/event-bus.js';
 // AEM
 import { readBlockConfig } from '../../scripts/aem.js';
-import { fetchPlaceholders, getProductLink } from '../../scripts/commerce.js';
+import { fetchPlaceholders, getProductLink, rootLink } from '../../scripts/commerce.js';
 import { getSearchStateFromUrl, applySearchStateToUrl, BASE_FILTER_ATTRIBUTES } from './search-url.js';
 import {
-  buildTileHeader,
-  buildTileName,
-  buildTileFooter,
+  tileHeaderSlot,
+  tileNameSlot,
+  tileFooterSlot,
   fetchCategoryTree,
   renderCategoryTree,
-  renderFacets,
-  renderSelectedFilters,
+  facetSlots,
+  buildSelectedHeader,
   renderResultsBar,
   renderControls,
   sortOptionFor,
@@ -28,7 +29,8 @@ import '../../scripts/initializers/search.js';
 
 /**
  * Marketplace category / search page: the old Marketplace layout (filters sidebar, results bar,
- * 4-column product tiles, paging) on top of the Product Discovery drop-in's search.
+ * 4-column product tiles, paging) on top of the Product Discovery drop-in's search. The filters
+ * are the drop-in's Facets container, adapted with slots and CSS.
  * Config: urlPath (category path), pageSize (default 36).
  * @param {Element} block
  */
@@ -42,8 +44,6 @@ export default async function decorate(block) {
     <div class="search__wrapper">
       <div class="search__view-facets"></div>
       <aside class="plp-sidebar" aria-label="Filters">
-        <div class="plp-selected"></div>
-        <div class="plp-categories"></div>
         <div class="plp-facets"></div>
       </aside>
       <div class="plp-main">
@@ -56,8 +56,6 @@ export default async function decorate(block) {
 
   const $viewFacets = fragment.querySelector('.search__view-facets');
   const $sidebar = fragment.querySelector('.plp-sidebar');
-  const $selected = fragment.querySelector('.plp-selected');
-  const $categories = fragment.querySelector('.plp-categories');
   const $facets = fragment.querySelector('.plp-facets');
   const $results = fragment.querySelector('.plp-results');
   const $productList = fragment.querySelector('.search__product-list');
@@ -102,21 +100,35 @@ export default async function decorate(block) {
     filter: [...baseFilters, ...userFilters],
   };
 
+  // Sort and paging aren't drop-in containers here; they search with the drop-in's last request,
+  // which the Facets container also builds on (it keeps the base filters, as they aren't facets).
   const runSearch = (changes) => {
     lastRequest = { ...lastRequest, ...changes };
     return search(lastRequest).catch((e) => {
       console.error('Error searching for products', e);
     });
   };
-  const applyUserFilters = (filters) => runSearch({
-    filter: [...baseFilters, ...filters],
-    currentPage: 1,
-  });
 
   // Request search based on the page type on block load
   await runSearch({});
 
-  // Category tree (category pages only)
+  // Category tree (category pages only), placed above the filters by the Facets slot
+  const $categories = document.createElement('div');
+  $categories.className = 'plp-categories';
+  const selectedHeader = buildSelectedHeader();
+  const categoryInfo = () => {
+    if (!config.urlpath) return null;
+    const crumbs = config.urlpath.split('/');
+    const h1 = document.querySelector('main h1')?.textContent.trim();
+    const treeName = $categories.querySelector('.plp-category__link--selected .plp-category__name')?.textContent;
+    const parentPath = crumbs.slice(0, -1).join('/');
+    return {
+      name: treeName || h1 || crumbs[crumbs.length - 1],
+      href: parentPath ? rootLink(`/${parentPath}`) : rootLink('/'),
+    };
+  };
+  selectedHeader.setCategory(categoryInfo());
+
   if (config.urlpath) {
     fetchCategoryTree(config.urlpath, [visibilityFilter, ...marketplaceFilters])
       .then((tree) => {
@@ -130,21 +142,10 @@ export default async function decorate(block) {
           if (target && tree.names[path]) target.textContent = tree.names[path];
         });
         // The Selected Filters pill uses the category name from the tree.
-        const last = events.lastPayload('search/result');
-        if (last) render(last);
+        selectedHeader.setCategory(categoryInfo());
       })
       .catch((e) => console.error('Category tree failed to load', e));
   }
-  const categoryInfo = () => {
-    if (!config.urlpath) return null;
-    const crumbs = config.urlpath.split('/');
-    const h1 = document.querySelector('main h1')?.textContent.trim();
-    const treeName = $categories.querySelector('.plp-category__link--selected .plp-category__name')?.textContent;
-    return {
-      name: treeName || h1 || crumbs[crumbs.length - 1],
-      parentPath: crumbs.slice(0, -1).join('/'),
-    };
-  };
 
   await Promise.all([
     // View Facets Button (small screens)
@@ -157,24 +158,21 @@ export default async function decorate(block) {
       },
     })($viewFacets),
 
+    // Filters: the drop-in's Facets container, shown as the old site's sidebar
+    provider.render(Facets, {
+      slots: facetSlots({ categories: $categories, selectedHeader: selectedHeader.element }),
+    })($facets),
+
     // Product List: Marketplace tiles (logo, Assurance badge, name, vendor, rating, partner level,
-    // price). The whole tile links to the product; there is no Add to Cart on the list.
+    // price). The whole tile links to the product; there is no Add to Cart on the list, so there
+    // is no ProductActions slot (the drop-in renders the actions area only for that slot).
     provider.render(SearchResults, {
       routeProduct: (product) => getProductLink(product.urlKey, product.sku),
       skeletonCount: pageSize,
       slots: {
-        ProductImage: (ctx) => {
-          ctx.replaceWith(buildTileHeader(ctx.product));
-        },
-        ProductName: (ctx) => {
-          ctx.replaceWith(buildTileName(ctx.product));
-        },
-        ProductPrice: (ctx) => {
-          ctx.replaceWith(buildTileFooter(ctx.product));
-        },
-        ProductActions: (ctx) => {
-          ctx.replaceWith(document.createElement('span'));
-        },
+        ProductImage: tileHeaderSlot,
+        ProductName: tileNameSlot,
+        ProductPrice: tileFooterSlot,
       },
     })($productList),
   ]);
@@ -183,12 +181,12 @@ export default async function decorate(block) {
     const result = payload.result || {};
     const totalCount = result.totalCount || 0;
     const request = payload.request || lastRequest;
+    // Searches also come from the Facets container; carry its request into sort and paging.
+    if (payload.request) lastRequest = { ...lastRequest, ...payload.request };
     const currentUserFilters = (request.filter || []).filter(isUserFilter);
 
     block.classList.toggle('product-list-page--empty', totalCount === 0);
 
-    renderSelectedFilters($selected, categoryInfo(), currentUserFilters, applyUserFilters);
-    renderFacets($facets, result, currentUserFilters, applyUserFilters);
     renderResultsBar($results, totalCount, sortOptionFor(request.sort).value, (value) => {
       const option = SORT_OPTIONS.find((o) => o.value === value) || SORT_OPTIONS[0];
       runSearch({ sort: option.sort, currentPage: 1 });

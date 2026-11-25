@@ -16,5 +16,18 @@ await initializeDropin(async () => {
   };
 
   // Initialize search
-  return initializers.mountImmediately(initialize, { langDefinitions });
+  return initializers.mountImmediately(initialize, {
+    langDefinitions,
+    models: {
+      Product: {
+        // Product images show the extension logo (small_image); the drop-in shows images[0].
+        // Its merge is per index, so this replaces only the first image's url and label.
+        transformer: (data) => {
+          const logo = data?.images?.find((image) => image.roles?.includes('small_image'));
+          if (!logo?.url || logo === data.images[0]) return undefined;
+          return { images: [{ url: logo.url.replace(/^https?:\/\//, '//'), label: logo.label || '' }] };
+        },
+      },
+    },
+  });
 })();
