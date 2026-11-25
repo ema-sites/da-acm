@@ -80,6 +80,13 @@ export default {
     const originalUrl = params.originalURL || url;
     const path = pagePath(originalUrl);
 
+    // Product pages are not imported any more: every /products/<url-key> is served by the
+    // /products/default template from the catalog, and the old /<url-key> addresses redirect there
+    // (PRODUCT_PAGES_PLAN.md). Importing them would recreate thousands of documents at the root.
+    if (info.isProduct) {
+      throw new Error(`commerce-import: ${path} is a product page; product pages come from the /products/default template, not from import`);
+    }
+
     // STEP 1: extract everything needed while the DOM is intact
     const title = meta(document, 'og:title') || (document.querySelector('title')?.textContent || '').trim();
     const description = meta(document, 'description');

@@ -87,6 +87,9 @@ var CustomImportScript = (() => {
       const info = params.commerce || { isProduct: false, sku: "" };
       const originalUrl = params.originalURL || url;
       const path = pagePath(originalUrl);
+      if (info.isProduct) {
+        throw new Error(`commerce-import: ${path} is a product page; product pages come from the /products/default template, not from import`);
+      }
       const title = meta(document, "og:title") || (((_a = document.querySelector("title")) == null ? void 0 : _a.textContent) || "").trim();
       const description = meta(document, "description");
       const ogImage = meta(document, "og:image");
