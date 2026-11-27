@@ -150,6 +150,21 @@ export default {
 
     main.appendChild(document.createElement('hr'));
     WebImporter.rules.createMetadata(main, document);
+    // Template: legal-page, cms-page (body classes) - the old CMS page layout: breadcrumb, title
+    // and copy spacing differ from the catalog pages
+    const metaTable = [...main.querySelectorAll('table')]
+      .find((t) => t.querySelector('tr')?.textContent.trim().toLowerCase() === 'metadata');
+    if (metaTable) {
+      const row = document.createElement('tr');
+      ['Template', `${PAGE_TEMPLATE.name}, cms-page`].forEach((text) => {
+        const cell = document.createElement('td');
+        cell.textContent = text;
+        row.append(cell);
+      });
+      (metaTable.querySelector('tbody') || metaTable).append(row);
+    } else {
+      main.append(WebImporter.DOMUtils.createTable([['Metadata'], ['Template', `${PAGE_TEMPLATE.name}, cms-page`]], document));
+    }
     WebImporter.rules.transformBackgroundImages(main, document);
     WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
 

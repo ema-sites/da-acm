@@ -17,6 +17,17 @@ function dynamicTrail(ol, base, label, href, eventName) {
   events.on(eventName, (data) => {
     if (data?.name) current.querySelector('span').textContent = data.name;
   }, { eager: true });
+  // A product address can also hold an authored seller page (a disabled extension, drawn by the
+  // profile template): there the trail is Home > Partners > seller, as on the old site.
+  if (eventName === 'pdp/data') {
+    events.on('partner/data', (data) => {
+      if (!data?.name) return;
+      if (!current.previousElementSibling?.querySelector(`a[href="${base}${PARTNERS_PAGE}"]`)) {
+        current.before(crumb('Partners', `${base}${PARTNERS_PAGE}`));
+      }
+      current.querySelector('span').textContent = data.name;
+    }, { eager: true });
+  }
 }
 
 function titleCase(segment) {

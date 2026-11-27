@@ -13,7 +13,7 @@ workbook `/partner/profiles.json`, sheet `data`:
 - an "About Seller | All Products" tab bar (kept in this block);
 - the biography, then the seller's products: the Product Discovery drop-in's `SearchResults`
   container (search scope `partner`), searched by `ext_developer_id` for listed Marketplace
-  extensions, by name, up to 500. Tiles use the category pages' slots
+  extensions, in the old Marketplace ranking (as the old grid), up to 500. Tiles use the category pages' slots
   (`scripts/marketplace-tiles.js`, styles in `styles/marketplace-tiles.css`) without the vendor line,
   as on the old profile tiles.
 

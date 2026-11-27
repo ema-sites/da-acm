@@ -12,10 +12,14 @@
   align-items: center;
 }
 
+/* Source .breadcrumbs li::after: ">" 10px either side, #333 */
 .breadcrumb li + li::before {
   content: '>';
-  padding: 0 8px;
-  opacity: 0.6;
+  display: inline-block;
+  width: 11.73px; /* the old icon-font glyph's advance (luma-icons, 14px) */
+  margin: 0 10px;
+  color: #333;
+  text-align: center;
 }
 
 .breadcrumb a {
@@ -27,16 +31,20 @@
   text-decoration: underline;
 }
 
-/* source breadcrumb typography */
+/* Source breadcrumb typography (.breadcrumbs: 14px/20px; links #1979c3; current page #8e8e8e) */
 .breadcrumb,
 .breadcrumb a:any-link {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 20px;
   letter-spacing: normal;
 }
 
 .breadcrumb a:any-link {
-  color: var(--brand-link-color, #0469e3);
+  color: #1979c3;
   text-decoration: none;
+}
+
+.breadcrumb [aria-current] {
+  color: #8e8e8e;
 }

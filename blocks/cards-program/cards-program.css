@@ -131,3 +131,15 @@ main .cards-program .cards-program-card-cta a.button:any-link {
     padding-top: 32px;
   }
 }
+
+/* small screens (source styles-m.css): the Assurance Program icon is drawn smaller (67px wide) */
+@media (max-width: 767px) {
+  .cards-program .cards-program-card-image:has(.icon-mp-assurance-program) {
+    height: auto;
+    padding: 12px 0;
+  }
+
+  .cards-program .cards-program-card-image .icon-mp-assurance-program img {
+    width: 67px;
+  }
+}

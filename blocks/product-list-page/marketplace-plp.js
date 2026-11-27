@@ -5,6 +5,7 @@
  * and the catalog.
  */
 import { CS_FETCH_GRAPHQL, rootLink } from '../../scripts/commerce.js';
+import { MARKETPLACE_RANKING } from '../../scripts/marketplace-tiles.js';
 
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
@@ -153,13 +154,20 @@ export function buildSelectedHeader() {
   const label = el('span', 'plp-selected__pill-label');
   pill.append(el('span', 'plp-selected__remove', 'X'), label);
   pill.hidden = true;
-  element.append(pill);
+  // The old site always shows Clear All, also with only the category selected. The drop-in shows
+  // its own only once a visitor filter is set (then this link is hidden by CSS); without one,
+  // clearing means leaving the category, as the pill does.
+  const clear = el('a', 'plp-selected__clear', 'Clear All');
+  clear.hidden = true;
+  element.append(pill, clear);
   return {
     element,
     setCategory(category) {
       pill.hidden = !category?.name;
+      clear.hidden = !category?.name;
       if (!category?.name) return;
       pill.href = category.href;
+      clear.href = category.href;
       label.replaceChildren(el('strong', '', 'Category:'), ` ${category.name}`);
     },
   };
@@ -274,11 +282,13 @@ export function renderCategoryTree(container, tree, categoryPath) {
 /* Results bar and paging                                             */
 /* ------------------------------------------------------------------ */
 
+// The old site's sort options (its #sorter). "Relevance" is its custom ranking
+// (MARKETPLACE_RANKING, scripts/marketplace-tiles.js).
 export const SORT_OPTIONS = [
-  { value: 'relevance', label: 'Relevance', sort: [{ attribute: 'ext_partner_weight', direction: 'DESC' }, { attribute: 'relevance', direction: 'DESC' }] },
+  { value: 'relevance', label: 'Relevance', sort: MARKETPLACE_RANKING },
   { value: 'price_ASC', label: 'Price (Low to High)', sort: [{ attribute: 'price', direction: 'ASC' }] },
   { value: 'price_DESC', label: 'Price (High to Low)', sort: [{ attribute: 'price', direction: 'DESC' }] },
-  { value: 'rating_DESC', label: 'Rating (High to Low)', sort: [{ attribute: 'ext_average_rating', direction: 'DESC' }] },
+  { value: 'rating_DESC', label: 'Rating (High to Low)', sort: [{ attribute: 'ext_approximate_rating', direction: 'DESC' }] },
 ];
 
 export function sortOptionFor(sort) {

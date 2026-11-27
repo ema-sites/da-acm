@@ -355,10 +355,12 @@ header nav .nav-sections .authCombineNavElement button {
   color: inherit;
 }
 
+/* The source's cart: the filled cart glyph (\e902) of its IconFeatured font, 24px, black */
 header nav .nav-tools button.nav-cart-button {
-  background-image: url('../../icons/cart.svg');
+  background-image: url('../../icons/marketplace-cart.svg');
   background-repeat: no-repeat;
   background-position: center;
+  background-size: 24px 24px;
   position: relative;
 }
 
@@ -964,7 +966,9 @@ header .nav-bar-search .nav-search-panel input {
   padding: 0 48px 0 16px;
   border: 0;
   border-radius: 0;
-  background: #fff url('../../icons/search.svg') no-repeat right 14px center / 18px;
+
+  /* Source .search-icon.magnifying-glass: grey 20px glyph, 16px from the right */
+  background: #fff url('../../icons/marketplace-search.svg') no-repeat right 16px center / 20px;
   color: #2c2c2c;
   font-family: inherit;
   font-size: 16px;
@@ -975,7 +979,7 @@ header .nav-bar-search .nav-search-panel input {
 
 header .nav-bar-search-stub input::placeholder,
 header .nav-bar-search .nav-search-panel input::placeholder {
-  color: #8e8e8e;
+  color: #bebebe;
 }
 
 header .nav-bar-search .search-wrapper,
@@ -1037,6 +1041,21 @@ header .nav-bar-text p {
 
   header .header.block {
     --nav-height: 90px;
+  }
+
+  /* Source: the nav items' links (15px padding) sit side by side, about 4px apart (inline-block
+     spacing) */
+  header nav .nav-sections .default-content-wrapper > ul {
+    gap: 4px;
+  }
+
+  /* Source: cart and Sign In 20px apart, Sign In ending 5px past the content edge, centred on
+     the row at 48.5px */
+  header nav .nav-tools {
+    box-sizing: border-box;
+    gap: 12px;
+    margin-right: -5px;
+    padding-top: 7px;
   }
 
   header nav {

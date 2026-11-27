@@ -8768,6 +8768,14 @@ var CustomImportScript = (() => {
     [`${STATIC_PDF}/legal/customer-agreement.pdf`]: "/legal/terms/customer-agreement.pdf",
     [`${STATIC_PDF}/footer/Marketplace-Infosheet.pdf`]: "/documents/marketplace-infosheet.pdf"
   };
+  function partnerSlug(oldSlug) {
+    let s = oldSlug;
+    try {
+      s = decodeURIComponent(s.replace(/\+/g, " "));
+    } catch (e) {
+    }
+    return s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
   function normalizePath(pathname) {
     let p;
     try {
@@ -8789,6 +8797,8 @@ var CustomImportScript = (() => {
     if (!/^https?:$/.test(url.protocol) || !SOURCE_HOSTS.includes(url.hostname)) return null;
     const doc = DOCUMENT_LINKS[url.pathname] || DOCUMENT_LINKS[url.pathname.replace(/\/+$/, "")];
     if (doc) return `${doc}${url.hash}`;
+    const profile = url.pathname.match(/^\/partner\/([^/]+)\/?$/);
+    if (profile && partnerSlug(profile[1])) return `/partner/${partnerSlug(profile[1])}${url.hash}`;
     const path = normalizePath(url.pathname);
     if (!migrated_paths_default.has(path)) return null;
     const target = PRODUCT_PATHS.has(path) ? `/products${path}` : path;
@@ -9012,6 +9022,21 @@ var CustomImportScript = (() => {
       executeTransformers("afterTransform", main, payload);
       main.appendChild(document.createElement("hr"));
       WebImporter.rules.createMetadata(main, document);
+      const metaTable = [...main.querySelectorAll("table")].find((t) => {
+        var _a;
+        return ((_a = t.querySelector("tr")) == null ? void 0 : _a.textContent.trim().toLowerCase()) === "metadata";
+      });
+      if (metaTable) {
+        const row = document.createElement("tr");
+        ["Template", `${PAGE_TEMPLATE.name}, cms-page`].forEach((text) => {
+          const cell = document.createElement("td");
+          cell.textContent = text;
+          row.append(cell);
+        });
+        (metaTable.querySelector("tbody") || metaTable).append(row);
+      } else {
+        main.append(WebImporter.DOMUtils.createTable([["Metadata"], ["Template", `${PAGE_TEMPLATE.name}, cms-page`]], document));
+      }
       WebImporter.rules.transformBackgroundImages(main, document);
       WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
       params.fragments.forEach(({ element }) => {

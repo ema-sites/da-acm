@@ -9,9 +9,9 @@
   display: none;
 }
 
-/* 45px below the All Products heading, as on the seller pages */
+/* Tiles start 35px below the All Products heading rule (source #instant-search-results-container) */
 .partner-page .partner-page-products {
-  padding-top: 35px;
+  padding-top: 25px;
 }
 
 .partner-page .partner-page-products .product-discovery-product-list__grid {
@@ -20,8 +20,31 @@
   gap: 10px;
 }
 
+/* Old profile tiles (source .result-content.partners): a fixed 240px box that clips what doesn't
+   fit. The partner level (90px) and price sit 31px below the rating, the badge 15px down and the
+   price on 28px lines from 13px down, so a two-line price ("$110.00 / year") shows its first
+   line only, as on the old site. */
 .partner-page .partner-page-products .dropin-product-item-card {
-  min-height: 240px;
+  height: 240px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.partner-page .partner-page-products .plp-tile__footer {
+  align-items: flex-start;
+  gap: 0;
+  min-height: 0;
+  margin: 31px 0 0;
+}
+
+.partner-page .partner-page-products .plp-tile__partner {
+  flex: none;
+  margin-top: 15px;
+}
+
+.partner-page .partner-page-products .plp-tile__price {
+  margin-top: 13px;
+  line-height: 28px;
 }
 
 @media (min-width: 900px) {
@@ -51,6 +74,7 @@
   font-size: 16px;
   font-weight: 500;
   line-height: 23px;
+  letter-spacing: normal;
   text-decoration: none;
 }
 
@@ -61,4 +85,20 @@
 
 .partner-page .partner-page-tabs a:any-link:hover {
   text-decoration: underline;
+}
+
+/* small screens (source styles-m.css, below 768px): the tabs stack, full width, in the grey box */
+@media (max-width: 767px) {
+  .partner-page:has(.partner-page-tabs) {
+    padding-top: 0;
+  }
+
+  .partner-page .partner-page-tabs {
+    display: block;
+    padding: 19px;
+  }
+
+  .partner-page .partner-page-tabs a:any-link {
+    display: block;
+  }
 }

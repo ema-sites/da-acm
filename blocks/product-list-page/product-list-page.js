@@ -2,7 +2,7 @@
 import SearchResults from '@dropins/storefront-product-discovery/containers/SearchResults.js';
 import Facets from '@dropins/storefront-product-discovery/containers/Facets.js';
 import { render as provider } from '@dropins/storefront-product-discovery/render.js';
-import { Button, Icon, provider as UI } from '@dropins/tools/components.js';
+import { Button, provider as UI } from '@dropins/tools/components.js';
 import { search } from '@dropins/storefront-product-discovery/api.js';
 // Event Bus
 import { events } from '@dropins/tools/event-bus.js';
@@ -152,10 +152,9 @@ export default async function decorate(block) {
   }
 
   await Promise.all([
-    // View Facets Button (small screens)
+    // View Facets Button (small screens): the old site's "+ Refine" toggle
     UI.render(Button, {
-      children: labels.Global?.Filters || 'Filters',
-      icon: Icon({ source: 'Burger' }),
+      children: labels.Global?.Refine || 'Refine',
       variant: 'secondary',
       onClick: () => {
         $sidebar.classList.toggle('plp-sidebar--visible');

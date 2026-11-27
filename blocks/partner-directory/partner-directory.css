@@ -1,10 +1,13 @@
 /* Partner directory, as on the old Marketplace /partners page (measured from its stylesheets) */
 
+/* The old directory's text is in its single-face adobe-clean (medium = Regular, bold = synthetic
+   bold) */
 .partner-directory {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 20px;
   color: #2b2b2c;
+  font-family: var(--brand-single-face-font-family);
   font-size: 14px;
   line-height: 20px;
 }
@@ -74,6 +77,7 @@
 
 .partner-directory .partner-directory-show-more {
   display: inline-block;
+  margin-top: 15px;
   padding: 4px 0;
   color: #007cba;
   font-size: 13px;
@@ -207,6 +211,7 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
+  letter-spacing: normal;
 }
 
 .partner-directory .partner-directory-more:hover {
@@ -215,14 +220,15 @@
   text-decoration: none;
 }
 
-/* Paging */
+/* Paging: 55px below the last row of tiles; 84px of space below it before the section's own
+   margin (source #partners-controls and the columns around it: 15px + 29px + 40px) */
 .partner-directory .partner-directory-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 15px;
-  margin: 87px 0 15px;
+  margin: 55px 0 84px;
 }
 
 .partner-directory .partner-directory-limiter {
@@ -294,6 +300,56 @@
   box-shadow: 0 2px 4px rgb(0 115 230 / 30%);
   color: #fff;
   font-weight: 600;
+}
+
+/* small screens (source styles-m.css, below 768px): the filters come first, in a 16px padded box,
+   and the results keep the wide layout's 75% column, one partner per row */
+@media (max-width: 767px) {
+  .partner-directory .partner-directory-filters {
+    order: 0;
+    margin-bottom: 21px;
+    padding: 16px;
+  }
+
+  .partner-directory .partner-directory-results {
+    width: 75%;
+  }
+
+  .partner-directory .partner-directory-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .partner-directory .partner-directory-facet--country .partner-directory-facet-item {
+    margin-bottom: 28px;
+  }
+
+  /* paging: the limiter, then the page links on their own row, both smaller */
+  .partner-directory .partner-directory-controls {
+    gap: 15px 0;
+    margin: 20px 0 15px;
+    padding: 0 10px;
+  }
+
+  .partner-directory .partner-directory-limiter {
+    padding: 2px 4px;
+    font-size: 12px;
+    line-height: 17.1429px;
+  }
+
+  .partner-directory .partner-directory-limiter select {
+    width: 55px;
+  }
+
+  .partner-directory .partner-directory-pagination {
+    gap: 2px;
+    padding: 3px 6px;
+  }
+
+  .partner-directory .partner-directory-page {
+    padding: 3px 5px;
+    font-size: 10px;
+    line-height: 12px;
+  }
 }
 
 @media (min-width: 768px) {

@@ -799,6 +799,22 @@ main > .section.light-grey {
   background-color: var(--brand-light-color);
 }
 
+/* Homepage: the slider and the Featured Categories section are 38px apart (the margins collapse,
+   so both sections and the carousel block use 38px); see carousel-promo.css */
+main > .section.carousel-promo-container {
+  margin-bottom: 38px;
+}
+
+main > .section.carousel-promo-container + .section.cards-category-container {
+  margin-top: 38px;
+}
+
+/* The homepage's grey Resources band (the only light-grey section): 50px below the categories, and
+   the footer follows it directly, as on the source (.case-resources) */
+main > .section.light-grey.cards-program-container {
+  margin: 50px 0 0;
+}
+
 /* Homepage section headings are large and centred on the source */
 main .cards-category-container > .default-content-wrapper h2,
 main .cards-program-container > .default-content-wrapper h2 {
@@ -806,6 +822,22 @@ main .cards-program-container > .default-content-wrapper h2 {
   font-size: 28px;
   line-height: 1.1;
   text-align: center;
+}
+
+/* Resources heading: at the band's 40px padding, 40px above the cards (source .case-resources h2) */
+main .cards-program-container > .default-content-wrapper h2 {
+  margin: 0 0 40px;
+}
+
+/* small screens (source styles-m.css): Featured Categories 30px, Resources 26px */
+@media (max-width: 767px) {
+  main .cards-category-container > .default-content-wrapper h2 {
+    font-size: 30px;
+  }
+
+  main .cards-program-container > .default-content-wrapper h2 {
+    font-size: 26px;
+  }
 }
 
 @media (min-width: 900px) {
@@ -893,22 +925,86 @@ main .partner-page-wrapper ~ .default-content-wrapper:has(+ .partner-page-wrappe
 }
 
 /* All Products heading rule: above the authored grid (seller pages) or the drop-in's (profiles) */
-main .partner-profile-container > .default-content-wrapper:has(+ .cards-product-wrapper, + .partner-page-wrapper) > h3:last-child {
+main .partner-profile-container > .default-content-wrapper:has(+ .cards-product-wrapper, + .partner-page-wrapper) > h3:is(:last-child, :has(+ .partner-page-back-top)) {
   padding-bottom: 10px;
   border-bottom: 2px solid #aeafb1;
 }
 
 /* Category pages (product-list-page) and the Partners directory: breadcrumb, title and listing
    spaced as on the old Marketplace pages (breadcrumb 10px below the header bar, title 10px below). */
-main > .breadcrumb-container:has(+ .product-list-page-container, + .partner-directory-container) {
+main > .breadcrumb-container:has(+ .product-list-page-container, + .partner-directory-container, + .partner-profile-container) {
   margin-bottom: 10px;
   padding-top: 10px;
+}
+
+/* Seller profiles and seller pages: title 10px below the breadcrumb, content 35px below the title,
+   and the disabled-extension warning 10px above the profile (source .page-title-wrapper,
+   .message-notice) */
+main > .breadcrumb-container + .partner-profile-container {
+  margin-top: 0;
+}
+
+/* 95px from the last row of products to the footer (source .product-data-items and columns) */
+main > .partner-profile-container:last-child {
+  margin-bottom: 95px;
+}
+
+main > .partner-profile-container h1 {
+  margin: 0 0 35px;
+}
+
+main > .partner-profile-container > .notice-wrapper:has(> .notice.warning) {
+  margin-bottom: 10px;
+}
+
+/* Profile sidebar (source .product-info-main): the partner-level badge line is 64px tall (the
+   image sits on a text line), and the Location head is 59px (padding 20px 24px 21px) */
+main > .partner-profile-container > .notice-wrapper > .notice-badge {
+  padding-bottom: 5px;
+}
+
+main > .partner-profile-container .notice.notice-titled .notice-head {
+  padding: 20px 24px 21px;
+}
+
+/* "Address": the old site's single-face semibold (synthetic bold) */
+main > .partner-profile-container .notice.notice-titled .notice-body strong {
+  font-family: var(--brand-single-face-font-family);
+}
+
+/* Seller pages on small screens (source styles-m.css, below 768px): title 15px above the warning,
+   30px more space below the profile, 32px medium section headings */
+@media (max-width: 767px) {
+  main > .partner-profile-container h1 {
+    margin-bottom: 15px;
+  }
+
+  main > .partner-profile-container > .partner-profile-wrapper {
+    margin-bottom: 30px;
+  }
+
+  main .partner-profile-container > .default-content-wrapper > h3:is(#about-seller, #all-products) {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 35.2px;
+  }
 }
 
 main > .product-list-page-container,
 main > .partner-directory-container {
   margin-top: 0;
   margin-bottom: 75px;
+}
+
+/* small screens: no trail on category pages (source styles-m.css) */
+@media (max-width: 767px) {
+  main > .breadcrumb-container:has(+ .product-list-page-container) {
+    display: none;
+  }
+
+  main > .breadcrumb-container + .product-list-page-container {
+    padding-top: 13px;
+  }
 }
 
 main > .product-list-page-container h1 {
@@ -918,6 +1014,13 @@ main > .product-list-page-container h1 {
 
 main > .partner-directory-container h1 {
   margin: 0 0 25px;
+}
+
+@media (max-width: 767px) {
+  main > .partner-directory-container h1 {
+    font-size: 24px;
+    line-height: 26.4px;
+  }
 }
 
 /* Error page (503): message left, illustration right, source type sizes */
@@ -985,4 +1088,297 @@ main .default-content-wrapper a:any-link:not(.button) {
   font-size: inherit;
   font-weight: inherit;
   letter-spacing: normal;
+}
+
+/* Seller pages: "Back to top" at the right end of the All Products heading (source
+   .box-back-top: 12px semibold, 15px below the heading's top, 2px in from the column edge) */
+main .partner-profile-container > .default-content-wrapper:has(> .partner-page-back-top) {
+  position: relative;
+}
+
+main .partner-profile-container > .default-content-wrapper > a.partner-page-back-top:any-link {
+  position: absolute;
+  top: 15px;
+  right: calc(var(--brand-content-padding) + 2px);
+  color: #0469e3;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 17px;
+  text-decoration: none;
+}
+
+main .partner-profile-container > .default-content-wrapper > a.partner-page-back-top:any-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 899px) {
+  main .partner-profile-container > .default-content-wrapper > a.partner-page-back-top:any-link {
+    right: 22px;
+  }
+}
+
+@media (min-width: 900px) {
+  main .partner-profile-container > .default-content-wrapper > a.partner-page-back-top:any-link {
+    right: calc(var(--brand-content-padding) + 390px);
+  }
+}
+
+/* CMS pages (template cms-page: the old CMS page layout, source .cms-page-view: legal pages and
+   the 503 page). The trail (12px, Home in medium #202021, current page in blue) starts 30px below
+   the header bar and copy 25px below it; 40px below the copy (source .column.main), then 75px to
+   the footer. */
+body.cms-page main > .section:not(:empty) {
+  margin: 0;
+}
+
+body.cms-page main > .section:first-child {
+  padding-top: 30px;
+}
+
+body.cms-page main > .breadcrumb-container:not(:empty) {
+  margin-bottom: 25px;
+}
+
+body.cms-page main .breadcrumb ol {
+  align-items: flex-start;
+  min-height: 24px;
+  color: #8e8e8e;
+  font-size: 12px;
+  line-height: 17.1429px;
+}
+
+body.cms-page main .breadcrumb a:any-link {
+  color: #202021;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18.5714px;
+}
+
+body.cms-page main .breadcrumb [aria-current] {
+  color: #0469e3;
+  font-size: 13px;
+  line-height: 18.5714px;
+}
+
+body.cms-page main .breadcrumb li + li::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 10px;
+  margin: 0 6px 0 7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='10' viewBox='0 0 6 10'%3E%3Cpath d='M1 1l4 4-4 4' fill='none' stroke='%23000' stroke-width='1.2'/%3E%3C/svg%3E") no-repeat center;
+}
+
+body.cms-page main > .section:last-child {
+  margin-bottom: 75px;
+  padding-bottom: 40px;
+}
+
+/* wide screens: the old content column (trail, copy and its 40px bottom padding) is at least
+   300px tall */
+@media (min-width: 768px) {
+  body.cms-page main > .breadcrumb-container + .section:last-child {
+    box-sizing: border-box;
+    min-height: 251px;
+  }
+}
+
+/* Legal pages (template legal-page): a page title, when there is one, sits above the trail with
+   50px below it; 30px section headings, 14px copy, 30px list rows */
+body.legal-page main > .section:has(+ .breadcrumb-container) h1 {
+  margin: 0 0 50px;
+  color: #000;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 30.8px;
+}
+
+body.legal-page main .default-content-wrapper h2 {
+  margin: 25px 0 20px;
+  color: #505050;
+  font-family: var(--brand-single-face-font-family);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 33px;
+}
+
+body.legal-page main .default-content-wrapper p {
+  margin: 0 0 10px;
+}
+
+body.legal-page main .default-content-wrapper ul {
+  margin: 0 0 25px;
+  padding-left: 40px;
+}
+
+body.legal-page main .default-content-wrapper li {
+  margin: 0 0 10px;
+  line-height: 20px;
+}
+
+body.legal-page main .default-content-wrapper a:any-link {
+  color: #0469e3;
+  line-height: 20px;
+}
+
+/* CMS pages on small screens (source styles-m.css, below 768px): no trail; the content starts
+   13px below the header (the old page-main's 68px top padding under its 55px header). */
+@media (max-width: 767px) {
+  body.cms-page main > .breadcrumb-container {
+    display: none;
+  }
+
+  body.cms-page main > .section:first-child,
+  body.cms-page main > .breadcrumb-container:first-child + .section {
+    padding-top: 13px;
+  }
+
+  /* the 503 page's own 40px on top */
+  body.cms-page main > .breadcrumb-container:first-child + .section.error-page {
+    padding-top: 53px;
+  }
+}
+
+/* 503 page (cms-page with an error-page section): the page's own style moves everything 40px
+   down. Message in the left 60% (40px title, 20px lines; 36px title on small screens), the
+   illustration 10px into the right 39%. Wide screens: the two buttons side by side 50px below the
+   message, the illustration beside it, 60px below the buttons. Small screens: full-width
+   buttons, one under the other, and the illustration below them. */
+body.cms-page main > .breadcrumb-container:has(+ .error-page) {
+  padding-top: 70px;
+}
+
+body.cms-page main > .section.error-page:last-child {
+  padding-bottom: 45px;
+}
+
+body.cms-page main > .section.error-page > .default-content-wrapper > :not(p:has(> picture)) {
+  max-width: 60%;
+}
+
+body.cms-page main > .section.error-page h1 {
+  margin: 0 0 20px;
+  color: #505050;
+  font-family: var(--brand-single-face-font-family);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 39.6px;
+}
+
+body.cms-page main > .section.error-page p {
+  margin: 0;
+  line-height: 28.5714px;
+}
+
+body.cms-page main > .section.error-page p.button-wrapper {
+  display: block;
+  margin: 20px 0 0;
+  line-height: 16px;
+}
+
+body.cms-page main > .section.error-page p:not(.button-wrapper) + p.button-wrapper {
+  margin-top: 50px;
+}
+
+body.cms-page main > .section.error-page a.button.primary:any-link,
+body.cms-page main > .section.error-page a.button.primary:any-link:hover,
+body.cms-page main > .section.error-page a.button.primary:any-link:focus-visible {
+  width: 100%;
+  height: 38px;
+  padding: 10px;
+  border: 1px solid #f16321;
+  border-radius: 3px;
+  background-color: #f16321;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: normal;
+}
+
+body.cms-page main > .section.error-page a.button.secondary:any-link,
+body.cms-page main > .section.error-page a.button.secondary:any-link:hover,
+body.cms-page main > .section.error-page a.button.secondary:any-link:focus-visible {
+  width: 100%;
+  height: 56px;
+  padding: 19px 20px;
+  border: 1px solid #d8d9da;
+  border-radius: 0;
+  background-color: #fff;
+  color: #eb5202;
+  font-family: roboto, var(--brand-body-font-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: normal;
+  text-transform: uppercase;
+}
+
+body.cms-page main > .section.error-page > .default-content-wrapper > p:has(> picture) {
+  box-sizing: border-box;
+  width: calc(39% + 10px);
+  padding: 60px 0 0 10px;
+}
+
+body.cms-page main > .section.error-page > .default-content-wrapper > p:has(> picture) img {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  body.cms-page main > .section.error-page:last-child {
+    padding-bottom: 60px;
+  }
+
+  body.cms-page main > .section.error-page > .default-content-wrapper {
+    display: block;
+    position: relative;
+  }
+
+  body.cms-page main > .section.error-page h1 {
+    margin-bottom: 40px;
+    font-size: 40px;
+    line-height: 44px;
+  }
+
+  body.cms-page main > .section.error-page p.button-wrapper {
+    display: inline-block;
+    margin: 50px 21px 0 0;
+  }
+
+  body.cms-page main > .section.error-page p.button-wrapper + p.button-wrapper {
+    margin-right: 0;
+  }
+
+  body.cms-page main > .section.error-page a.button.primary:any-link,
+  body.cms-page main > .section.error-page a.button.primary:any-link:hover,
+  body.cms-page main > .section.error-page a.button.primary:any-link:focus-visible {
+    width: auto;
+    height: 40px;
+    padding: 11px 30px;
+  }
+
+  body.cms-page main > .section.error-page a.button.secondary:any-link,
+  body.cms-page main > .section.error-page a.button.secondary:any-link:hover,
+  body.cms-page main > .section.error-page a.button.secondary:any-link:focus-visible {
+    width: auto;
+    height: 40px;
+    padding: 11px 22px;
+  }
+
+  body.cms-page main > .section.error-page > .default-content-wrapper > p:has(> picture) {
+    position: absolute;
+    top: 0;
+    left: calc(var(--brand-content-padding) + (100% - 2 * var(--brand-content-padding)) * 0.6);
+    width: auto;
+    padding: 0 0 0 10px;
+  }
+
+  body.cms-page main > .section.error-page > .default-content-wrapper > p:has(> picture) img {
+    width: auto;
+  }
+}
+
+/* Partners directory: the trail's Home link is in Adobe Clean Medium */
+main > .breadcrumb-container:has(+ .partner-directory-container) .breadcrumb a:any-link {
+  font-weight: 500;
 }

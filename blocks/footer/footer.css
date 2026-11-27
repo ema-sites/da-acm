@@ -22,6 +22,53 @@ footer .footer p {
   letter-spacing: normal;
 }
 
+/* "Become a Partner" band above the footer on product, seller and error pages (source
+   .page-footer > .become-partner) */
+footer .footer-banner {
+  padding: 30px 45px;
+  background-color: #f1f1ef;
+  color: #31302b;
+  text-align: center;
+}
+
+footer .footer-banner h3 {
+  margin: 0 0 15px;
+  color: #31302b;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 17.6px;
+  letter-spacing: normal;
+}
+
+footer .footer-banner p {
+  margin: 0 0 10px;
+}
+
+footer .footer-banner a.button:any-link,
+footer .footer-banner a.button:any-link:hover,
+footer .footer-banner a.button:any-link:focus-visible {
+  box-sizing: border-box;
+  display: inline-block;
+  height: 40px;
+  padding: 11px 30px;
+  border: 1px solid #f16321;
+  border-radius: 3px;
+  background-color: #fff;
+  color: #f16321;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: normal;
+  text-decoration: none;
+}
+
+/* small screens: the button spans the band (source styles-m.css .btn) */
+@media (max-width: 767px) {
+  footer .footer-banner a.button:any-link {
+    width: 100%;
+  }
+}
+
 /* link columns */
 footer .footer-links {
   padding-top: 40px;
@@ -134,22 +181,26 @@ footer .footer-column li a {
     padding-top: 60px;
   }
 
+  /* The source's columns block is 230px tall (.footer.content: 60px padding, then the columns) */
   footer .footer-columns {
     grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 0;
+    padding-bottom: 28px;
   }
 
+  /* The divider spans the full 1200px (the source's border includes its 30px side padding) */
   footer .footer-bottom {
-    margin-top: 40px;
-    padding-top: 50px;
-    padding-bottom: 25px;
+    margin: 40px -30px 0;
+    padding: 50px 30px 25px;
   }
 
+  /* Source .case-logo-links: 37px tall */
   footer .footer-brand-row {
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
     gap: 0;
+    min-height: 37px;
   }
 
   footer .footer-brand-row > * {
@@ -160,15 +211,19 @@ footer .footer-column li a {
     text-align: center;
   }
 
+  /* Source: "Follow us:" and the icons 20px apart */
   footer .footer-social {
     justify-content: flex-end;
+    gap: 20px;
   }
 
+  /* Source small.copyright: 40px above, 16px below */
   footer .footer-legal-row {
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
     padding-top: 40px;
+    padding-bottom: 16px;
   }
 
   footer .footer-legal-links a {
