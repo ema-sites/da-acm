@@ -5,9 +5,11 @@ import commercemarketplaceCleanupTransformer from './transformers/commercemarket
 import commercemarketplacePageCorrectionsTransformer from './transformers/commercemarketplace-page-corrections.js';
 import commercemarketplaceLinksTransformer from './transformers/commercemarketplace-links.js';
 import commercemarketplaceSectionsTransformer from './transformers/commercemarketplace-sections.js';
+import becomePartnerBannerTransformer from './transformers/become-partner-banner.js';
 
 const PAGE_TEMPLATE = {
   "name": "service-unavailable",
+  "becomePartnerFragment": "/fragments/become-partner-503",
   "urls": [
     "https://commercemarketplace.adobe.com/service-unavailable"
   ],
@@ -46,7 +48,8 @@ const lateTransformers = [...sectionTransformers, ...fragmentTransformers];
 // Page corrections ({sitename}-page-corrections.js, when it exists) run last.
 const correctionTransformers = [commercemarketplacePageCorrectionsTransformer];
 // Links to migrated pages become site-relative (afterTransform), before page corrections.
-const transformers = [commercemarketplaceCleanupTransformer, ...lateTransformers, commercemarketplaceLinksTransformer, ...correctionTransformers];
+// The "Become a Partner" band is read from the footer before the cleanup removes it.
+const transformers = [becomePartnerBannerTransformer, commercemarketplaceCleanupTransformer, ...lateTransformers, commercemarketplaceLinksTransformer, ...correctionTransformers];
 const earlyTransformers = transformers.filter((fn) => !lateTransformers.includes(fn));
 // Catalog selectors (pageInstances, pageCleanup) count the <script> and <hr> elements the importer
 // removes before transform, so a catalog template finds its targets in preprocess.
@@ -128,6 +131,27 @@ export default {
 
     main.appendChild(document.createElement('hr'));
     WebImporter.rules.createMetadata(main, document);
+    // Template: cms-page (body class) - the old CMS page layout (breadcrumb style and spacing), and
+    // the page's own "Become a Partner" band above the footer (blocks/footer/footer.js)
+    // The trail ends with the page title (as on the old site), not the h1
+    const metaRows = [['Template', 'cms-page'], ['Footer Banner', PAGE_TEMPLATE.becomePartnerFragment]];
+    const pageTitle = (document.title || '').trim();
+    if (pageTitle) metaRows.push(['Breadcrumb Title', pageTitle]);
+    const metaTable = [...main.querySelectorAll('table')]
+      .find((t) => t.querySelector('tr')?.textContent.trim().toLowerCase() === 'metadata');
+    if (metaTable) {
+      metaRows.forEach((cells) => {
+        const row = document.createElement('tr');
+        cells.forEach((text) => {
+          const cell = document.createElement('td');
+          cell.textContent = text;
+          row.append(cell);
+        });
+        (metaTable.querySelector('tbody') || metaTable).append(row);
+      });
+    } else {
+      main.append(WebImporter.DOMUtils.createTable([['Metadata'], ...metaRows], document));
+    }
     WebImporter.rules.transformBackgroundImages(main, document);
     WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
 

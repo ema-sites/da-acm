@@ -7,6 +7,9 @@
   --brand-heading-font-family: adobe-clean, 'Helvetica Neue', helvetica, arial, sans-serif;
   --brand-body-font-family: adobe-clean, 'Helvetica Neue', helvetica, arial, sans-serif;
 
+  /* the old site's single-face adobe-clean (see fonts.css) */
+  --brand-single-face-font-family: adobe-clean-single, 'Helvetica Neue', helvetica, arial, sans-serif;
+
   /* colors */
   --brand-background-color: #fff;
   --brand-text-color: #505050;

@@ -1,8 +1,12 @@
 /* Marketplace category page: filters sidebar (250px) + results (870px), as on the old site */
 
+/* The old category page's text is in its single-face adobe-clean (bold = synthetic bold), except
+   the tile titles (true Bold, styles/marketplace-tiles.css); the drop-in's type tokens follow. */
 .block.product-list-page {
+  --type-base-font-family: var(--brand-single-face-font-family);
+
   color: #505050;
-  font-family: var(--body-font-family);
+  font-family: var(--brand-single-face-font-family);
   font-size: 14px;
   line-height: 20px;
 }
@@ -404,7 +408,9 @@
   font-weight: 700;
 }
 
-/* The drop-in's Clear All (the only selected-filters button without an icon), in the header */
+/* Clear All in the header: the drop-in's (the only selected-filters button without an icon) once a
+   visitor filter is set, otherwise the block's own link (source: always shown) */
+.block.product-list-page .plp-selected__clear,
 .block.product-list-page .product-discovery-facet-list__selected-filters > .dropin-button:not(:has(svg)) {
   position: absolute;
   top: 15px;
@@ -425,8 +431,14 @@
   font-weight: inherit;
 }
 
+.block.product-list-page .plp-selected__clear:hover,
 .block.product-list-page .product-discovery-facet-list__selected-filters > .dropin-button:not(:has(svg)):hover {
   text-decoration: underline;
+}
+
+.block.product-list-page .product-discovery-facet-list__selected-filters:has(> .dropin-button:not(:has(svg))) .plp-selected__clear,
+.block.product-list-page .plp-selected__clear[hidden] {
+  display: none;
 }
 
 /* ---------------- Results ---------------- */
@@ -455,10 +467,11 @@
   font-weight: 700;
 }
 
+/* Source .sorter-options margin-left: 7px */
 .block.product-list-page .plp-results__sort {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 
 .block.product-list-page .plp-results__sort-label {
@@ -474,15 +487,16 @@
   border-radius: 4px;
   background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M0 0h12L6 8z' fill='%23202021'/%3E%3C/svg%3E") no-repeat right 12px center;
   color: #202021;
-  font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+  font-family: roboto, "Helvetica Neue", helvetica, arial, sans-serif;
   font-size: 14px;
   line-height: 20px;
   appearance: none;
   cursor: pointer;
 }
 
+/* Source #sorter: RobotoRegular, 175px wide at the source's fonts */
 .block.product-list-page #plp-sorter {
-  width: 190px;
+  width: 175px;
 }
 
 .block.product-list-page #plp-limiter {
@@ -526,9 +540,9 @@
 }
 
 .block.product-list-page .plp-controls__limiter b {
-  color: #505050;
-  font-size: 13px;
-  font-weight: 400;
+  color: #727272;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .block.product-list-page .plp-controls__pages {
@@ -570,12 +584,97 @@
 
 .block.product-list-page .plp-controls__page--next .plp-controls__page-link,
 .block.product-list-page .plp-controls__page--previous .plp-controls__page-link {
+  letter-spacing: normal;
   font-weight: 600;
 }
 
 /* Empty State */
 .block.product-list-page.product-list-page--empty .plp-controls {
   display: none;
+}
+
+/* Small screens (source styles-m.css, below 768px): "+ Refine" opens the filters; the selected
+   filters stay in view above the results; the results bar has the count (and the Next Page link)
+   on one row and the sort on the next; the tiles fill the column. */
+@media only screen and (max-width: 767px) {
+  .block.product-list-page .search__view-facets {
+    margin-block-end: 15px;
+  }
+
+  .block.product-list-page .search__view-facets button {
+    box-sizing: border-box;
+    height: 44px;
+    padding: 12px 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    color: #333;
+    font-family: var(--brand-single-face-font-family);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: normal;
+  }
+
+  .block.product-list-page .search__view-facets button::before {
+    content: "+";
+    margin-right: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 16px;
+  }
+
+  .block.product-list-page .plp-sidebar {
+    display: block;
+  }
+
+  .block.product-list-page .plp-sidebar:not(.plp-sidebar--visible) .product-discovery-facet-list__facet-options {
+    display: none;
+  }
+
+  .block.product-list-page .product-discovery-facet-list__selected-filters {
+    margin: 0 0 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .block.product-list-page .plp-main {
+    position: relative;
+  }
+
+  .block.product-list-page .plp-results {
+    flex-wrap: wrap;
+    row-gap: 15px;
+  }
+
+  .block.product-list-page .plp-results__count {
+    flex-basis: 100%;
+  }
+
+  .block.product-list-page .plp-results__sort {
+    gap: 8px;
+  }
+
+  .block.product-list-page #plp-sorter {
+    width: 174px;
+  }
+
+  .block.product-list-page .plp-controls__page--next {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .block.product-list-page .product-discovery-product-list__grid {
+    padding-inline: 0;
+  }
+
+  .block.product-list-page .plp-controls__limiter {
+    gap: 10px;
+    margin-top: 0;
+  }
+
+
 }
 
 /* Media Queries */

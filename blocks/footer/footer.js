@@ -8,6 +8,33 @@ import {
 // Block-level
 import createModal from '../modal/modal.js';
 import { loadFragment } from '../fragment/fragment.js';
+import { getMetadata } from '../../scripts/aem.js';
+
+// The old footer opened with a "Become a Partner" band on product and seller pages. A page can name
+// its own band (metadata `footer-banner`: a fragment path) or turn it off (`off`).
+const BANNER_PAGES = 'main .product-details, main .partner-page';
+const BANNER_FRAGMENT = '/fragments/become-partner';
+
+/**
+ * Loads the page's "Become a Partner" band, if it has one. The local preview serves content
+ * under /content.
+ * @returns {Promise<Element|null>} The band, or null
+ */
+async function loadBanner() {
+  const setting = getMetadata('footer-banner').trim();
+  if (/^(off|no|false)$/i.test(setting)) return null;
+  const path = setting || (document.querySelector(BANNER_PAGES) ? BANNER_FRAGMENT : '');
+  if (!path.startsWith('/')) return null;
+  let fragment = await loadFragment(path);
+  if (!fragment && window.location.hostname === 'localhost') {
+    fragment = await loadFragment(`/content${path}`);
+  }
+  if (!fragment) return null;
+  const banner = document.createElement('aside');
+  banner.className = 'footer-banner';
+  fragment.querySelectorAll('.default-content-wrapper > *').forEach((node) => banner.append(node));
+  return banner.children.length ? banner : null;
+}
 
 /**
  * Toggles all storeSelector sections
@@ -102,6 +129,7 @@ export default async function decorate(block) {
   const footerPath = footerResp.ok
     ? new URL(footerResp.url).pathname.replace(/\.plain\.html$/, '')
     : '/footer';
+  const bannerPromise = loadBanner();
   const fragment = await loadFragment(footerPath);
 
   // decorate footer DOM
@@ -239,5 +267,7 @@ export default async function decorate(block) {
   while (fragment.firstElementChild) footer.append(fragment.firstElementChild);
 
   decorateFooterSections(footer);
+  const banner = await bannerPromise;
+  if (banner) block.append(banner);
   block.append(footer);
 }

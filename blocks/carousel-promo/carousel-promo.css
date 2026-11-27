@@ -4,10 +4,12 @@ main > .section > .carousel-promo-wrapper {
   padding: 0;
 }
 
+/* 38px below: with the next section's 30px heading space this puts the following heading where the
+   source's does (slider, dots, then .case-featured-category's padding) */
 .carousel-promo {
   display: flow-root;
   position: relative;
-  margin: 0 0 40px;
+  margin: 0 0 38px;
   color: var(--brand-text-color);
 }
 

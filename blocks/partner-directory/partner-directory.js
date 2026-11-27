@@ -211,7 +211,7 @@ function renderFilters(container, aggregations, state, onChange) {
       if (!buckets.some((b) => b.key === v)) buckets.push({ key: v, count: 0 });
     });
     if (!buckets.length) return null;
-    const group = el('div', 'partner-directory-facet');
+    const group = el('div', `partner-directory-facet partner-directory-facet--${filter.key}`);
     group.append(el('h3', 'partner-directory-facet-title', filter.title));
     const items = el('div', 'partner-directory-facet-items');
     const expanded = container.dataset[`expanded${filter.key}`] === 'true';

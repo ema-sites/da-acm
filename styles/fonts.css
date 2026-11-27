@@ -78,6 +78,17 @@
     font-weight: 500;
 }
 
+/* The old site's own "adobe-clean" family had a single face (Regular): its medium text rendered as
+   Regular and its semibold and bold text as the browser's synthetic bold of Regular. Text styled
+   that way on the old site uses this family (--brand-single-face-font-family) to look the same. */
+@font-face {
+    font-family: adobe-clean-single;
+    src: url('../fonts/adobe-clean-normal-400.woff2') format('woff2');
+    font-display: swap;
+    font-style: normal;
+    font-weight: 400;
+}
+
 @font-face {
     font-family: adobe-clean-semilight;
     src: url('../fonts/adobe-clean-normal-400.woff2') format('woff2');

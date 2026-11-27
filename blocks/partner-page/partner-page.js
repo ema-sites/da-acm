@@ -7,7 +7,9 @@ import {
 } from '../../scripts/aem.js';
 import { getProductLink, loadErrorPage } from '../../scripts/commerce.js';
 import { fetchProfileRows, PROFILES_SHEET } from '../../scripts/partner-profiles.js';
-import { tileHeaderSlot, tileNameSlot, tileFooterSlot } from '../../scripts/marketplace-tiles.js';
+import {
+  tileHeaderSlot, tileNameSlot, tileFooterSlot, MARKETPLACE_RANKING,
+} from '../../scripts/marketplace-tiles.js';
 import '../../scripts/initializers/search.js';
 
 /*
@@ -90,7 +92,8 @@ function findProfile(rows, slug) {
 
 /**
  * The seller's listed products, as the old profile page searched them (its Live Search widget):
- * listed Marketplace extensions by seller ID, by name. Returns the drop-in's search result.
+ * listed Marketplace extensions by seller ID, in the old Marketplace ranking. Returns the
+ * drop-in's search result.
  */
 function searchProducts(sellerId) {
   if (!sellerId) return Promise.resolve(null);
@@ -98,7 +101,8 @@ function searchProducts(sellerId) {
     phrase: '',
     currentPage: 1,
     pageSize: PAGE_SIZE,
-    sort: [{ attribute: 'name', direction: 'ASC' }],
+    // The old profile grid's order (its Live Search widget used the Marketplace custom ranking).
+    sort: MARKETPLACE_RANKING,
     filter: [{ attribute: 'ext_developer_id', eq: String(sellerId) }, ...MARKETPLACE_FILTERS],
   }, { scope: SEARCH_SCOPE }).catch((error) => {
     // eslint-disable-next-line no-console
@@ -201,16 +205,28 @@ function buildTabs(block, tabs) {
   return { wrapper: el('div', { class: 'partner-page-wrapper' }, block) };
 }
 
+/** The disabled-extension warning the old site showed above the seller profile. */
+function warningNotice(text) {
+  const block = el('div', { class: 'notice warning' }, el('div', {}, el('div', { text })));
+  return { wrapper: el('div', { class: 'notice-wrapper' }, block), block };
+}
+
 /**
- * Template block. Optional config row: `profiles` (sheet path, default /partner/profiles.json).
- * An authored `partner` row picks the profile instead of the page address.
+ * Template block. Optional config rows:
+ * - `profiles`: sheet path (default /partner/profiles.json);
+ * - `partner`: the profile slug, or `partner-id`: the seller ID, instead of the page address
+ *   (authored pages, e.g. the disabled-extension seller pages under /products/);
+ * - `notice`: a warning shown under the title (the disabled-extension message).
  * @param {Element} block
  */
 export default async function decorate(block) {
   const config = readBlockConfig(block);
-  const slug = (config.partner || currentSlug()).trim();
-  const rows = slug ? await fetchProfileRows('data', config.profiles || PROFILES_SHEET) : [];
-  const profile = slug && findProfile(rows, slug);
+  const sellerId = String(config['partner-id'] || '').trim();
+  const slug = (config.partner || (sellerId ? '' : currentSlug())).trim();
+  const rows = slug || sellerId ? await fetchProfileRows('data', config.profiles || PROFILES_SHEET) : [];
+  const profile = sellerId
+    ? rows.find((r) => String(r.id) === sellerId)
+    : slug && findProfile(rows, slug);
   if (!profile?.name) {
     await loadErrorPage(404);
     return;
@@ -220,7 +236,8 @@ export default async function decorate(block) {
   // folder mapping answers before the redirects sheet. Send the visitor on to the new address.
   const canonical = (profile.path || '').split('/').pop();
   const addressSlug = window.location.pathname.replace(/\/+$/, '').split('/').pop();
-  if (!config.partner && canonical && addressSlug !== TEMPLATE_SLUG && addressSlug !== canonical) {
+  const authored = config.partner || sellerId;
+  if (!authored && canonical && addressSlug !== TEMPLATE_SLUG && addressSlug !== canonical) {
     const local = window.location.pathname.startsWith('/content/') ? '/content' : '';
     window.location.replace(`${local}${profile.path}${window.location.hash}`);
     return;
@@ -242,7 +259,9 @@ export default async function decorate(block) {
   const wrapper = block.closest('.partner-page-wrapper') || block;
   const anchor = document.createComment('partner-page');
   wrapper.before(anchor);
-  const parts = [defaultContent(el('h1', { id: toClassName(profile.name), text: profile.name })), headerBlock(profile)];
+  const parts = [defaultContent(el('h1', { id: toClassName(profile.name), text: profile.name }))];
+  if (config.notice) parts.push(warningNotice(config.notice));
+  parts.push(headerBlock(profile));
   const level = levelNotice(profile);
   const location = locationNotice(profile);
   if (level) parts.push(level);
@@ -265,7 +284,13 @@ export default async function decorate(block) {
   if (tabs.length) parts.push(buildTabs(block, tabs));
   if (about.length) parts.push(defaultContent(el('h3', { id: 'about-seller', text: 'About Seller' }), ...about));
   if (hasProducts) {
-    parts.push(defaultContent(el('h3', { id: 'all-products', text: 'All Products' })));
+    // "Back to top" at the right of the heading, as on the old site
+    const backToTop = el('a', { class: 'partner-page-back-top', href: '#top', text: 'Back to top' });
+    backToTop.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    parts.push(defaultContent(el('h3', { id: 'all-products', text: 'All Products' }), backToTop));
     parts.push(grid);
   }
 

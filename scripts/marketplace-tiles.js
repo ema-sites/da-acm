@@ -8,6 +8,15 @@
 
 // Partner level lockups (from the old site),
 // keyed by the catalog's ext_connect_partner_level_image.
+/**
+ * The old site's default ("Relevance") order for Marketplace product lists: its Live Search
+ * custom ranking (customRankingConfig for the extensions, themes and partner pages) — relevance,
+ * certification, partner weight, average rating, all descending. With an empty phrase this
+ * reproduces the old category and profile grids' order.
+ */
+export const MARKETPLACE_RANKING = ['relevance', 'ext_certification', 'ext_partner_weight', 'ext_average_rating']
+  .map((attribute) => ({ attribute, direction: 'DESC' }));
+
 const PARTNER_LEVEL_IMAGES = {
   'platinum-technology-partner.png': 'platinum-technology-partner.png',
   'gold-technology-partner.png': 'gold-technology-partner.png',

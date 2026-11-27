@@ -9064,6 +9064,14 @@ var CustomImportScript = (() => {
     [`${STATIC_PDF}/legal/customer-agreement.pdf`]: "/legal/terms/customer-agreement.pdf",
     [`${STATIC_PDF}/footer/Marketplace-Infosheet.pdf`]: "/documents/marketplace-infosheet.pdf"
   };
+  function partnerSlug(oldSlug) {
+    let s = oldSlug;
+    try {
+      s = decodeURIComponent(s.replace(/\+/g, " "));
+    } catch (e) {
+    }
+    return s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
   function normalizePath(pathname) {
     let p;
     try {
@@ -9085,6 +9093,8 @@ var CustomImportScript = (() => {
     if (!/^https?:$/.test(url.protocol) || !SOURCE_HOSTS.includes(url.hostname)) return null;
     const doc = DOCUMENT_LINKS[url.pathname] || DOCUMENT_LINKS[url.pathname.replace(/\/+$/, "")];
     if (doc) return `${doc}${url.hash}`;
+    const profile = url.pathname.match(/^\/partner\/([^/]+)\/?$/);
+    if (profile && partnerSlug(profile[1])) return `/partner/${partnerSlug(profile[1])}${url.hash}`;
     const path = normalizePath(url.pathname);
     if (!migrated_paths_default.has(path)) return null;
     const target = PRODUCT_PATHS.has(path) ? `/products${path}` : path;
@@ -9159,6 +9169,70 @@ var CustomImportScript = (() => {
         }
       }
     }
+  }
+
+  // tools/importer/transformers/seller-page-template.js
+  function transform4(hookName, element, payload) {
+    var _a;
+    const params = payload.params || {};
+    if (hookName === "beforeTransform") {
+      const id = (_a = element.querySelector("[data-partner-id]")) == null ? void 0 : _a.getAttribute("data-partner-id");
+      const warning = element.querySelector(".message.notice, .message-notice, .messages .message");
+      if (id) params.sellerPage = {
+        id,
+        notice: ((warning == null ? void 0 : warning.textContent) || "").replace(/\s+/g, " ").trim()
+      };
+      return;
+    }
+    if (hookName !== "afterTransform" || !params.sellerPage) return;
+    const { document } = payload;
+    if (element !== document.body) return;
+    const rows = [["Partner Page"], ["partner-id", params.sellerPage.id]];
+    if (params.sellerPage.notice) rows.push(["notice", params.sellerPage.notice]);
+    const block = WebImporter.DOMUtils.createTable(rows, document);
+    element.replaceChildren(block);
+  }
+
+  // tools/importer/transformers/become-partner-banner.js
+  var DEFAULT_LINK = "https://www.adobe.com/partners.html";
+  var DEFAULT_FRAGMENT = "/fragments/become-partner";
+  function transform5(hookName, element, payload) {
+    var _a, _b;
+    const params = payload.params || {};
+    const fragmentPath = ((_a = payload.template) == null ? void 0 : _a.becomePartnerFragment) || DEFAULT_FRAGMENT;
+    if (hookName === "beforeTransform") {
+      const band = element.querySelector(".page-footer .become-partner, .become-partner");
+      if (!band || params.becomePartner) return;
+      const heading = band.querySelector("h1, h2, h3, h4");
+      const action = band.querySelector("a, button");
+      params.becomePartner = {
+        heading: ((heading == null ? void 0 : heading.textContent) || "").replace(/\s+/g, " ").trim(),
+        label: ((action == null ? void 0 : action.textContent) || "").replace(/\s+/g, " ").trim(),
+        href: (action == null ? void 0 : action.getAttribute("href")) || DEFAULT_LINK
+      };
+      return;
+    }
+    const { document } = payload;
+    if (hookName !== "afterTransform" || element !== document.body) return;
+    const data = params.becomePartner;
+    if (!(data == null ? void 0 : data.heading) || !data.label || ((_b = params.fragments) == null ? void 0 : _b.some((f) => f.path === fragmentPath))) return;
+    const fragment = document.createElement("div");
+    const h3 = document.createElement("h3");
+    h3.textContent = data.heading;
+    const p = document.createElement("p");
+    const strong = document.createElement("strong");
+    const a = document.createElement("a");
+    a.href = data.href;
+    a.textContent = data.label;
+    strong.append(a);
+    p.append(strong);
+    fragment.append(h3, p);
+    params.fragments = params.fragments || [];
+    params.fragments.push({
+      element: fragment,
+      path: WebImporter.FileUtils.sanitizePath(fragmentPath),
+      report: { title: "Become a Partner band", template: "fragment" }
+    });
   }
 
   // tools/importer/import-partner-profile.js
@@ -9381,7 +9455,7 @@ var CustomImportScript = (() => {
   var fragmentTransformers = [];
   var lateTransformers = [...sectionTransformers, ...fragmentTransformers];
   var correctionTransformers = [];
-  var transformers = [transform, ...lateTransformers, transform2, ...correctionTransformers];
+  var transformers = [transform4, transform5, transform, ...lateTransformers, transform2, ...correctionTransformers];
   var earlyTransformers = transformers.filter((fn) => !lateTransformers.includes(fn));
   var CATALOG = Boolean(PAGE_TEMPLATE.pageCleanup || PAGE_TEMPLATE.blocks.some((b) => b.pageInstances));
   function executeTransformers(hookName, element, payload, list = transformers) {

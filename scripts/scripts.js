@@ -133,6 +133,15 @@ function buildBreadcrumbBlock(main) {
   const section = document.createElement('div');
   section.append(buildBlock('breadcrumb', ''));
   main.prepend(section);
+  // Legal pages (template legal-page): the old CMS page layout shows the page title above the
+  // trail, so a leading h1 gets its own section before it.
+  const title = document.body.classList.contains('legal-page')
+    && main.querySelector(':scope > div:nth-child(2) > h1:first-child');
+  if (title) {
+    const titleSection = document.createElement('div');
+    titleSection.append(title);
+    main.prepend(titleSection);
+  }
 }
 
 /**

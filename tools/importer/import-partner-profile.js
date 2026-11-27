@@ -7,6 +7,8 @@ import cardsProductParser from './parsers/cards-product.js';
 import commercemarketplaceCleanupTransformer from './transformers/commercemarketplace-cleanup.js';
 import commercemarketplaceLinksTransformer from './transformers/commercemarketplace-links.js';
 import commercemarketplaceSectionsTransformer from './transformers/commercemarketplace-sections.js';
+import sellerPageTemplateTransformer from './transformers/seller-page-template.js';
+import becomePartnerBannerTransformer from './transformers/become-partner-banner.js';
 
 const PAGE_TEMPLATE = {
   "name": "partner-profile",
@@ -232,7 +234,10 @@ const lateTransformers = [...sectionTransformers, ...fragmentTransformers];
 // Page corrections ({sitename}-page-corrections.js, when it exists) run last.
 const correctionTransformers = [];
 // Links to migrated pages become site-relative (afterTransform), before page corrections.
-const transformers = [commercemarketplaceCleanupTransformer, ...lateTransformers, commercemarketplaceLinksTransformer, ...correctionTransformers];
+// The seller-page template transformer runs first: it reads the seller ID and warning before the
+// cleanup, and its afterTransform replaces the parsed content with the profile template block.
+// The "Become a Partner" band is read from the footer before the cleanup removes it.
+const transformers = [sellerPageTemplateTransformer, becomePartnerBannerTransformer, commercemarketplaceCleanupTransformer, ...lateTransformers, commercemarketplaceLinksTransformer, ...correctionTransformers];
 const earlyTransformers = transformers.filter((fn) => !lateTransformers.includes(fn));
 // Catalog selectors (pageInstances, pageCleanup) count the <script> and <hr> elements the importer
 // removes before transform, so a catalog template finds its targets in preprocess.

@@ -90,7 +90,7 @@
   display: block;
   width: 84px;
   height: 50px;
-  background: url("/icons/mp-assurance-program-badge.svg") no-repeat center / contain;
+  background: url("/icons/mp-assurance-program-badge.svg") no-repeat center top / contain;
 }
 
 .marketplace-tiles .plp-tile__assurance[hidden] {
@@ -175,7 +175,10 @@
   object-fit: contain;
 }
 
+/* Source .price-box: 10px below the top of the partner/price row */
 .marketplace-tiles .plp-tile__price {
+  align-self: flex-start;
+  margin-top: 10px;
   margin-left: auto;
   color: #2c3e50;
   font-size: 14px;
